@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PATIENT
+  DOCTOR
+  ADMIN
+}
+
+enum AppointmentStatus {
+  UPCOMING
+  COMPLETED
+  CANCELLED
+}
+
+enum ConsultationType {
+  IN_PERSON
+  ONLINE
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      Role     @default(PATIENT)
+  firstName String
+  lastName  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  doctorProfile  DoctorProfile?
+  patientProfile PatientProfile?
+
+  reviewsGiven    Review[] @relation("PatientReviews")
+  reviewsReceived Review[] @relation("DoctorReviews")
+
+  appointmentsAsPatient Appointment[] @relation("PatientAppointments")
+  appointmentsAsDoctor  Appointment[] @relation("DoctorAppointments")
+
+  medicalRecords PatientMedicalRecord[] @relation("PatientRecords")
+  doctorRecords  PatientMedicalRecord[] @relation("DoctorAuthoredRecords")
+}
+
+model PatientProfile {
+  id          Int       @id @default(autoincrement())
+  userId      Int       @unique
+  user        User      @relation(fields: [userId], references: [id])
+  dateOfBirth DateTime?
+  bloodGroup  String?
+  allergies   String[]
+}
+
+model DoctorProfile {
+  id            Int     @id @default(autoincrement())
+  userId        Int     @unique
+  user          User    @relation(fields: [userId], references: [id])
+  specialty     String
+  experienceYrs Int
+  rating        Float   @default(0.0)
+  reviewCount   Int     @default(0)
+  priceAmount   Float
+  currency      String  @default("UZS")
+  availability  String?
+  bg            String?
+  color         String?
+}
+
+model Appointment {
+  id        Int               @id @default(autoincrement())
+  patientId Int
+  doctorId  Int
+  patient   User              @relation("PatientAppointments", fields: [patientId], references: [id])
+  doctor    User              @relation("DoctorAppointments", fields: [doctorId], references: [id])
+  status    AppointmentStatus @default(UPCOMING)
+  dateTime  DateTime
+  type      ConsultationType  @default(IN_PERSON)
+  notes     String?
+  price     String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model PatientMedicalRecord {
+  id            Int      @id @default(autoincrement())
+  patientId     Int
+  doctorId      Int
+  patient       User     @relation("PatientRecords", fields: [patientId], references: [id])
+  doctor        User     @relation("DoctorAuthoredRecords", fields: [doctorId], references: [id])
+  diagnosis     String
+  date          DateTime @default(now())
+  prescriptions String[]
+  notes         String?
+  attachments   String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  patientId Int
+  doctorId  Int
+  patient   User     @relation("PatientReviews", fields: [patientId], references: [id])
+  doctor    User     @relation("DoctorReviews", fields: [doctorId], references: [id])
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+}

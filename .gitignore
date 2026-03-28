@@ -41,3 +41,14 @@ app-example
 # generated native folders
 /ios
 /android
+
+# Backend
+backend/node_modules/
+backend/dist/
+backend/.env
+backend/.env.bak
+backend/prisma_error.log
+backend/prisma_error2.log
+backend/format_error.log
+backend/prisma_version.txt
+backend/prisma.config.ts

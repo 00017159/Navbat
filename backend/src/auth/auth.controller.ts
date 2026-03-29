@@ -21,7 +21,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req: any) {
+  login(@Request() req: any) {
     return this.authService.login(req.user);
   }
 
@@ -37,6 +37,7 @@ export class AuthController {
       // Default to PATIENT if not supplied, though Role parsing needs precise type match
     });
     // Strip out the password from response
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...result } = user;
     return result;
   }

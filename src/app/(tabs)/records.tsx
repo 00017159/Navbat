@@ -3,27 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Ale
 import { Activity, MessageSquare, Paperclip, ChevronRight, ChevronDown, ChevronUp, Download } from 'lucide-react-native';
 import { getRecords } from '../../services/api';
 
-const MOCK_RECORDS = [
-  {
-    id: 1, 
-    doctor: { firstName: 'Dr. Jasur', lastName: 'Toshmatov' },
-    createdAt: '2026-03-20T14:00:00Z',
-    diagnosis: 'Chronic Migraine',
-    prescriptions: ['Sumatriptan 50mg', 'Amitriptyline 25mg', 'Vitamin B2 400mg'],
-    notes: 'Patient responds well to treatment. Follow-up in 3 months.',
-    attachments: ['MRI_scan.pdf', 'Blood_test.pdf'],
-  },
-  {
-    id: 2, 
-    doctor: { firstName: 'Dr. Sherzod', lastName: 'Umarov' },
-    createdAt: '2026-02-15T10:00:00Z',
-    diagnosis: 'Acute Respiratory Infection',
-    prescriptions: ['Amoxicillin 500mg', 'Paracetamol 500mg', 'Vitamin C 1000mg'],
-    notes: 'Complete course of antibiotics required. Rest and hydration advised.',
-    attachments: [],
-  },
-];
-
+// Live data only
 function getInitials(firstName: string, lastName: string) {
   return `${(firstName || '').replace('Dr. ', '').charAt(0)}${(lastName || '').charAt(0)}`.toUpperCase();
 }
@@ -47,10 +27,10 @@ export default function RecordsScreen() {
       if (Array.isArray(data) && data.length > 0) {
         setRecords(data);
       } else {
-        setRecords(MOCK_RECORDS);
+        setRecords([]);
       }
     } catch {
-      setRecords(MOCK_RECORDS);
+      setRecords([]);
     } finally {
       setLoading(false);
       setRefreshing(false);

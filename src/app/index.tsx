@@ -32,9 +32,7 @@ export default function LoginScreen() {
       setStep('otp');
       Alert.alert('Code Sent', `A 6-digit verification code has been sent to ${email}`);
     } catch (error: any) {
-      setDevCode('123456');
-      setStep('otp');
-      Alert.alert('Demo Mode', 'Backend not connected. Use code: 123456');
+      Alert.alert('Error', error.message || 'Failed to connect to the server');
     } finally {
       setLoading(false);
     }
@@ -78,20 +76,9 @@ export default function LoginScreen() {
       await verifyOtp(email, otpCode);
       router.replace('/(tabs)');
     } catch (error: any) {
-      if (otpCode === '123456' || otpCode === devCode) {
-        setCurrentUser({
-          id: 1,
-          email: email,
-          role: 'PATIENT',
-          firstName: email.split('@')[0],
-          lastName: '',
-        });
-        router.replace('/(tabs)');
-      } else {
-        Alert.alert('Invalid Code', 'The verification code is incorrect or expired. Please try again.');
-        setOtpDigits(['', '', '', '', '', '']);
-        inputRefs.current[0]?.focus();
-      }
+      Alert.alert('Invalid Code', error.message || 'The verification code is incorrect or expired. Please try again.');
+      setOtpDigits(['', '', '', '', '', '']);
+      inputRefs.current[0]?.focus();
     } finally {
       setLoading(false);
     }
@@ -103,9 +90,8 @@ export default function LoginScreen() {
       const result = await requestOtp(email);
       if (result.dev_code) setDevCode(result.dev_code);
       Alert.alert('Code Resent', `A new code has been sent to ${email}`);
-    } catch {
-      setDevCode('123456');
-      Alert.alert('Demo Mode', 'Use code: 123456');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Failed to resend code');
     } finally {
       setLoading(false);
     }

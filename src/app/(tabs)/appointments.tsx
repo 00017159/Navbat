@@ -5,24 +5,7 @@ import { getAppointments, createAppointment } from '../../services/api';
 
 const TABS = ['All', 'Upcoming', 'Completed', 'Cancelled'];
 
-const MOCK_APPOINTMENTS = [
-  {
-    id: 1, status: 'CANCELLED', dateTime: '2026-04-02T10:00:00Z',
-    type: 'IN_PERSON', notes: 'Regular heart checkup', price: '150000',
-    doctor: { firstName: 'Dr. Malika', lastName: 'Yusupova', doctorProfile: { specialty: 'Cardiologist' } },
-  },
-  {
-    id: 2, status: 'COMPLETED', dateTime: '2026-03-20T14:00:00Z',
-    type: 'ONLINE', notes: 'Migraine treatment follow-up', price: '130000',
-    doctor: { firstName: 'Dr. Jasur', lastName: 'Toshmatov', doctorProfile: { specialty: 'Neurologist' } },
-  },
-  {
-    id: 3, status: 'CANCELLED', dateTime: '2026-03-10T11:00:00Z',
-    type: 'IN_PERSON', notes: 'Skin rash examination', price: '110000',
-    doctor: { firstName: 'Dr. Gulnora', lastName: 'Mirzayeva', doctorProfile: { specialty: 'Dermatologist' } },
-  },
-];
-
+// Live data only
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
   return d.toISOString().split('T')[0];
@@ -62,10 +45,10 @@ export default function AppointmentsScreen() {
       if (Array.isArray(data) && data.length > 0) {
         setAppointments(data);
       } else {
-        setAppointments(MOCK_APPOINTMENTS);
+        setAppointments([]);
       }
     } catch {
-      setAppointments(MOCK_APPOINTMENTS);
+      setAppointments([]);
     } finally {
       setLoading(false);
       setRefreshing(false);

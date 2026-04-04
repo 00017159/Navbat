@@ -6,45 +6,7 @@ import { getDoctors, getAppointments, getCurrentUser } from '../../services/api'
 
 const CATEGORIES = ['All', 'Cardiologist', 'Neurologist', 'Pediatrician', 'Dentist', 'Orthopedic'];
 
-// Fallback mock data when backend is unreachable
-const MOCK_DOCTORS = [
-  {
-    id: 1, firstName: 'Dr. Malika', lastName: 'Yusupova',
-    doctorProfile: { specialty: 'Cardiologist', experience: 12, priceAmount: 150000 },
-    reviewsReceived: Array(248).fill({ rating: 5 }),
-    initials: 'MY', bg: '#fef3c7',
-  },
-  {
-    id: 2, firstName: 'Dr. Jasur', lastName: 'Toshmatov',
-    doctorProfile: { specialty: 'Neurologist', experience: 8, priceAmount: 130000 },
-    reviewsReceived: Array(183).fill({ rating: 4 }),
-    initials: 'JT', bg: '#ffedd5',
-  },
-  {
-    id: 3, firstName: 'Dr. Nozima', lastName: 'Rahimova',
-    doctorProfile: { specialty: 'Pediatrician', experience: 15, priceAmount: 120000 },
-    reviewsReceived: Array(392).fill({ rating: 5 }),
-    initials: 'NR', bg: '#ffedd5',
-  },
-  {
-    id: 4, firstName: 'Dr. Sardor', lastName: 'Karimov',
-    doctorProfile: { specialty: 'Dentist', experience: 6, priceAmount: 100000 },
-    reviewsReceived: Array(124).fill({ rating: 4 }),
-    initials: 'SK', bg: '#fef3c7',
-  },
-  {
-    id: 5, firstName: 'Dr. Dilnoza', lastName: 'Hasanova',
-    doctorProfile: { specialty: 'Orthopedic', experience: 10, priceAmount: 140000 },
-    reviewsReceived: Array(210).fill({ rating: 5 }),
-    initials: 'DH', bg: '#e0f2fe',
-  },
-  {
-    id: 6, firstName: 'Dr. Bobur', lastName: 'Alimov',
-    doctorProfile: { specialty: 'Cardiologist', experience: 20, priceAmount: 200000 },
-    reviewsReceived: Array(510).fill({ rating: 5 }),
-    initials: 'BA', bg: '#fce7f3',
-  },
-];
+// Live data only
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -91,14 +53,15 @@ export default function HomeScreen() {
       if (doctorsList.status === 'fulfilled' && Array.isArray(doctorsList.value)) {
         setDoctors(doctorsList.value);
       } else {
-        setDoctors(MOCK_DOCTORS);
+        setDoctors([]);
       }
 
       if (appointmentsList.status === 'fulfilled' && Array.isArray(appointmentsList.value)) {
         setAppointments(appointmentsList.value);
       }
     } catch {
-      setDoctors(MOCK_DOCTORS);
+      setDoctors([]);
+      setAppointments([]);
     } finally {
       setLoading(false);
       setRefreshing(false);

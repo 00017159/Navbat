@@ -97,8 +97,7 @@ export default function DoctorBookingScreen() {
       });
       setBooked(true);
     } catch (error: any) {
-      // Demo fallback - show success anyway
-      setBooked(true);
+      Alert.alert('Booking Failed', error.message || 'Failed to book appointment. Please try again.');
     } finally {
       setLoading(false);
     }

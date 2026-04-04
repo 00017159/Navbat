@@ -1,8 +1,11 @@
 import { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert, ActivityIndicator, Keyboard } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert, ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
 import { Mail, Activity, ArrowLeft, ShieldCheck } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { requestOtp, verifyOtp, setCurrentUser } from '../services/api';
+
+const { width } = Dimensions.get('window');
+const OTP_INPUT_SIZE = Math.min((width - 80) / 6, 48); // Responsive sizing for OTP inputs
 
 type Step = 'email' | 'otp';
 
@@ -23,14 +26,12 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       const result = await requestOtp(email);
-      // In dev mode, the backend returns the code for easy testing
       if (result.dev_code) {
         setDevCode(result.dev_code);
       }
       setStep('otp');
       Alert.alert('Code Sent', `A 6-digit verification code has been sent to ${email}`);
     } catch (error: any) {
-      // Fallback to demo mode if backend is unreachable
       setDevCode('123456');
       setStep('otp');
       Alert.alert('Demo Mode', 'Backend not connected. Use code: 123456');
@@ -44,12 +45,10 @@ export default function LoginScreen() {
     newDigits[index] = text;
     setOtpDigits(newDigits);
 
-    // Auto-advance to next input
     if (text && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
 
-    // Auto-submit when all 6 digits are filled
     if (text && index === 5) {
       Keyboard.dismiss();
       const code = [...newDigits.slice(0, 5), text].join('');
@@ -79,7 +78,6 @@ export default function LoginScreen() {
       await verifyOtp(email, otpCode);
       router.replace('/(tabs)');
     } catch (error: any) {
-      // Demo fallback
       if (otpCode === '123456' || otpCode === devCode) {
         setCurrentUser({
           id: 1,
@@ -116,120 +114,130 @@ export default function LoginScreen() {
   if (step === 'otp') {
     return (
       <SafeAreaView style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <TouchableOpacity style={styles.backButton} onPress={() => { setStep('email'); setOtpDigits(['', '', '', '', '', '']); }}>
-            <ArrowLeft color="#111827" size={24} />
-          </TouchableOpacity>
-
-          <View style={styles.otpHeader}>
-            <View style={styles.shieldIcon}>
-              <ShieldCheck color="#fff" size={32} />
-            </View>
-            <Text style={styles.otpTitle}>Verification Code</Text>
-            <Text style={styles.otpSubtitle}>Enter the 6-digit code sent to</Text>
-            <Text style={styles.otpEmail}>{email}</Text>
-          </View>
-
-          <View style={styles.otpContainer}>
-            {otpDigits.map((digit, index) => (
-              <TextInput
-                key={index}
-                ref={ref => { inputRefs.current[index] = ref; }}
-                style={[styles.otpInput, digit ? styles.otpInputFilled : null]}
-                value={digit}
-                onChangeText={(text) => handleOtpChange(text.replace(/[^0-9]/g, ''), index)}
-                onKeyPress={({ nativeEvent }) => handleOtpKeyPress(nativeEvent.key, index)}
-                keyboardType="number-pad"
-                maxLength={1}
-                selectTextOnFocus
-                autoFocus={index === 0}
-              />
-            ))}
-          </View>
-
-          <TouchableOpacity
-            style={[styles.verifyButton, loading && { opacity: 0.7 }]}
-            onPress={() => handleVerifyOtp()}
-            disabled={loading}
-          >
-            {loading
-              ? <ActivityIndicator color="#FFF" />
-              : <Text style={styles.verifyButtonText}>Verify & Sign In</Text>
-            }
-          </TouchableOpacity>
-
-          <View style={styles.resendRow}>
-            <Text style={styles.resendText}>Didn't receive the code? </Text>
-            <TouchableOpacity onPress={handleResendOtp} disabled={loading}>
-              <Text style={styles.resendLink}>Resend</Text>
+        <KeyboardAvoidingView 
+          style={{ flex: 1 }} 
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+            <TouchableOpacity style={styles.backButton} onPress={() => { setStep('email'); setOtpDigits(['', '', '', '', '', '']); }}>
+              <ArrowLeft color="#111827" size={24} />
             </TouchableOpacity>
-          </View>
 
-          {devCode ? (
-            <View style={styles.devBanner}>
-              <Text style={styles.devBannerText}>🔧 Dev code: {devCode}</Text>
+            <View style={styles.otpHeader}>
+              <View style={styles.shieldIcon}>
+                <ShieldCheck color="#fff" size={32} />
+              </View>
+              <Text style={styles.otpTitle}>Verification Code</Text>
+              <Text style={styles.otpSubtitle}>Enter the 6-digit code sent to</Text>
+              <Text style={styles.otpEmail}>{email}</Text>
             </View>
-          ) : null}
 
-        </ScrollView>
+            <View style={styles.otpContainer}>
+              {otpDigits.map((digit, index) => (
+                <TextInput
+                  key={index}
+                  ref={ref => { inputRefs.current[index] = ref; }}
+                  style={[styles.otpInput, digit ? styles.otpInputFilled : null]}
+                  value={digit}
+                  onChangeText={(text) => handleOtpChange(text.replace(/[^0-9]/g, ''), index)}
+                  onKeyPress={({ nativeEvent }) => handleOtpKeyPress(nativeEvent.key, index)}
+                  keyboardType="number-pad"
+                  maxLength={1}
+                  selectTextOnFocus
+                  autoFocus={index === 0}
+                />
+              ))}
+            </View>
+
+            <TouchableOpacity
+              style={[styles.verifyButton, loading && { opacity: 0.7 }]}
+              onPress={() => handleVerifyOtp()}
+              disabled={loading}
+            >
+              {loading
+                ? <ActivityIndicator color="#FFF" />
+                : <Text style={styles.verifyButtonText}>Verify & Sign In</Text>
+              }
+            </TouchableOpacity>
+
+            <View style={styles.resendRow}>
+              <Text style={styles.resendText}>Didn't receive the code? </Text>
+              <TouchableOpacity onPress={handleResendOtp} disabled={loading}>
+                <Text style={styles.resendLink}>Resend</Text>
+              </TouchableOpacity>
+            </View>
+
+            {devCode ? (
+              <View style={styles.devBanner}>
+                <Text style={styles.devBannerText}>🔧 Dev code: {devCode}</Text>
+              </View>
+            ) : null}
+
+          </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        
-        <View style={styles.header}>
-          <View style={styles.logoContainer}>
-            <Activity color="#fff" size={32} />
-          </View>
-          <Text style={styles.brandTitle}>NavbatUz</Text>
-          <Text style={styles.brandSubtitle}>Your Healthcare Companion</Text>
-        </View>
-
-        <View style={styles.formCard}>
-          <Text style={styles.welcomeText}>Welcome</Text>
-          <Text style={styles.welcomeSubtext}>Enter your email to receive a one-time verification code</Text>
-
-          <Text style={styles.label}>Email Address</Text>
-          <View style={styles.inputContainer}>
-            <Mail color="#94A3B8" size={20} style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="your@email.com"
-              placeholderTextColor="#94A3B8"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-              editable={!loading}
-              returnKeyType="go"
-              onSubmitEditing={handleRequestOtp}
-            />
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }} 
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+          
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <Activity color="#fff" size={32} />
+            </View>
+            <Text style={styles.brandTitle}>NavbatUz</Text>
+            <Text style={styles.brandSubtitle}>Your Healthcare Companion</Text>
           </View>
 
-          <TouchableOpacity
-            style={[styles.signInButton, loading && { opacity: 0.7 }]}
-            onPress={handleRequestOtp}
-            disabled={loading}
-          >
-            {loading
-              ? <ActivityIndicator color="#FFF" />
-              : <Text style={styles.signInText}>Send Verification Code</Text>
-            }
-          </TouchableOpacity>
-        </View>
+          <View style={styles.formCard}>
+            <Text style={styles.welcomeText}>Welcome</Text>
+            <Text style={styles.welcomeSubtext}>Enter your email to receive a one-time verification code</Text>
 
-        <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>🔒 Secure & Passwordless</Text>
-          <Text style={styles.infoText}>
-            We'll send a one-time code to your email. No password needed — fast, secure, and easy.
-          </Text>
-        </View>
+            <Text style={styles.label}>Email Address</Text>
+            <View style={styles.inputContainer}>
+              <Mail color="#94A3B8" size={20} style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="your@email.com"
+                placeholderTextColor="#94A3B8"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+                editable={!loading}
+                returnKeyType="go"
+                onSubmitEditing={handleRequestOtp}
+              />
+            </View>
 
-      </ScrollView>
+            <TouchableOpacity
+              style={[styles.signInButton, loading && { opacity: 0.7 }]}
+              onPress={handleRequestOtp}
+              disabled={loading}
+            >
+              {loading
+                ? <ActivityIndicator color="#FFF" />
+                : <Text style={styles.signInText}>Send Verification Code</Text>
+              }
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.infoCard}>
+            <Text style={styles.infoTitle}>🔒 Secure & Passwordless</Text>
+            <Text style={styles.infoText}>
+              We'll send a one-time code to your email. No password needed — fast, secure, and easy.
+            </Text>
+          </View>
+
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -283,10 +291,10 @@ const styles = StyleSheet.create({
   otpSubtitle: { fontSize: 14, color: '#64748B' },
   otpEmail: { fontSize: 14, fontWeight: '600', color: '#1E63D3', marginTop: 4 },
   otpContainer: {
-    flexDirection: 'row', justifyContent: 'center', gap: 10, marginBottom: 32,
+    flexDirection: 'row', justifyContent: 'space-between', marginBottom: 32,
   },
   otpInput: {
-    width: 48, height: 56, borderRadius: 12, borderWidth: 2, borderColor: '#E2E8F0',
+    width: OTP_INPUT_SIZE, height: 56, borderRadius: 12, borderWidth: 2, borderColor: '#E2E8F0',
     backgroundColor: '#FFFFFF', textAlign: 'center', fontSize: 22, fontWeight: 'bold',
     color: '#111827',
   },

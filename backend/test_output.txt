@@ -1,0 +1,1610 @@
+
+> backend@0.0.1 test
+> jest
+
+PASS src/notifications/notifications.service.spec.ts
+PASS src/app.controller.spec.ts
+FAIL src/appointments/appointments.service.spec.ts
+  ● AppointmentsService › should be defined
+
+    Nest can't resolve dependencies of the AppointmentsService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mAppointmentsService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (appointments/appointments.service.spec.ts:8:35)
+
+FAIL src/profiles/profiles.controller.spec.ts
+  ● ProfilesController › should be defined
+
+    Nest can't resolve dependencies of the ProfilesController (?). Please make sure that the argument ProfilesService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If ProfilesService is a provider, is it part of the current RootTestModule?
+    - If ProfilesService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing ProfilesService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mProfilesController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (profiles/profiles.controller.spec.ts:8:35)
+
+FAIL src/appointments/appointments.controller.spec.ts
+  ● AppointmentsController › should be defined
+
+    Nest can't resolve dependencies of the AppointmentsController (?). Please make sure that the argument AppointmentsService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AppointmentsService is a provider, is it part of the current RootTestModule?
+    - If AppointmentsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AppointmentsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mAppointmentsController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (appointments/appointments.controller.spec.ts:8:35)
+
+FAIL src/reviews/reviews.controller.spec.ts
+  ● ReviewsController › should be defined
+
+    Nest can't resolve dependencies of the ReviewsController (?). Please make sure that the argument ReviewsService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If ReviewsService is a provider, is it part of the current RootTestModule?
+    - If ReviewsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing ReviewsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mReviewsController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (reviews/reviews.controller.spec.ts:8:35)
+
+FAIL src/analytics/analytics.controller.spec.ts
+  ● AnalyticsController › should be defined
+
+    Nest can't resolve dependencies of the AnalyticsController (?). Please make sure that the argument AnalyticsService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AnalyticsService is a provider, is it part of the current RootTestModule?
+    - If AnalyticsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AnalyticsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mAnalyticsController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (analytics/analytics.controller.spec.ts:8:35)
+
+FAIL src/records/records.controller.spec.ts
+  ● RecordsController › should be defined
+
+    Nest can't resolve dependencies of the RecordsController (?). Please make sure that the argument RecordsService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If RecordsService is a provider, is it part of the current RootTestModule?
+    - If RecordsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing RecordsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mRecordsController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (records/records.controller.spec.ts:8:35)
+
+FAIL src/reports/reports.controller.spec.ts
+  ● ReportsController › should be defined
+
+    Nest can't resolve dependencies of the ReportsController (?). Please make sure that the argument ReportsService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If ReportsService is a provider, is it part of the current RootTestModule?
+    - If ReportsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing ReportsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mReportsController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (reports/reports.controller.spec.ts:8:35)
+
+FAIL src/analytics/analytics.service.spec.ts
+  ● AnalyticsService › should be defined
+
+    Nest can't resolve dependencies of the AnalyticsService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mAnalyticsService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (analytics/analytics.service.spec.ts:8:35)
+
+FAIL src/profiles/profiles.service.spec.ts
+  ● ProfilesService › should be defined
+
+    Nest can't resolve dependencies of the ProfilesService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mProfilesService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (profiles/profiles.service.spec.ts:8:35)
+
+FAIL src/reviews/reviews.service.spec.ts
+  ● ReviewsService › should be defined
+
+    Nest can't resolve dependencies of the ReviewsService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mReviewsService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (reviews/reviews.service.spec.ts:8:35)
+
+FAIL src/doctors/doctors.controller.spec.ts
+  ● DoctorsController › should be defined
+
+    Nest can't resolve dependencies of the DoctorsController (?). Please make sure that the argument DoctorsService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If DoctorsService is a provider, is it part of the current RootTestModule?
+    - If DoctorsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing DoctorsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mDoctorsController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (doctors/doctors.controller.spec.ts:8:35)
+
+FAIL src/auth/auth.controller.spec.ts
+  ● AuthController › should be defined
+
+    Nest can't resolve dependencies of the AuthController (?, UsersService). Please make sure that the argument AuthService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AuthService is a provider, is it part of the current RootTestModule?
+    - If AuthService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AuthService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mAuthController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (auth/auth.controller.spec.ts:8:35)
+
+FAIL src/doctors/doctors.service.spec.ts
+  ● DoctorsService › should be defined
+
+    Nest can't resolve dependencies of the DoctorsService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mDoctorsService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (doctors/doctors.service.spec.ts:8:35)
+
+FAIL src/reports/reports.service.spec.ts
+  ● ReportsService › should be defined
+
+    Nest can't resolve dependencies of the ReportsService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mReportsService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (reports/reports.service.spec.ts:8:35)
+
+FAIL src/records/records.service.spec.ts
+  ● RecordsService › should be defined
+
+    Nest can't resolve dependencies of the RecordsService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mRecordsService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (records/records.service.spec.ts:8:35)
+
+FAIL src/users/users.service.spec.ts
+  ● UsersService › should be defined
+
+    Nest can't resolve dependencies of the UsersService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mUsersService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (users/users.service.spec.ts:8:35)
+
+FAIL src/ai/ai.controller.spec.ts
+  ● AiController › should be defined
+
+    Nest can't resolve dependencies of the AiController (?). Please make sure that the argument AiService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AiService is a provider, is it part of the current RootTestModule?
+    - If AiService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AiService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mAiController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (ai/ai.controller.spec.ts:8:35)
+
+PASS src/prisma/prisma.service.spec.ts
+FAIL src/auth/auth.service.spec.ts
+  ● AuthService › should be defined
+
+    Nest can't resolve dependencies of the AuthService (?, JwtService). Please make sure that the argument UsersService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If UsersService is a provider, is it part of the current RootTestModule?
+    - If UsersService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing UsersService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mAuthService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (auth/auth.service.spec.ts:8:35)
+
+FAIL src/ai/ai.service.spec.ts
+  ● AiService › should be defined
+
+    Nest can't resolve dependencies of the AiService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mAiService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (ai/ai.service.spec.ts:8:35)
+
+Summary of all failing tests
+FAIL appointments/appointments.service.spec.ts
+  ● AppointmentsService › should be defined
+
+    Nest can't resolve dependencies of the AppointmentsService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mAppointmentsService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (appointments/appointments.service.spec.ts:8:35)
+
+FAIL profiles/profiles.controller.spec.ts
+  ● ProfilesController › should be defined
+
+    Nest can't resolve dependencies of the ProfilesController (?). Please make sure that the argument ProfilesService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If ProfilesService is a provider, is it part of the current RootTestModule?
+    - If ProfilesService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing ProfilesService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mProfilesController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (profiles/profiles.controller.spec.ts:8:35)
+
+FAIL appointments/appointments.controller.spec.ts
+  ● AppointmentsController › should be defined
+
+    Nest can't resolve dependencies of the AppointmentsController (?). Please make sure that the argument AppointmentsService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AppointmentsService is a provider, is it part of the current RootTestModule?
+    - If AppointmentsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AppointmentsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mAppointmentsController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (appointments/appointments.controller.spec.ts:8:35)
+
+FAIL reviews/reviews.controller.spec.ts
+  ● ReviewsController › should be defined
+
+    Nest can't resolve dependencies of the ReviewsController (?). Please make sure that the argument ReviewsService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If ReviewsService is a provider, is it part of the current RootTestModule?
+    - If ReviewsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing ReviewsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mReviewsController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (reviews/reviews.controller.spec.ts:8:35)
+
+FAIL analytics/analytics.controller.spec.ts
+  ● AnalyticsController › should be defined
+
+    Nest can't resolve dependencies of the AnalyticsController (?). Please make sure that the argument AnalyticsService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AnalyticsService is a provider, is it part of the current RootTestModule?
+    - If AnalyticsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AnalyticsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mAnalyticsController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (analytics/analytics.controller.spec.ts:8:35)
+
+FAIL records/records.controller.spec.ts
+  ● RecordsController › should be defined
+
+    Nest can't resolve dependencies of the RecordsController (?). Please make sure that the argument RecordsService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If RecordsService is a provider, is it part of the current RootTestModule?
+    - If RecordsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing RecordsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mRecordsController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (records/records.controller.spec.ts:8:35)
+
+FAIL reports/reports.controller.spec.ts
+  ● ReportsController › should be defined
+
+    Nest can't resolve dependencies of the ReportsController (?). Please make sure that the argument ReportsService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If ReportsService is a provider, is it part of the current RootTestModule?
+    - If ReportsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing ReportsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mReportsController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (reports/reports.controller.spec.ts:8:35)
+
+FAIL analytics/analytics.service.spec.ts
+  ● AnalyticsService › should be defined
+
+    Nest can't resolve dependencies of the AnalyticsService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mAnalyticsService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (analytics/analytics.service.spec.ts:8:35)
+
+FAIL profiles/profiles.service.spec.ts
+  ● ProfilesService › should be defined
+
+    Nest can't resolve dependencies of the ProfilesService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mProfilesService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (profiles/profiles.service.spec.ts:8:35)
+
+FAIL reviews/reviews.service.spec.ts
+  ● ReviewsService › should be defined
+
+    Nest can't resolve dependencies of the ReviewsService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mReviewsService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (reviews/reviews.service.spec.ts:8:35)
+
+FAIL doctors/doctors.controller.spec.ts
+  ● DoctorsController › should be defined
+
+    Nest can't resolve dependencies of the DoctorsController (?). Please make sure that the argument DoctorsService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If DoctorsService is a provider, is it part of the current RootTestModule?
+    - If DoctorsService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing DoctorsService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mDoctorsController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (doctors/doctors.controller.spec.ts:8:35)
+
+FAIL auth/auth.controller.spec.ts
+  ● AuthController › should be defined
+
+    Nest can't resolve dependencies of the AuthController (?, UsersService). Please make sure that the argument AuthService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AuthService is a provider, is it part of the current RootTestModule?
+    - If AuthService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AuthService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mAuthController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (auth/auth.controller.spec.ts:8:35)
+
+FAIL doctors/doctors.service.spec.ts
+  ● DoctorsService › should be defined
+
+    Nest can't resolve dependencies of the DoctorsService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mDoctorsService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (doctors/doctors.service.spec.ts:8:35)
+
+FAIL reports/reports.service.spec.ts
+  ● ReportsService › should be defined
+
+    Nest can't resolve dependencies of the ReportsService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mReportsService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (reports/reports.service.spec.ts:8:35)
+
+FAIL records/records.service.spec.ts
+  ● RecordsService › should be defined
+
+    Nest can't resolve dependencies of the RecordsService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mRecordsService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (records/records.service.spec.ts:8:35)
+
+FAIL users/users.service.spec.ts
+  ● UsersService › should be defined
+
+    Nest can't resolve dependencies of the UsersService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mUsersService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (users/users.service.spec.ts:8:35)
+
+FAIL ai/ai.controller.spec.ts
+  ● AiController › should be defined
+
+    Nest can't resolve dependencies of the AiController (?). Please make sure that the argument AiService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If AiService is a provider, is it part of the current RootTestModule?
+    - If AiService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing AiService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       controllers[33m:[39m [[33mAiController[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadController (../node_modules/@nestjs/core/injector/injector.js:94:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:68:13
+          at async Promise.all (index 0)
+      at TestingInstanceLoader.createInstancesOfControllers (../node_modules/@nestjs/core/injector/instance-loader.js:67:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:42:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (ai/ai.controller.spec.ts:8:35)
+
+FAIL auth/auth.service.spec.ts
+  ● AuthService › should be defined
+
+    Nest can't resolve dependencies of the AuthService (?, JwtService). Please make sure that the argument UsersService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If UsersService is a provider, is it part of the current RootTestModule?
+    - If UsersService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing UsersService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mAuthService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (auth/auth.service.spec.ts:8:35)
+
+FAIL ai/ai.service.spec.ts
+  ● AiService › should be defined
+
+    Nest can't resolve dependencies of the AiService (?). Please make sure that the argument PrismaService at index [0] is available in the RootTestModule module.
+
+    Potential solutions:
+    - Is RootTestModule a valid NestJS module?
+    - If PrismaService is a provider, is it part of the current RootTestModule?
+    - If PrismaService is exported from a separate @Module, is that module imported within RootTestModule?
+      @Module({
+        imports: [ /* the Module containing PrismaService */ ]
+      })
+
+    For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors
+
+    [0m [90m  6 |[39m
+     [90m  7 |[39m   beforeEach([36masync[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m  8 |[39m     [36mconst[39m module[33m:[39m [33mTestingModule[39m [33m=[39m [36mawait[39m [33mTest[39m[33m.[39mcreateTestingModule({
+     [90m    |[39m                                   [31m[1m^[22m[39m
+     [90m  9 |[39m       providers[33m:[39m [[33mAiService[39m][33m,[39m
+     [90m 10 |[39m     })[33m.[39mcompile()[33m;[39m
+     [90m 11 |[39m[0m
+
+      at TestingInjector.lookupComponentInParentModules (../node_modules/@nestjs/core/injector/injector.js:290:19)
+      at TestingInjector.resolveComponentWrapper (../node_modules/@nestjs/testing/testing-injector.js:19:45)
+      at resolveParam (../node_modules/@nestjs/core/injector/injector.js:140:38)
+          at async Promise.all (index 0)
+      at TestingInjector.resolveConstructorParams (../node_modules/@nestjs/core/injector/injector.js:169:27)
+      at TestingInjector.loadInstance (../node_modules/@nestjs/core/injector/injector.js:75:13)
+      at TestingInjector.loadProvider (../node_modules/@nestjs/core/injector/injector.js:103:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:56:13
+          at async Promise.all (index 3)
+      at TestingInstanceLoader.createInstancesOfProviders (../node_modules/@nestjs/core/injector/instance-loader.js:55:9)
+      at ../node_modules/@nestjs/core/injector/instance-loader.js:40:13
+          at async Promise.all (index 1)
+      at TestingInstanceLoader.createInstances (../node_modules/@nestjs/core/injector/instance-loader.js:39:9)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/core/injector/instance-loader.js:22:13)
+      at TestingInstanceLoader.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-instance-loader.js:9:9)
+      at TestingModuleBuilder.createInstancesOfDependencies (../node_modules/@nestjs/testing/testing-module.builder.js:118:9)
+      at TestingModuleBuilder.compile (../node_modules/@nestjs/testing/testing-module.builder.js:74:9)
+      at Object.<anonymous> (ai/ai.service.spec.ts:8:35)
+
+
+Test Suites: 19 failed, 3 passed, 22 total
+Tests:       19 failed, 3 passed, 22 total
+Snapshots:   0 total
+Time:        9.193 s
+Ran all test suites.

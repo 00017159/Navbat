@@ -27,10 +27,10 @@ enum ConsultationType {
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
-  password  String
+  password  String?
   role      Role     @default(PATIENT)
-  firstName String
-  lastName  String
+  firstName String   @default("")
+  lastName  String   @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -109,5 +109,14 @@ model Review {
   doctor    User     @relation("DoctorReviews", fields: [doctorId], references: [id])
   rating    Int
   comment   String?
+  createdAt DateTime @default(now())
+}
+
+model OtpCode {
+  id        Int      @id @default(autoincrement())
+  email     String
+  code      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
   createdAt DateTime @default(now())
 }

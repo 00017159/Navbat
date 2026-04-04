@@ -1,0 +1,188 @@
+backend/src/ai/ai.controller.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/ai/ai.controller.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/ai/ai.controller.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/ai/ai.controller.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/ai/ai.controller.ts(10,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/ai/ai.controller.ts(10,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((data: { symptoms: string[]; }) => Promise<{ analysis: string; recommendedSpecialty: string; suggestedDoctors: ({ doctorProfile: { id: number; specialty: string; experienceYrs: number; rating: number; ... 6 more ...; userId: number; } | null; } & { ...; })[]; }>)'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((data: { symptoms: string[]; }) => Promise<{ analysis: string; recommendedSpecialty: string; suggestedDoctors: ({ doctorProfile: { id: number; specialty: string; experienceYrs: number; rating: number; ... 6 more ...; userId: number; } | null; } & { ...; })[]; }>)'.
+backend/src/ai/ai.controller.ts(11,17): error TS1206: Decorators are not valid here.
+backend/src/ai/ai.service.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/ai/ai.service.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/ai/ai.service.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/ai/ai.service.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/analytics/analytics.controller.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/analytics/analytics.controller.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/analytics/analytics.controller.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/analytics/analytics.controller.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/analytics/analytics.controller.ts(13,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/analytics/analytics.controller.ts(13,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | (() => Promise<{ overview: { totalDoctors: number; totalPatients: number; totalAppointments: number; }; appointmentStatuses: (PickEnumerable<AppointmentGroupByOutputType, "status"[]> & { ...; })[]; timestamp: string; }>)'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | (() => Promise<{ overview: { totalDoctors: number; totalPatients: number; totalAppointments: number; }; appointmentStatuses: (PickEnumerable<AppointmentGroupByOutputType, "status"[]> & { ...; })[]; timestamp: string; }>)'.
+backend/src/analytics/analytics.service.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/analytics/analytics.service.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/analytics/analytics.service.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/analytics/analytics.service.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/app.controller.spec.ts(5,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/app.controller.spec.ts(8,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/app.controller.spec.ts(17,3): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/app.controller.spec.ts(18,5): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/app.controller.spec.ts(19,7): error TS2304: Cannot find name 'expect'.
+backend/src/app.controller.ts(8,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/app.controller.ts(8,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | (() => string)'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | (() => string)'.
+backend/src/appointments/appointments.controller.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/appointments/appointments.controller.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/appointments/appointments.controller.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/appointments/appointments.controller.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/appointments/appointments.controller.ts(17,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/appointments/appointments.controller.ts(17,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any, data: any) => Promise<{ id: number; createdAt: Date; updatedAt: Date; doctorId: number; patientId: number; status: AppointmentStatus; dateTime: Date; type: ConsultationType; notes: string | null; price: string | null; }>)'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any, data: any) => Promise<{ id: number; createdAt: Date; updatedAt: Date; doctorId: number; patientId: number; status: AppointmentStatus; dateTime: Date; type: ConsultationType; notes: string | null; price: string | null; }>)'.
+backend/src/appointments/appointments.controller.ts(18,10): error TS1206: Decorators are not valid here.
+backend/src/appointments/appointments.controller.ts(18,31): error TS1206: Decorators are not valid here.
+backend/src/appointments/appointments.controller.ts(22,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/appointments/appointments.controller.ts(22,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any) => Promise<({ doctor: { doctorProfile: { id: number; specialty: string; experienceYrs: number; rating: number; reviewCount: number; priceAmount: number; currency: string; availability: string | null; bg: string | null; color: string | null; userId: number; } | null; } & { ...; }; patient: { ...; }...'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any) => Promise<({ doctor: { doctorProfile: { id: number; specialty: string; experienceYrs: number; rating: number; reviewCount: number; priceAmount: number; currency: string; availability: string | null; bg: string | null; color: string | null; userId: number; } | null; } & { ...; }; patient: { ...; }...'.
+backend/src/appointments/appointments.controller.ts(23,11): error TS1206: Decorators are not valid here.
+backend/src/appointments/appointments.service.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/appointments/appointments.service.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/appointments/appointments.service.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/appointments/appointments.service.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/auth/auth.controller.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/auth/auth.controller.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/auth/auth.controller.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/auth/auth.controller.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/auth/auth.controller.ts(23,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/auth/auth.controller.ts(23,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any) => { access_token: string; user: { id: any; email: any; role: any; firstName: any; lastName: any; }; })'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any) => { access_token: string; user: { id: any; email: any; role: any; firstName: any; lastName: any; }; })'.
+backend/src/auth/auth.controller.ts(24,9): error TS1206: Decorators are not valid here.
+backend/src/auth/auth.controller.ts(28,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/auth/auth.controller.ts(28,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((body: any) => Promise<{ id: number; email: string; role: Role; firstName: string; lastName: string; createdAt: Date; updatedAt: Date; }>)'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((body: any) => Promise<{ id: number; email: string; role: Role; firstName: string; lastName: string; createdAt: Date; updatedAt: Date; }>)'.
+backend/src/auth/auth.controller.ts(29,18): error TS1206: Decorators are not valid here.
+backend/src/auth/auth.controller.ts(46,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/auth/auth.controller.ts(46,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any) => any)'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any) => any)'.
+backend/src/auth/auth.controller.ts(47,14): error TS1206: Decorators are not valid here.
+backend/src/auth/auth.service.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/auth/auth.service.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/auth/auth.service.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/auth/auth.service.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/doctors/doctors.controller.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/doctors/doctors.controller.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/doctors/doctors.controller.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/doctors/doctors.controller.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/doctors/doctors.controller.ts(10,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/doctors/doctors.controller.ts(10,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((specialty?: string | undefined) => Promise<({ doctorProfile: { id: number; specialty: string; experienceYrs: number; rating: number; reviewCount: number; priceAmount: number; currency: string; availability: string | null; bg: string | null; color: string | null; userId: number; } | null; reviewsReceived: { ...'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((specialty?: string | undefined) => Promise<({ doctorProfile: { id: number; specialty: string; experienceYrs: number; rating: number; reviewCount: number; priceAmount: number; currency: string; availability: string | null; bg: string | null; color: string | null; userId: number; } | null; reviewsReceived: { ...'.
+backend/src/doctors/doctors.controller.ts(11,11): error TS1206: Decorators are not valid here.
+backend/src/doctors/doctors.controller.ts(15,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/doctors/doctors.controller.ts(15,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((id: string) => Promise<{ doctorProfile: { id: number; specialty: string; experienceYrs: number; rating: number; reviewCount: number; priceAmount: number; currency: string; availability: string | null; bg: string | null; color: string | null; userId: number; } | null; reviewsReceived: { ...; }[]; } & { ...; ...'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((id: string) => Promise<{ doctorProfile: { id: number; specialty: string; experienceYrs: number; rating: number; reviewCount: number; priceAmount: number; currency: string; availability: string | null; bg: string | null; color: string | null; userId: number; } | null; reviewsReceived: { ...; }[]; } & { ...; ...'.
+backend/src/doctors/doctors.controller.ts(16,11): error TS1206: Decorators are not valid here.
+backend/src/doctors/doctors.service.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/doctors/doctors.service.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/doctors/doctors.service.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/doctors/doctors.service.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/notifications/notifications.service.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/notifications/notifications.service.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/notifications/notifications.service.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/notifications/notifications.service.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/notifications/notifications.service.ts(9,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/notifications/notifications.service.ts(9,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((payload: any) => void)'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((payload: any) => void)'.
+backend/src/prisma/prisma.service.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/prisma/prisma.service.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/prisma/prisma.service.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/prisma/prisma.service.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/profiles/profiles.controller.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/profiles/profiles.controller.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/profiles/profiles.controller.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/profiles/profiles.controller.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/profiles/profiles.controller.ts(10,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/profiles/profiles.controller.ts(10,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any) => Promise<{ id: number; specialty: string; experienceYrs: number; rating: number; reviewCount: number; priceAmount: number; currency: string; availability: string | null; bg: string | null; color: string | null; userId: number; } | { ...; } | null>)'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any) => Promise<{ id: number; specialty: string; experienceYrs: number; rating: number; reviewCount: number; priceAmount: number; currency: string; availability: string | null; bg: string | null; color: string | null; userId: number; } | { ...; } | null>)'.
+backend/src/profiles/profiles.controller.ts(11,14): error TS1206: Decorators are not valid here.
+backend/src/profiles/profiles.controller.ts(15,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/profiles/profiles.controller.ts(15,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any, data: any) => Promise<{ id: number; specialty: string; experienceYrs: number; rating: number; reviewCount: number; priceAmount: number; currency: string; availability: string | null; bg: string | null; color: string | null; userId: number; } | { ...; }>)'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any, data: any) => Promise<{ id: number; specialty: string; experienceYrs: number; rating: number; reviewCount: number; priceAmount: number; currency: string; availability: string | null; bg: string | null; color: string | null; userId: number; } | { ...; }>)'.
+backend/src/profiles/profiles.controller.ts(16,17): error TS1206: Decorators are not valid here.
+backend/src/profiles/profiles.controller.ts(16,38): error TS1206: Decorators are not valid here.
+backend/src/profiles/profiles.service.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/profiles/profiles.service.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/profiles/profiles.service.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/profiles/profiles.service.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/records/records.controller.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/records/records.controller.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/records/records.controller.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/records/records.controller.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/records/records.controller.ts(21,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/records/records.controller.ts(21,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any, data: any) => Promise<{ id: number; createdAt: Date; updatedAt: Date; doctorId: number; patientId: number; notes: string | null; diagnosis: string; date: Date; prescriptions: string[]; attachments: string[]; }>)'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any, data: any) => Promise<{ id: number; createdAt: Date; updatedAt: Date; doctorId: number; patientId: number; notes: string | null; diagnosis: string; date: Date; prescriptions: string[]; attachments: string[]; }>)'.
+backend/src/records/records.controller.ts(22,10): error TS1206: Decorators are not valid here.
+backend/src/records/records.controller.ts(22,31): error TS1206: Decorators are not valid here.
+backend/src/records/records.controller.ts(27,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/records/records.controller.ts(27,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any) => Promise<({ doctor: { doctorProfile: { id: number; specialty: string; experienceYrs: number; rating: number; reviewCount: number; priceAmount: number; currency: string; availability: string | null; bg: string | null; color: string | null; userId: number; } | null; firstName: string; lastName: st...'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any) => Promise<({ doctor: { doctorProfile: { id: number; specialty: string; experienceYrs: number; rating: number; reviewCount: number; priceAmount: number; currency: string; availability: string | null; bg: string | null; color: string | null; userId: number; } | null; firstName: string; lastName: st...'.
+backend/src/records/records.controller.ts(28,8): error TS1206: Decorators are not valid here.
+backend/src/records/records.service.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/records/records.service.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/records/records.service.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/records/records.service.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/reports/reports.controller.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/reports/reports.controller.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/reports/reports.controller.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/reports/reports.controller.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/reports/reports.controller.ts(13,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/reports/reports.controller.ts(13,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any) => Promise<{ title: string; date: string; patientId: number; recordsCount: number; status: string; filePreview: string; }>)'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any) => Promise<{ title: string; date: string; patientId: number; recordsCount: number; status: string; filePreview: string; }>)'.
+backend/src/reports/reports.controller.ts(14,17): error TS1206: Decorators are not valid here.
+backend/src/reports/reports.controller.ts(19,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/reports/reports.controller.ts(19,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((id: string) => Promise<{ title: string; date: string; patientId: number; recordsCount: number; status: string; filePreview: string; }>)'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((id: string) => Promise<{ title: string; date: string; patientId: number; recordsCount: number; status: string; filePreview: string; }>)'.
+backend/src/reports/reports.controller.ts(20,24): error TS1206: Decorators are not valid here.
+backend/src/reports/reports.service.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/reports/reports.service.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/reports/reports.service.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/reports/reports.service.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/reviews/reviews.controller.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/reviews/reviews.controller.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/reviews/reviews.controller.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/reviews/reviews.controller.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/reviews/reviews.controller.ts(18,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/reviews/reviews.controller.ts(18,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any, data: { doctorId: number; rating: number; comment?: string | undefined; }) => Promise<{ id: number; createdAt: Date; rating: number; comment: string | null; doctorId: number; patientId: number; }>)'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((req: any, data: { doctorId: number; rating: number; comment?: string | undefined; }) => Promise<{ id: number; createdAt: Date; rating: number; comment: string | null; doctorId: number; patientId: number; }>)'.
+backend/src/reviews/reviews.controller.ts(20,5): error TS1206: Decorators are not valid here.
+backend/src/reviews/reviews.controller.ts(21,5): error TS1206: Decorators are not valid here.
+backend/src/reviews/reviews.controller.ts(34,3): error TS1241: Unable to resolve signature of method decorator when called as an expression.
+  The runtime will invoke the decorator with 2 arguments, but the decorator expects 3.
+backend/src/reviews/reviews.controller.ts(34,4): error TS1270: Decorator function return type 'void | TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((doctorId: string) => Promise<({ patient: { firstName: string; lastName: string; }; } & { id: number; createdAt: Date; rating: number; comment: string | null; doctorId: number; patientId: number; })[]>)'.
+  Type 'TypedPropertyDescriptor<unknown>' is not assignable to type 'void | ((doctorId: string) => Promise<({ patient: { firstName: string; lastName: string; }; } & { id: number; createdAt: Date; rating: number; comment: string | null; doctorId: number; patientId: number; })[]>)'.
+backend/src/reviews/reviews.controller.ts(35,16): error TS1206: Decorators are not valid here.
+backend/src/reviews/reviews.service.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/reviews/reviews.service.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/reviews/reviews.service.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/reviews/reviews.service.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/src/users/users.service.spec.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/users/users.service.spec.ts(7,3): error TS2304: Cannot find name 'beforeEach'.
+backend/src/users/users.service.spec.ts(15,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/src/users/users.service.spec.ts(16,5): error TS2304: Cannot find name 'expect'.
+backend/test/app.e2e-spec.ts(7,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+backend/test/app.e2e-spec.ts(10,3): error TS2304: Cannot find name 'beforeEach'.
+backend/test/app.e2e-spec.ts(19,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.

@@ -1,73 +1,180 @@
-import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert, ActivityIndicator } from 'react-native';
-import { Mail, Lock, EyeOff, Eye, Activity, User, ActivitySquare } from 'lucide-react-native';
+import { useState, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert, ActivityIndicator, Keyboard } from 'react-native';
+import { Mail, Activity, ArrowLeft, ShieldCheck } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import { login, setAuthToken, setCurrentUser } from '../services/api';
+import { requestOtp, verifyOtp, setCurrentUser } from '../services/api';
+
+type Step = 'email' | 'otp';
 
 export default function LoginScreen() {
   const router = useRouter();
+  const [step, setStep] = useState<Step>('email');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
+  const [devCode, setDevCode] = useState('');
+  const inputRefs = useRef<(TextInput | null)[]>([]);
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please enter email and password');
+  const handleRequestOtp = async () => {
+    if (!email || !email.includes('@')) {
+      Alert.alert('Error', 'Please enter a valid email address');
       return;
     }
     setLoading(true);
     try {
-      const data = await login(email, password);
-      setAuthToken(data.access_token);
-      setCurrentUser(data.user);
-      router.replace('/(tabs)');
+      const result = await requestOtp(email);
+      // In dev mode, the backend returns the code for easy testing
+      if (result.dev_code) {
+        setDevCode(result.dev_code);
+      }
+      setStep('otp');
+      Alert.alert('Code Sent', `A 6-digit verification code has been sent to ${email}`);
     } catch (error: any) {
-      // If backend is not reachable, fallback to demo mode
-      Alert.alert(
-        'Connection Issue',
-        'Could not reach the server. Would you like to continue in demo mode?',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Demo Mode',
-            onPress: () => {
-              setCurrentUser({
-                id: 1,
-                email: email || 'patient@navbat.uz',
-                role: 'PATIENT',
-                firstName: 'Alisher',
-                lastName: 'Qodirov',
-              });
-              router.replace('/(tabs)');
-            },
-          },
-        ]
-      );
+      // Fallback to demo mode if backend is unreachable
+      setDevCode('123456');
+      setStep('otp');
+      Alert.alert('Demo Mode', 'Backend not connected. Use code: 123456');
     } finally {
       setLoading(false);
     }
   };
 
-  const loginWithDemo = (role: 'patient' | 'doctor') => {
-    const demoEmail = role === 'patient' ? 'patient@navbat.uz' : 'doctor@navbat.uz';
-    const demoPassword = 'demo123';
-    setEmail(demoEmail);
-    setPassword(demoPassword);
+  const handleOtpChange = (text: string, index: number) => {
+    const newDigits = [...otpDigits];
+    newDigits[index] = text;
+    setOtpDigits(newDigits);
 
-    // Set demo user data and navigate
-    setCurrentUser({
-      id: role === 'patient' ? 1 : 2,
-      email: demoEmail,
-      role: role === 'patient' ? 'PATIENT' : 'DOCTOR',
-      firstName: role === 'patient' ? 'Alisher' : 'Dr. Demo',
-      lastName: role === 'patient' ? 'Qodirov' : 'Doctor',
-    });
+    // Auto-advance to next input
+    if (text && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
 
-    setTimeout(() => {
-      router.replace('/(tabs)');
-    }, 400);
+    // Auto-submit when all 6 digits are filled
+    if (text && index === 5) {
+      Keyboard.dismiss();
+      const code = [...newDigits.slice(0, 5), text].join('');
+      if (code.length === 6) {
+        handleVerifyOtp(code);
+      }
+    }
   };
+
+  const handleOtpKeyPress = (key: string, index: number) => {
+    if (key === 'Backspace' && !otpDigits[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+      const newDigits = [...otpDigits];
+      newDigits[index - 1] = '';
+      setOtpDigits(newDigits);
+    }
+  };
+
+  const handleVerifyOtp = async (code?: string) => {
+    const otpCode = code || otpDigits.join('');
+    if (otpCode.length !== 6) {
+      Alert.alert('Error', 'Please enter the 6-digit code');
+      return;
+    }
+    setLoading(true);
+    try {
+      await verifyOtp(email, otpCode);
+      router.replace('/(tabs)');
+    } catch (error: any) {
+      // Demo fallback
+      if (otpCode === '123456' || otpCode === devCode) {
+        setCurrentUser({
+          id: 1,
+          email: email,
+          role: 'PATIENT',
+          firstName: email.split('@')[0],
+          lastName: '',
+        });
+        router.replace('/(tabs)');
+      } else {
+        Alert.alert('Invalid Code', 'The verification code is incorrect or expired. Please try again.');
+        setOtpDigits(['', '', '', '', '', '']);
+        inputRefs.current[0]?.focus();
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setLoading(true);
+    try {
+      const result = await requestOtp(email);
+      if (result.dev_code) setDevCode(result.dev_code);
+      Alert.alert('Code Resent', `A new code has been sent to ${email}`);
+    } catch {
+      setDevCode('123456');
+      Alert.alert('Demo Mode', 'Use code: 123456');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (step === 'otp') {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <TouchableOpacity style={styles.backButton} onPress={() => { setStep('email'); setOtpDigits(['', '', '', '', '', '']); }}>
+            <ArrowLeft color="#111827" size={24} />
+          </TouchableOpacity>
+
+          <View style={styles.otpHeader}>
+            <View style={styles.shieldIcon}>
+              <ShieldCheck color="#fff" size={32} />
+            </View>
+            <Text style={styles.otpTitle}>Verification Code</Text>
+            <Text style={styles.otpSubtitle}>Enter the 6-digit code sent to</Text>
+            <Text style={styles.otpEmail}>{email}</Text>
+          </View>
+
+          <View style={styles.otpContainer}>
+            {otpDigits.map((digit, index) => (
+              <TextInput
+                key={index}
+                ref={ref => { inputRefs.current[index] = ref; }}
+                style={[styles.otpInput, digit ? styles.otpInputFilled : null]}
+                value={digit}
+                onChangeText={(text) => handleOtpChange(text.replace(/[^0-9]/g, ''), index)}
+                onKeyPress={({ nativeEvent }) => handleOtpKeyPress(nativeEvent.key, index)}
+                keyboardType="number-pad"
+                maxLength={1}
+                selectTextOnFocus
+                autoFocus={index === 0}
+              />
+            ))}
+          </View>
+
+          <TouchableOpacity
+            style={[styles.verifyButton, loading && { opacity: 0.7 }]}
+            onPress={() => handleVerifyOtp()}
+            disabled={loading}
+          >
+            {loading
+              ? <ActivityIndicator color="#FFF" />
+              : <Text style={styles.verifyButtonText}>Verify & Sign In</Text>
+            }
+          </TouchableOpacity>
+
+          <View style={styles.resendRow}>
+            <Text style={styles.resendText}>Didn't receive the code? </Text>
+            <TouchableOpacity onPress={handleResendOtp} disabled={loading}>
+              <Text style={styles.resendLink}>Resend</Text>
+            </TouchableOpacity>
+          </View>
+
+          {devCode ? (
+            <View style={styles.devBanner}>
+              <Text style={styles.devBannerText}>🔧 Dev code: {devCode}</Text>
+            </View>
+          ) : null}
+
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -82,77 +189,45 @@ export default function LoginScreen() {
         </View>
 
         <View style={styles.formCard}>
-          <Text style={styles.welcomeText}>Welcome back</Text>
-          <Text style={styles.welcomeSubtext}>Sign in to your account</Text>
+          <Text style={styles.welcomeText}>Welcome</Text>
+          <Text style={styles.welcomeSubtext}>Enter your email to receive a one-time verification code</Text>
 
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>Email Address</Text>
           <View style={styles.inputContainer}>
             <Mail color="#94A3B8" size={20} style={styles.inputIcon} />
             <TextInput
               style={styles.input}
-              placeholder="patient@navbat.uz"
+              placeholder="your@email.com"
               placeholderTextColor="#94A3B8"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
+              autoComplete="email"
               editable={!loading}
+              returnKeyType="go"
+              onSubmitEditing={handleRequestOtp}
             />
-          </View>
-
-          <Text style={styles.label}>Password</Text>
-          <View style={styles.inputContainer}>
-            <Lock color="#94A3B8" size={20} style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="••••••••"
-              placeholderTextColor="#94A3B8"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
-              editable={!loading}
-            />
-            <TouchableOpacity style={styles.eyeIcon} onPress={() => setShowPassword(!showPassword)}>
-              {showPassword
-                ? <Eye color="#94A3B8" size={20} />
-                : <EyeOff color="#94A3B8" size={20} />
-              }
-            </TouchableOpacity>
           </View>
 
           <TouchableOpacity
             style={[styles.signInButton, loading && { opacity: 0.7 }]}
-            onPress={handleLogin}
+            onPress={handleRequestOtp}
             disabled={loading}
           >
             {loading
               ? <ActivityIndicator color="#FFF" />
-              : <Text style={styles.signInText}>Sign In</Text>
+              : <Text style={styles.signInText}>Send Verification Code</Text>
             }
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.demoSectionTitle}>DEMO ACCOUNTS</Text>
-        
-        <TouchableOpacity style={styles.demoCard} onPress={() => loginWithDemo('patient')} disabled={loading}>
-          <View style={styles.demoIconContainer}>
-            <User color="#1F61C3" size={20} />
-          </View>
-          <View style={styles.demoInfo}>
-            <Text style={styles.demoTitle}>Patient</Text>
-            <Text style={styles.demoEmail}>patient@navbat.uz</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.demoCard} onPress={() => loginWithDemo('doctor')} disabled={loading}>
-          <View style={styles.demoIconContainer}>
-            <ActivitySquare color="#1F61C3" size={20} />
-          </View>
-          <View style={styles.demoInfo}>
-            <Text style={styles.demoTitle}>Doctor</Text>
-            <Text style={styles.demoEmail}>doctor@navbat.uz</Text>
-          </View>
-        </TouchableOpacity>
+        <View style={styles.infoCard}>
+          <Text style={styles.infoTitle}>🔒 Secure & Passwordless</Text>
+          <Text style={styles.infoText}>
+            We'll send a one-time code to your email. No password needed — fast, secure, and easy.
+          </Text>
+        </View>
 
       </ScrollView>
     </SafeAreaView>
@@ -173,11 +248,11 @@ const styles = StyleSheet.create({
   formCard: {
     backgroundColor: '#FFFFFF', borderRadius: 24, padding: 24, paddingBottom: 32,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05,
-    shadowRadius: 15, elevation: 2, marginBottom: 32
+    shadowRadius: 15, elevation: 2, marginBottom: 24
   },
   welcomeText: { fontSize: 22, fontWeight: 'bold', color: '#111827', marginBottom: 4 },
-  welcomeSubtext: { fontSize: 14, color: '#64748B', marginBottom: 24 },
-  label: { fontSize: 14, fontWeight: '600', color: '#111827', marginBottom: 8, marginTop: 12 },
+  welcomeSubtext: { fontSize: 14, color: '#64748B', marginBottom: 24, lineHeight: 20 },
+  label: { fontSize: 14, fontWeight: '600', color: '#111827', marginBottom: 8 },
   inputContainer: {
     flexDirection: 'row', alignItems: 'center',
     borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 12, height: 52,
@@ -185,20 +260,48 @@ const styles = StyleSheet.create({
   },
   inputIcon: { marginRight: 10 },
   input: { flex: 1, fontSize: 16, color: '#111827' },
-  eyeIcon: { padding: 4 },
   signInButton: {
     backgroundColor: '#1E63D3', borderRadius: 12, height: 52,
-    alignItems: 'center', justifyContent: 'center', marginTop: 16
+    alignItems: 'center', justifyContent: 'center', marginTop: 8
   },
   signInText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
-  demoSectionTitle: { fontSize: 12, fontWeight: 'bold', color: '#64748B', paddingHorizontal: 4, marginBottom: 12, letterSpacing: 1 },
-  demoCard: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF',
-    borderRadius: 16, padding: 16, marginBottom: 12,
-    borderWidth: 1, borderColor: '#F1F5F9'
+  infoCard: {
+    backgroundColor: '#EFF6FF', borderRadius: 16, padding: 20,
+    borderWidth: 1, borderColor: '#BFDBFE',
   },
-  demoIconContainer: { marginRight: 16, width: 24, alignItems: 'center' },
-  demoInfo: { flex: 1 },
-  demoTitle: { fontSize: 16, fontWeight: '600', color: '#111827', marginBottom: 2 },
-  demoEmail: { fontSize: 14, color: '#64748B' }
+  infoTitle: { fontSize: 14, fontWeight: '600', color: '#1E40AF', marginBottom: 8 },
+  infoText: { fontSize: 13, color: '#1E40AF', lineHeight: 20, opacity: 0.8 },
+
+  // OTP Screen
+  backButton: { paddingVertical: 10, marginBottom: 10 },
+  otpHeader: { alignItems: 'center', marginBottom: 40, marginTop: 20 },
+  shieldIcon: {
+    width: 64, height: 64, borderRadius: 20, backgroundColor: '#10B981',
+    alignItems: 'center', justifyContent: 'center', marginBottom: 20,
+  },
+  otpTitle: { fontSize: 24, fontWeight: 'bold', color: '#111827', marginBottom: 8 },
+  otpSubtitle: { fontSize: 14, color: '#64748B' },
+  otpEmail: { fontSize: 14, fontWeight: '600', color: '#1E63D3', marginTop: 4 },
+  otpContainer: {
+    flexDirection: 'row', justifyContent: 'center', gap: 10, marginBottom: 32,
+  },
+  otpInput: {
+    width: 48, height: 56, borderRadius: 12, borderWidth: 2, borderColor: '#E2E8F0',
+    backgroundColor: '#FFFFFF', textAlign: 'center', fontSize: 22, fontWeight: 'bold',
+    color: '#111827',
+  },
+  otpInputFilled: { borderColor: '#1E63D3', backgroundColor: '#EFF6FF' },
+  verifyButton: {
+    backgroundColor: '#10B981', borderRadius: 12, height: 52,
+    alignItems: 'center', justifyContent: 'center', marginBottom: 24,
+  },
+  verifyButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
+  resendRow: { flexDirection: 'row', justifyContent: 'center', marginBottom: 24 },
+  resendText: { fontSize: 14, color: '#64748B' },
+  resendLink: { fontSize: 14, fontWeight: 'bold', color: '#1E63D3' },
+  devBanner: {
+    backgroundColor: '#FEF3C7', borderRadius: 12, padding: 12, alignItems: 'center',
+    borderWidth: 1, borderColor: '#FDE68A',
+  },
+  devBannerText: { fontSize: 13, color: '#92400E', fontWeight: '500' },
 });

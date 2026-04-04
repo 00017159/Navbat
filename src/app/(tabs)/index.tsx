@@ -126,23 +126,18 @@ export default function HomeScreen() {
   const completedCount = appointments.filter(a => a.status === 'COMPLETED').length;
 
   const handleBookDoctor = (doctor: any) => {
-    Alert.alert(
-      'Book Appointment',
-      `Schedule an appointment with ${doctor.firstName} ${doctor.lastName}?\n\nSpecialty: ${doctor.doctorProfile?.specialty || 'General'}\nPrice: ${formatPrice(doctor.doctorProfile?.priceAmount || 0)}`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Book Now',
-          onPress: () => {
-            // Navigate to booking screen with doctor data
-            router.push({
-              pathname: '/(tabs)/appointments',
-              params: { bookDoctorId: doctor.id },
-            });
-          },
-        },
-      ]
-    );
+    const ratingVal = getAvgRating(doctor.reviewsReceived || []);
+    const init = doctor.initials || getInitials(doctor.firstName, doctor.lastName);
+    const params = new URLSearchParams({
+      name: `${doctor.firstName} ${doctor.lastName}`,
+      specialty: doctor.doctorProfile?.specialty || 'General',
+      experience: (doctor.doctorProfile?.experience || doctor.doctorProfile?.experienceYrs || 0).toString(),
+      price: (doctor.doctorProfile?.priceAmount || 0).toString(),
+      rating: (ratingVal || 4.8).toString(),
+      reviews: (doctor.reviewsReceived?.length || 0).toString(),
+      initials: init,
+    }).toString();
+    router.push(`/doctor/${doctor.id}?${params}` as any);
   };
 
   const handleNotifications = () => {

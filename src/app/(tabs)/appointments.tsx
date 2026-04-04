@@ -1,40 +1,145 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
-import { Calendar, Video, MapPin, FileText } from 'lucide-react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator, RefreshControl } from 'react-native';
+import { Calendar, Video, MapPin, FileText, Clock, XCircle, CheckCircle } from 'lucide-react-native';
+import { getAppointments, createAppointment } from '../../services/api';
 
 const TABS = ['All', 'Upcoming', 'Completed', 'Cancelled'];
 
-const APPOINTMENTS = [
+const MOCK_APPOINTMENTS = [
   {
-    id: 1, name: 'Dr. Malika Yusupova', specialty: 'Cardiologist',
-    status: 'Cancelled', date: '2026-04-02', time: '10:00',
-    type: 'In-Person Visit', typeIcon: 'MapPin',
-    notes: 'Regular heart checkup', price: '150K so\'m',
-    initials: 'MY', bg: '#fef3c7', color: '#92400e'
+    id: 1, status: 'CANCELLED', dateTime: '2026-04-02T10:00:00Z',
+    type: 'IN_PERSON', notes: 'Regular heart checkup', price: '150000',
+    doctor: { firstName: 'Dr. Malika', lastName: 'Yusupova', doctorProfile: { specialty: 'Cardiologist' } },
   },
   {
-    id: 2, name: 'Dr. Jasur Toshmatov', specialty: 'Neurologist',
-    status: 'Completed', date: '2026-03-20', time: '14:00',
-    type: 'Online Consultation', typeIcon: 'Video',
-    notes: 'Migraine treatment follow-up', price: '130K so\'m',
-    initials: 'JT', bg: '#ffedd5', color: '#c2410c'
+    id: 2, status: 'COMPLETED', dateTime: '2026-03-20T14:00:00Z',
+    type: 'ONLINE', notes: 'Migraine treatment follow-up', price: '130000',
+    doctor: { firstName: 'Dr. Jasur', lastName: 'Toshmatov', doctorProfile: { specialty: 'Neurologist' } },
   },
   {
-    id: 3, name: 'Dr. Gulnora Mirzayeva', specialty: 'Dermatologist',
-    status: 'Cancelled', date: '2026-03-10', time: '11:00',
-    type: 'In-Person Visit', typeIcon: 'MapPin',
-    notes: 'Skin rash examination', price: '110K so\'m',
-    initials: 'GM', bg: '#fef3c7', color: '#92400e'
-  }
+    id: 3, status: 'CANCELLED', dateTime: '2026-03-10T11:00:00Z',
+    type: 'IN_PERSON', notes: 'Skin rash examination', price: '110000',
+    doctor: { firstName: 'Dr. Gulnora', lastName: 'Mirzayeva', doctorProfile: { specialty: 'Dermatologist' } },
+  },
 ];
+
+function formatDate(dateStr: string) {
+  const d = new Date(dateStr);
+  return d.toISOString().split('T')[0];
+}
+
+function formatTime(dateStr: string) {
+  const d = new Date(dateStr);
+  return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+}
+
+function formatPrice(price: string | number) {
+  const num = typeof price === 'string' ? parseInt(price, 10) : price;
+  if (num >= 1000) return `${Math.round(num / 1000)}K so'm`;
+  return `${num} so'm`;
+}
+
+function getInitials(firstName: string, lastName: string) {
+  return `${(firstName || '').replace('Dr. ', '').charAt(0)}${(lastName || '').charAt(0)}`.toUpperCase();
+}
+
+function isUpcoming(dateStr: string) {
+  return new Date(dateStr) > new Date();
+}
+
+const AVATAR_COLORS = ['#fef3c7', '#ffedd5', '#e0f2fe', '#fce7f3', '#dcfce7'];
+const TEXT_COLORS = ['#92400e', '#c2410c', '#0369a1', '#be185d', '#166534'];
 
 export default function AppointmentsScreen() {
   const [activeTab, setActiveTab] = useState('All');
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const filteredAppointments = APPOINTMENTS.filter(app => {
+  const fetchData = useCallback(async () => {
+    try {
+      const data = await getAppointments();
+      if (Array.isArray(data) && data.length > 0) {
+        setAppointments(data);
+      } else {
+        setAppointments(MOCK_APPOINTMENTS);
+      }
+    } catch {
+      setAppointments(MOCK_APPOINTMENTS);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchData();
+  }, [fetchData]);
+
+  const filteredAppointments = appointments.filter(app => {
     if (activeTab === 'All') return true;
-    return app.status === activeTab;
+    if (activeTab === 'Upcoming') return app.status !== 'COMPLETED' && app.status !== 'CANCELLED' && isUpcoming(app.dateTime);
+    if (activeTab === 'Completed') return app.status === 'COMPLETED';
+    if (activeTab === 'Cancelled') return app.status === 'CANCELLED';
+    return true;
   });
+
+  const handleCancelAppointment = (appointment: any) => {
+    Alert.alert(
+      'Cancel Appointment',
+      `Are you sure you want to cancel the appointment with ${appointment.doctor?.firstName} ${appointment.doctor?.lastName}?`,
+      [
+        { text: 'Keep', style: 'cancel' },
+        {
+          text: 'Cancel Appointment',
+          style: 'destructive',
+          onPress: () => {
+            setAppointments(prev =>
+              prev.map(a => a.id === appointment.id ? { ...a, status: 'CANCELLED' } : a)
+            );
+            Alert.alert('Cancelled', 'Your appointment has been cancelled.');
+          },
+        },
+      ]
+    );
+  };
+
+  const handleReschedule = (appointment: any) => {
+    Alert.alert(
+      'Reschedule',
+      `Rescheduling appointment with ${appointment.doctor?.firstName} ${appointment.doctor?.lastName}.\n\nThis feature will be available soon.`,
+      [{ text: 'OK' }]
+    );
+  };
+
+  const getStatusDisplay = (status: string, dateTime: string): { label: string; bgColor: string; textColor: string } => {
+    if (status === 'COMPLETED') return { label: 'Completed', bgColor: '#ECFDF5', textColor: '#10B981' };
+    if (status === 'CANCELLED') return { label: 'Cancelled', bgColor: '#FEF2F2', textColor: '#EF4444' };
+    if (isUpcoming(dateTime)) return { label: 'Upcoming', bgColor: '#EFF6FF', textColor: '#1E63D3' };
+    return { label: status, bgColor: '#F1F5F9', textColor: '#64748B' };
+  };
+
+  const getTabCount = (tab: string) => {
+    if (tab === 'All') return appointments.length;
+    if (tab === 'Upcoming') return appointments.filter(a => a.status !== 'COMPLETED' && a.status !== 'CANCELLED' && isUpcoming(a.dateTime)).length;
+    if (tab === 'Completed') return appointments.filter(a => a.status === 'COMPLETED').length;
+    if (tab === 'Cancelled') return appointments.filter(a => a.status === 'CANCELLED').length;
+    return 0;
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#1E63D3" />
+        <Text style={{ marginTop: 12, color: '#64748B' }}>Loading appointments...</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -51,58 +156,93 @@ export default function AppointmentsScreen() {
               onPress={() => setActiveTab(tab)}
             >
               <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
-                {tab}
+                {tab} {getTabCount(tab) > 0 ? `(${getTabCount(tab)})` : ''}
               </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
       </View>
 
-      <ScrollView contentContainerStyle={styles.listContainer} showsVerticalScrollIndicator={false}>
-        {filteredAppointments.map(app => (
-          <View key={app.id} style={styles.card}>
-            
-            <View style={styles.cardHeader}>
-              <View style={[styles.avatar, { backgroundColor: app.bg }]}>
-                <Text style={[styles.avatarText, { color: app.color }]}>{app.initials}</Text>
-              </View>
-              <View style={styles.doctorInfo}>
-                <Text style={styles.doctorName}>{app.name}</Text>
-                <Text style={styles.specialty}>{app.specialty}</Text>
-              </View>
-              <View style={[
-                styles.statusPill, 
-                app.status === 'Completed' ? styles.statusCompletedBg : styles.statusCancelledBg
-              ]}>
-                <Text style={[
-                  styles.statusText, 
-                  app.status === 'Completed' ? styles.statusCompletedText : styles.statusCancelledText
-                ]}>
-                  {app.status}
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.detailsRow}>
-              <Calendar color="#9CA3AF" size={16} />
-              <Text style={styles.detailText}>{app.date}</Text>
-              <Text style={styles.timeText}>🕑 {app.time}</Text>
-            </View>
-
-            <View style={styles.detailsRow}>
-              {app.typeIcon === 'MapPin' ? <MapPin color="#9CA3AF" size={16} /> : <Video color="#9CA3AF" size={16} />}
-              <Text style={styles.detailText}>{app.type}</Text>
-            </View>
-
-            <View style={styles.detailsRow}>
-              <FileText color="#9CA3AF" size={16} />
-              <Text style={styles.detailText}>{app.notes}</Text>
-            </View>
-
-            <Text style={styles.priceText}>{app.price}</Text>
-
+      <ScrollView
+        contentContainerStyle={styles.listContainer}
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1E63D3']} />}
+      >
+        {filteredAppointments.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Calendar color="#CBD5E1" size={48} />
+            <Text style={styles.emptyTitle}>No {activeTab.toLowerCase()} appointments</Text>
+            <Text style={styles.emptySubtitle}>Your {activeTab.toLowerCase()} appointments will appear here</Text>
           </View>
-        ))}
+        ) : (
+          filteredAppointments.map((app, index) => {
+            const doctor = app.doctor || {};
+            const initials = getInitials(doctor.firstName || '', doctor.lastName || '');
+            const bg = AVATAR_COLORS[index % AVATAR_COLORS.length];
+            const color = TEXT_COLORS[index % TEXT_COLORS.length];
+            const statusInfo = getStatusDisplay(app.status, app.dateTime);
+            const isActive = app.status !== 'COMPLETED' && app.status !== 'CANCELLED';
+
+            return (
+              <View key={app.id} style={styles.card}>
+                
+                <View style={styles.cardHeader}>
+                  <View style={[styles.avatar, { backgroundColor: bg }]}>
+                    <Text style={[styles.avatarText, { color }]}>{initials}</Text>
+                  </View>
+                  <View style={styles.doctorInfo}>
+                    <Text style={styles.doctorName}>{doctor.firstName} {doctor.lastName}</Text>
+                    <Text style={styles.specialty}>{doctor.doctorProfile?.specialty || 'Specialist'}</Text>
+                  </View>
+                  <View style={[styles.statusPill, { backgroundColor: statusInfo.bgColor }]}>
+                    <Text style={[styles.statusText, { color: statusInfo.textColor }]}>
+                      {statusInfo.label}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.detailsRow}>
+                  <Calendar color="#9CA3AF" size={16} />
+                  <Text style={styles.detailText}>{formatDate(app.dateTime)}</Text>
+                  <Clock color="#9CA3AF" size={16} style={{ marginLeft: 16 }} />
+                  <Text style={styles.detailText}>{formatTime(app.dateTime)}</Text>
+                </View>
+
+                <View style={styles.detailsRow}>
+                  {app.type === 'IN_PERSON' ? <MapPin color="#9CA3AF" size={16} /> : <Video color="#9CA3AF" size={16} />}
+                  <Text style={styles.detailText}>{app.type === 'IN_PERSON' ? 'In-Person Visit' : 'Online Consultation'}</Text>
+                </View>
+
+                {app.notes && (
+                  <View style={styles.detailsRow}>
+                    <FileText color="#9CA3AF" size={16} />
+                    <Text style={styles.detailText}>{app.notes}</Text>
+                  </View>
+                )}
+
+                <Text style={styles.priceText}>{formatPrice(app.price || '0')}</Text>
+
+                {/* Action Buttons */}
+                {isActive && (
+                  <View style={styles.actionsRow}>
+                    <TouchableOpacity style={styles.rescheduleBtn} onPress={() => handleReschedule(app)}>
+                      <Text style={styles.rescheduleBtnText}>Reschedule</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.cancelBtn} onPress={() => handleCancelAppointment(app)}>
+                      <Text style={styles.cancelBtnText}>Cancel</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+
+                {app.status === 'COMPLETED' && (
+                  <TouchableOpacity style={styles.reviewBtn} onPress={() => Alert.alert('Review', 'Leave a review feature coming soon!')}>
+                    <Text style={styles.reviewBtnText}>Leave a Review ★</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            );
+          })
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -135,13 +275,27 @@ const styles = StyleSheet.create({
   doctorName: { fontSize: 16, fontWeight: 'bold', color: '#111827', marginBottom: 2 },
   specialty: { fontSize: 14, color: '#64748B' },
   statusPill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
-  statusCompletedBg: { backgroundColor: '#ECFDF5' },
-  statusCancelledBg: { backgroundColor: '#FEF2F2' },
   statusText: { fontSize: 12, fontWeight: 'bold' },
-  statusCompletedText: { color: '#10B981' },
-  statusCancelledText: { color: '#EF4444' },
   detailsRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
   detailText: { fontSize: 14, color: '#4B5563', marginLeft: 8 },
-  timeText: { fontSize: 14, color: '#4B5563', marginLeft: 16 },
-  priceText: { fontSize: 16, fontWeight: 'bold', color: '#1E63D3', marginTop: 12 }
+  priceText: { fontSize: 16, fontWeight: 'bold', color: '#1E63D3', marginTop: 12 },
+  actionsRow: { flexDirection: 'row', gap: 12, marginTop: 16 },
+  rescheduleBtn: {
+    flex: 1, paddingVertical: 10, borderRadius: 12,
+    backgroundColor: '#EFF6FF', alignItems: 'center',
+  },
+  rescheduleBtnText: { fontSize: 14, fontWeight: '600', color: '#1E63D3' },
+  cancelBtn: {
+    flex: 1, paddingVertical: 10, borderRadius: 12,
+    backgroundColor: '#FEF2F2', alignItems: 'center',
+  },
+  cancelBtnText: { fontSize: 14, fontWeight: '600', color: '#EF4444' },
+  reviewBtn: {
+    marginTop: 16, paddingVertical: 10, borderRadius: 12,
+    backgroundColor: '#ECFDF5', alignItems: 'center',
+  },
+  reviewBtnText: { fontSize: 14, fontWeight: '600', color: '#10B981' },
+  emptyState: { alignItems: 'center', paddingVertical: 60 },
+  emptyTitle: { fontSize: 18, fontWeight: 'bold', color: '#64748B', marginTop: 16, marginBottom: 8 },
+  emptySubtitle: { fontSize: 14, color: '#9CA3AF', textAlign: 'center' },
 });

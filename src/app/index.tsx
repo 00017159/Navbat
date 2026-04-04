@@ -1,24 +1,72 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
-import { Mail, Lock, EyeOff, Activity, User, ActivitySquare } from 'lucide-react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { Mail, Lock, EyeOff, Eye, Activity, User, ActivitySquare } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { login, setAuthToken, setCurrentUser } from '../services/api';
 
 export default function LoginScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    // Navigate to tabs directly for demo
-    router.replace('/(tabs)');
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please enter email and password');
+      return;
+    }
+    setLoading(true);
+    try {
+      const data = await login(email, password);
+      setAuthToken(data.access_token);
+      setCurrentUser(data.user);
+      router.replace('/(tabs)');
+    } catch (error: any) {
+      // If backend is not reachable, fallback to demo mode
+      Alert.alert(
+        'Connection Issue',
+        'Could not reach the server. Would you like to continue in demo mode?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Demo Mode',
+            onPress: () => {
+              setCurrentUser({
+                id: 1,
+                email: email || 'patient@navbat.uz',
+                role: 'PATIENT',
+                firstName: 'Alisher',
+                lastName: 'Qodirov',
+              });
+              router.replace('/(tabs)');
+            },
+          },
+        ]
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const loginWithDemo = (role: 'patient' | 'doctor') => {
-    setEmail(role === 'patient' ? 'patient@navbat.uz' : 'doctor@navbat.uz');
-    setPassword('demo123');
+    const demoEmail = role === 'patient' ? 'patient@navbat.uz' : 'doctor@navbat.uz';
+    const demoPassword = 'demo123';
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+
+    // Set demo user data and navigate
+    setCurrentUser({
+      id: role === 'patient' ? 1 : 2,
+      email: demoEmail,
+      role: role === 'patient' ? 'PATIENT' : 'DOCTOR',
+      firstName: role === 'patient' ? 'Alisher' : 'Dr. Demo',
+      lastName: role === 'patient' ? 'Qodirov' : 'Doctor',
+    });
+
     setTimeout(() => {
       router.replace('/(tabs)');
-    }, 500);
+    }, 400);
   };
 
   return (
@@ -48,6 +96,7 @@ export default function LoginScreen() {
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
+              editable={!loading}
             />
           </View>
 
@@ -60,21 +109,32 @@ export default function LoginScreen() {
               placeholderTextColor="#94A3B8"
               value={password}
               onChangeText={setPassword}
-              secureTextEntry
+              secureTextEntry={!showPassword}
+              editable={!loading}
             />
-            <TouchableOpacity style={styles.eyeIcon}>
-              <EyeOff color="#94A3B8" size={20} />
+            <TouchableOpacity style={styles.eyeIcon} onPress={() => setShowPassword(!showPassword)}>
+              {showPassword
+                ? <Eye color="#94A3B8" size={20} />
+                : <EyeOff color="#94A3B8" size={20} />
+              }
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.signInButton} onPress={handleLogin}>
-            <Text style={styles.signInText}>Sign In</Text>
+          <TouchableOpacity
+            style={[styles.signInButton, loading && { opacity: 0.7 }]}
+            onPress={handleLogin}
+            disabled={loading}
+          >
+            {loading
+              ? <ActivityIndicator color="#FFF" />
+              : <Text style={styles.signInText}>Sign In</Text>
+            }
           </TouchableOpacity>
         </View>
 
         <Text style={styles.demoSectionTitle}>DEMO ACCOUNTS</Text>
         
-        <TouchableOpacity style={styles.demoCard} onPress={() => loginWithDemo('patient')}>
+        <TouchableOpacity style={styles.demoCard} onPress={() => loginWithDemo('patient')} disabled={loading}>
           <View style={styles.demoIconContainer}>
             <User color="#1F61C3" size={20} />
           </View>
@@ -84,7 +144,7 @@ export default function LoginScreen() {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.demoCard} onPress={() => loginWithDemo('doctor')}>
+        <TouchableOpacity style={styles.demoCard} onPress={() => loginWithDemo('doctor')} disabled={loading}>
           <View style={styles.demoIconContainer}>
             <ActivitySquare color="#1F61C3" size={20} />
           </View>

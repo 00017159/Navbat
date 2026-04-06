@@ -174,14 +174,14 @@ export default function HomeScreen() {
             <View style={[styles.statIconWrapper, { backgroundColor: '#EFF6FF' }]}>
               <Calendar color="#3B82F6" size={24} />
             </View>
-            <Text style={[styles.statValue, { color: '#1E40AF' }]}>{appointments.length || 3}</Text>
+            <Text style={[styles.statValue, { color: '#1E40AF' }]}>{appointments.length}</Text>
             <Text style={styles.statTitle}>Appointments</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.statCard} onPress={() => router.push('/(tabs)/appointments')}>
             <View style={[styles.statIconWrapper, { backgroundColor: '#ECFDF5' }]}>
               <CheckCircle2 color="#10B981" size={24} />
             </View>
-            <Text style={[styles.statValue, { color: '#065F46' }]}>{completedCount || 1}</Text>
+            <Text style={[styles.statValue, { color: '#065F46' }]}>{completedCount}</Text>
             <Text style={styles.statTitle}>Completed</Text>
           </TouchableOpacity>
           <View style={styles.statCard}>

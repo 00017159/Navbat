@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert, ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
 import { Mail, Activity, ArrowLeft, ShieldCheck } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import { requestOtp, verifyOtp, setCurrentUser } from '../services/api';
+import { requestOtp, verifyOtp } from '../services/api';
 
 const { width } = Dimensions.get('window');
 const OTP_INPUT_SIZE = Math.min((width - 80) / 6, 48); // Responsive sizing for OTP inputs
@@ -15,7 +15,6 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
-  const [devCode, setDevCode] = useState('');
   const inputRefs = useRef<(TextInput | null)[]>([]);
 
   const handleRequestOtp = async () => {
@@ -25,10 +24,7 @@ export default function LoginScreen() {
     }
     setLoading(true);
     try {
-      const result = await requestOtp(email);
-      if (result.dev_code) {
-        setDevCode(result.dev_code);
-      }
+      await requestOtp(email);
       setStep('otp');
       Alert.alert('Code Sent', `A 6-digit verification code has been sent to ${email}`);
     } catch (error: any) {
@@ -87,8 +83,7 @@ export default function LoginScreen() {
   const handleResendOtp = async () => {
     setLoading(true);
     try {
-      const result = await requestOtp(email);
-      if (result.dev_code) setDevCode(result.dev_code);
+      await requestOtp(email);
       Alert.alert('Code Resent', `A new code has been sent to ${email}`);
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to resend code');
@@ -153,11 +148,7 @@ export default function LoginScreen() {
               </TouchableOpacity>
             </View>
 
-            {devCode ? (
-              <View style={styles.devBanner}>
-                <Text style={styles.devBannerText}>🔧 Dev code: {devCode}</Text>
-              </View>
-            ) : null}
+
 
           </ScrollView>
         </KeyboardAvoidingView>

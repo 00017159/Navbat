@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, Switch } from 'react-native';
 import { User, Bell, Lock, HelpCircle, Info, ChevronRight, LogOut, Shield, Moon, Globe } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import { getCurrentUser, setAuthToken, setCurrentUser } from '../../services/api';
+import { getCurrentUser, setAuthToken, setCurrentUser, signOut } from '../../services/api';
 
 const SETTINGS_ITEMS = [
   { id: 1, icon: 'User', title: 'Personal Information', description: 'Name, email, phone number' },
@@ -96,9 +96,8 @@ export default function ProfileScreen() {
         {
           text: 'Log Out',
           style: 'destructive',
-          onPress: () => {
-            setAuthToken(null);
-            setCurrentUser(null);
+          onPress: async () => {
+            await signOut();
             router.replace('/');
           },
         },

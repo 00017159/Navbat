@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Alert, ActivityIndicator, RefreshControl } from 'react-native';
-import { Bell, Search, Calendar, CheckCircle2, Users, Star } from 'lucide-react-native';
+import { Search, Calendar, CheckCircle2, Users, Star } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { getDoctors, getAppointments, getCurrentUser } from '../../services/api';
 
@@ -15,10 +15,7 @@ function getGreeting() {
   return 'Good evening';
 }
 
-function formatPrice(amount: number) {
-  if (amount >= 1000) return `${Math.round(amount / 1000)}K so'm`;
-  return `${amount} so'm`;
-}
+
 
 function getAvgRating(reviews: { rating: number }[]) {
   if (!reviews || reviews.length === 0) return 0;
@@ -95,7 +92,6 @@ export default function HomeScreen() {
       name: `${doctor.firstName} ${doctor.lastName}`,
       specialty: doctor.doctorProfile?.specialty || 'General',
       experience: (doctor.doctorProfile?.experience || doctor.doctorProfile?.experienceYrs || 0).toString(),
-      price: (doctor.doctorProfile?.priceAmount || 0).toString(),
       rating: (ratingVal || 4.8).toString(),
       reviews: (doctor.reviewsReceived?.length || 0).toString(),
       initials: init,
@@ -141,12 +137,6 @@ export default function HomeScreen() {
               <Text style={styles.userName}>{user?.firstName || 'Alisher'} <Text style={{ fontSize: 24 }}>👋</Text></Text>
             </View>
           </View>
-          <TouchableOpacity style={styles.notificationBtn} onPress={handleNotifications}>
-            <Bell color="#111827" size={24} />
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>2</Text>
-            </View>
-          </TouchableOpacity>
         </View>
 
         {/* Search Bar */}
@@ -228,8 +218,7 @@ export default function HomeScreen() {
               const textColor = TEXT_COLORS[index % TEXT_COLORS.length];
               const rating = getAvgRating(doc.reviewsReceived || []);
               const reviewCount = doc.reviewsReceived?.length || 0;
-              const experience = doc.doctorProfile?.experience || 0;
-              const price = formatPrice(doc.doctorProfile?.priceAmount || 0);
+              const experience = doc.doctorProfile?.experience || doc.doctorProfile?.experienceYrs || 0;
               const specialty = doc.doctorProfile?.specialty || 'General';
               const isAvailableToday = index % 3 !== 2; // Simple availability pattern
 
@@ -254,7 +243,7 @@ export default function HomeScreen() {
                         <Text style={styles.dotSeparator}>•</Text>
                         <Text style={styles.expText}>{experience}y exp</Text>
                         <Text style={styles.dotSeparator}>•</Text>
-                        <Text style={styles.priceText}>{price}</Text>
+                        <Text style={[styles.priceText, { color: '#10B981' }]}>Free</Text>
                       </View>
                     </View>
                     <View style={styles.statusDotWrapper}>

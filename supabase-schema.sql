@@ -6,9 +6,10 @@ CREATE TYPE user_role AS ENUM ('PATIENT', 'DOCTOR', 'ADMIN');
 CREATE TYPE appointment_status AS ENUM ('UPCOMING', 'COMPLETED', 'CANCELLED');
 CREATE TYPE consultation_type AS ENUM ('IN_PERSON', 'ONLINE');
 
--- Users table (linked to Supabase Auth)
+-- Profiles table (decoupled from auth.users so doctors can exist independently)
 CREATE TABLE profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  auth_id UUID UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
   email TEXT UNIQUE NOT NULL,
   role user_role DEFAULT 'PATIENT',
   first_name TEXT DEFAULT '',
@@ -80,25 +81,37 @@ ALTER TABLE appointments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE medical_records ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 
--- Profiles: users can read all profiles, update their own
+-- Profiles: everyone can read, users update their own (matched via auth_id)
 CREATE POLICY "Public profiles readable" ON profiles FOR SELECT USING (true);
-CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
-CREATE POLICY "Users can insert own profile" ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
+CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = auth_id);
+CREATE POLICY "Users can insert own profile" ON profiles FOR INSERT WITH CHECK (true);
 
 -- Doctor profiles: everyone can read
 CREATE POLICY "Doctor profiles readable" ON doctor_profiles FOR SELECT USING (true);
+CREATE POLICY "Doctor profiles insertable" ON doctor_profiles FOR INSERT WITH CHECK (true);
 
 -- Appointments: users can see their own, create their own
-CREATE POLICY "Users see own appointments" ON appointments FOR SELECT USING (auth.uid() = patient_id OR auth.uid() = doctor_id);
-CREATE POLICY "Users create own appointments" ON appointments FOR INSERT WITH CHECK (auth.uid() = patient_id);
-CREATE POLICY "Users update own appointments" ON appointments FOR UPDATE USING (auth.uid() = patient_id OR auth.uid() = doctor_id);
+CREATE POLICY "Users see own appointments" ON appointments FOR SELECT
+  USING (
+    patient_id IN (SELECT id FROM profiles WHERE auth_id = auth.uid())
+    OR doctor_id IN (SELECT id FROM profiles WHERE auth_id = auth.uid())
+  );
+CREATE POLICY "Users create own appointments" ON appointments FOR INSERT
+  WITH CHECK (patient_id IN (SELECT id FROM profiles WHERE auth_id = auth.uid()));
+CREATE POLICY "Users update own appointments" ON appointments FOR UPDATE
+  USING (
+    patient_id IN (SELECT id FROM profiles WHERE auth_id = auth.uid())
+    OR doctor_id IN (SELECT id FROM profiles WHERE auth_id = auth.uid())
+  );
 
 -- Medical records: patients see their own
-CREATE POLICY "Patients see own records" ON medical_records FOR SELECT USING (auth.uid() = patient_id);
+CREATE POLICY "Patients see own records" ON medical_records FOR SELECT
+  USING (patient_id IN (SELECT id FROM profiles WHERE auth_id = auth.uid()));
 
 -- Reviews: everyone can read, authenticated users can create
 CREATE POLICY "Reviews readable" ON reviews FOR SELECT USING (true);
-CREATE POLICY "Users create own reviews" ON reviews FOR INSERT WITH CHECK (auth.uid() = patient_id);
+CREATE POLICY "Users create own reviews" ON reviews FOR INSERT
+  WITH CHECK (patient_id IN (SELECT id FROM profiles WHERE auth_id = auth.uid()));
 
 -- ═══════════════════════════════════════
 -- TRIGGER: Auto-create profile on signup
@@ -107,7 +120,7 @@ CREATE POLICY "Users create own reviews" ON reviews FOR INSERT WITH CHECK (auth.
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, email, first_name)
+  INSERT INTO public.profiles (auth_id, email, first_name)
   VALUES (NEW.id, NEW.email, SPLIT_PART(NEW.email, '@', 1));
   RETURN NEW;
 END;
@@ -118,10 +131,8 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- ═══════════════════════════════════════
--- SEED: Sample doctors (using service role)
+-- SEED: Sample doctors (no auth account needed)
 -- ═══════════════════════════════════════
--- NOTE: Doctors are inserted below as regular profiles.
--- Since they don't go through auth.users, we use generated UUIDs.
 
 INSERT INTO profiles (id, email, role, first_name, last_name) VALUES
   ('d0000001-0000-0000-0000-000000000001', 'malika@navbat.uz', 'DOCTOR', 'Dr. Malika', 'Yusupova'),

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator, TextInput } from 'react-native';
-import { ArrowLeft, Star, Clock, MapPin, Video, Calendar, FileText, CheckCircle } from 'lucide-react-native';
+import { ArrowLeft, Star, Clock, MapPin, Calendar, FileText, CheckCircle } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { createAppointment } from '../../services/api';
 
@@ -56,26 +56,20 @@ export default function DoctorBookingScreen() {
   const doctorName = (params.name as string) || 'Doctor';
   const specialty = (params.specialty as string) || 'Specialist';
   const experience = (params.experience as string) || '0';
-  const price = (params.price as string) || '0';
   const rating = (params.rating as string) || '4.8';
   const reviews = (params.reviews as string) || '0';
-  const doctorId = parseInt(params.id as string) || 1;
+  const doctorId = params.id as string;
   const initials = (params.initials as string) || doctorName.split(' ').map((n: string) => n.charAt(0)).join('').substring(0, 2).toUpperCase();
-  const colorIndex = doctorId % AVATAR_COLORS.length;
+  const colorIndex = (doctorId?.charCodeAt(0) || 0) % AVATAR_COLORS.length;
 
   const dates = generateDates();
   const timeSlots = generateTimeSlots();
 
   const [selectedDate, setSelectedDate] = useState<Date>(dates[0]);
   const [selectedTime, setSelectedTime] = useState<string>('');
-  const [consultationType, setConsultationType] = useState<'IN_PERSON' | 'ONLINE'>('IN_PERSON');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [booked, setBooked] = useState(false);
-
-  const formattedPrice = parseInt(price) >= 1000
-    ? `${Math.round(parseInt(price) / 1000)}K so'm`
-    : `${price} so'm`;
 
   const handleBook = async () => {
     if (!selectedTime) {
@@ -92,7 +86,7 @@ export default function DoctorBookingScreen() {
       await createAppointment({
         doctorId,
         dateTime: dateTime.toISOString(),
-        type: consultationType,
+        type: 'IN_PERSON',
         notes: notes || undefined,
       });
       setBooked(true);
@@ -154,29 +148,15 @@ export default function DoctorBookingScreen() {
             </View>
           </View>
           <View style={styles.priceTag}>
-            <Text style={styles.priceTagText}>{formattedPrice}</Text>
+            <Text style={[styles.priceTagText, { color: '#10B981' }]}>Free</Text>
           </View>
         </View>
 
         {/* Consultation Type */}
-        <Text style={styles.sectionTitle}>Consultation Type</Text>
-        <View style={styles.typeRow}>
-          <TouchableOpacity
-            style={[styles.typeCard, consultationType === 'IN_PERSON' && styles.typeCardActive]}
-            onPress={() => setConsultationType('IN_PERSON')}
-          >
-            <MapPin color={consultationType === 'IN_PERSON' ? '#1E63D3' : '#9CA3AF'} size={24} />
-            <Text style={[styles.typeText, consultationType === 'IN_PERSON' && styles.typeTextActive]}>In-Person</Text>
-            <Text style={styles.typeSubtext}>Visit clinic</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.typeCard, consultationType === 'ONLINE' && styles.typeCardActive]}
-            onPress={() => setConsultationType('ONLINE')}
-          >
-            <Video color={consultationType === 'ONLINE' ? '#1E63D3' : '#9CA3AF'} size={24} />
-            <Text style={[styles.typeText, consultationType === 'ONLINE' && styles.typeTextActive]}>Online</Text>
-            <Text style={styles.typeSubtext}>Video call</Text>
-          </TouchableOpacity>
+        <View style={[styles.typeCard, styles.typeCardActive, { marginBottom: 28 }]}>
+          <MapPin color="#1E63D3" size={24} />
+          <Text style={[styles.typeText, styles.typeTextActive]}>In-Person</Text>
+          <Text style={styles.typeSubtext}>Visit clinic</Text>
         </View>
 
         {/* Date Selection */}
@@ -255,11 +235,11 @@ export default function DoctorBookingScreen() {
             </View>
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Type</Text>
-              <Text style={styles.summaryValue}>{consultationType === 'IN_PERSON' ? 'In-Person Visit' : 'Online Consultation'}</Text>
+              <Text style={styles.summaryValue}>In-Person Visit</Text>
             </View>
             <View style={[styles.summaryRow, { borderBottomWidth: 0 }]}>
               <Text style={styles.summaryLabel}>Price</Text>
-              <Text style={[styles.summaryValue, { color: '#1E63D3', fontWeight: 'bold' }]}>{formattedPrice}</Text>
+              <Text style={[styles.summaryValue, { color: '#10B981', fontWeight: 'bold' }]}>Free</Text>
             </View>
           </View>
         ) : null}
@@ -272,7 +252,7 @@ export default function DoctorBookingScreen() {
         >
           {loading
             ? <ActivityIndicator color="#FFF" />
-            : <Text style={styles.bookButtonText}>Confirm Booking — {formattedPrice}</Text>
+            : <Text style={styles.bookButtonText}>Confirm Booking — Free</Text>
           }
         </TouchableOpacity>
 

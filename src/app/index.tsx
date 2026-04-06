@@ -1,11 +1,12 @@
 import { useState, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert, ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
-import { Mail, Activity, ArrowLeft, ShieldCheck } from 'lucide-react-native';
+import { Mail, ChevronUp, ArrowLeft, ShieldCheck } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { requestOtp, verifyOtp } from '../services/api';
 
 const { width } = Dimensions.get('window');
-const OTP_INPUT_SIZE = Math.min((width - 80) / 6, 48); // Responsive sizing for OTP inputs
+const OTP_LENGTH = 8;
+const OTP_INPUT_SIZE = Math.min((width - 80) / OTP_LENGTH, 42);
 
 type Step = 'email' | 'otp';
 
@@ -13,7 +14,7 @@ export default function LoginScreen() {
   const router = useRouter();
   const [step, setStep] = useState<Step>('email');
   const [email, setEmail] = useState('');
-  const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
+  const [otpDigits, setOtpDigits] = useState(Array(OTP_LENGTH).fill(''));
   const [loading, setLoading] = useState(false);
   const inputRefs = useRef<(TextInput | null)[]>([]);
 
@@ -39,14 +40,14 @@ export default function LoginScreen() {
     newDigits[index] = text;
     setOtpDigits(newDigits);
 
-    if (text && index < 5) {
+    if (text && index < OTP_LENGTH - 1) {
       inputRefs.current[index + 1]?.focus();
     }
 
-    if (text && index === 5) {
+    if (text && index === OTP_LENGTH - 1) {
       Keyboard.dismiss();
-      const code = [...newDigits.slice(0, 5), text].join('');
-      if (code.length === 6) {
+      const code = [...newDigits.slice(0, OTP_LENGTH - 1), text].join('');
+      if (code.length === OTP_LENGTH) {
         handleVerifyOtp(code);
       }
     }
@@ -63,8 +64,8 @@ export default function LoginScreen() {
 
   const handleVerifyOtp = async (code?: string) => {
     const otpCode = code || otpDigits.join('');
-    if (otpCode.length !== 6) {
-      Alert.alert('Error', 'Please enter the 6-digit code');
+    if (otpCode.length !== OTP_LENGTH) {
+      Alert.alert('Error', `Please enter the ${OTP_LENGTH}-digit code`);
       return;
     }
     setLoading(true);
@@ -73,7 +74,7 @@ export default function LoginScreen() {
       router.replace('/(tabs)');
     } catch (error: any) {
       Alert.alert('Invalid Code', error.message || 'The verification code is incorrect or expired. Please try again.');
-      setOtpDigits(['', '', '', '', '', '']);
+      setOtpDigits(Array(OTP_LENGTH).fill(''));
       inputRefs.current[0]?.focus();
     } finally {
       setLoading(false);
@@ -109,7 +110,7 @@ export default function LoginScreen() {
                 <ShieldCheck color="#fff" size={32} />
               </View>
               <Text style={styles.otpTitle}>Verification Code</Text>
-              <Text style={styles.otpSubtitle}>Enter the 6-digit code sent to</Text>
+              <Text style={styles.otpSubtitle}>Enter the {OTP_LENGTH}-digit code sent to</Text>
               <Text style={styles.otpEmail}>{email}</Text>
             </View>
 
@@ -166,9 +167,9 @@ export default function LoginScreen() {
           
           <View style={styles.header}>
             <View style={styles.logoContainer}>
-              <Activity color="#fff" size={32} />
+              <ChevronUp color="#fff" size={36} strokeWidth={3} />
             </View>
-            <Text style={styles.brandTitle}>NavbatUz</Text>
+            <Text style={styles.brandTitle}>Navbat</Text>
             <Text style={styles.brandSubtitle}>Your Healthcare Companion</Text>
           </View>
 
@@ -206,12 +207,7 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
 
-          <View style={styles.infoCard}>
-            <Text style={styles.infoTitle}>🔒 Secure & Passwordless</Text>
-            <Text style={styles.infoText}>
-              We'll send a one-time code to your email. No password needed — fast, secure, and easy.
-            </Text>
-          </View>
+
 
         </ScrollView>
       </KeyboardAvoidingView>

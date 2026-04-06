@@ -28,11 +28,12 @@ export async function verifyOtp(email: string, code: string) {
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .eq('id', data.user?.id)
+    .eq('auth_id', data.user?.id)
     .single();
 
   const user = {
-    id: data.user?.id,
+    id: profile?.id || data.user?.id,
+    authId: data.user?.id,
     email: data.user?.email,
     role: profile?.role || 'PATIENT',
     firstName: profile?.first_name || email.split('@')[0],
@@ -50,7 +51,7 @@ export async function getProfile() {
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .eq('id', user.id)
+    .eq('auth_id', user.id)
     .single();
 
   return profile;
@@ -113,15 +114,27 @@ export async function getDoctor(id: string) {
   return data;
 }
 
+// Helper: get current user's profile id
+async function getMyProfileId(): Promise<string | null> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('auth_id', user.id)
+    .single();
+  return profile?.id || null;
+}
+
 // ─── Appointments ──────────────────────────────────────────
 export async function getAppointments() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
+  const profileId = await getMyProfileId();
+  if (!profileId) return [];
 
   const { data, error } = await supabase
     .from('appointments')
     .select('*, doctor:profiles!doctor_id(first_name, last_name, doctor_profiles(specialty))')
-    .eq('patient_id', user.id)
+    .eq('patient_id', profileId)
     .order('date_time', { ascending: false });
 
   if (error) throw new Error(error.message);
@@ -148,11 +161,11 @@ export async function createAppointment(data: {
   type?: string;
   notes?: string;
 }) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
+  const profileId = await getMyProfileId();
+  if (!profileId) throw new Error('Not authenticated');
 
   const { error } = await supabase.from('appointments').insert({
-    patient_id: user.id,
+    patient_id: profileId,
     doctor_id: data.doctorId,
     date_time: data.dateTime,
     type: data.type || 'IN_PERSON',
@@ -165,13 +178,13 @@ export async function createAppointment(data: {
 
 // ─── Medical Records ───────────────────────────────────────
 export async function getRecords() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
+  const profileId = await getMyProfileId();
+  if (!profileId) return [];
 
   const { data, error } = await supabase
     .from('medical_records')
     .select('*, doctor:profiles!doctor_id(first_name, last_name)')
-    .eq('patient_id', user.id)
+    .eq('patient_id', profileId)
     .order('created_at', { ascending: false });
 
   if (error) throw new Error(error.message);
@@ -204,11 +217,11 @@ export async function getReviews(doctorId: string) {
 }
 
 export async function createReview(data: { doctorId: string; rating: number; comment?: string }) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Not authenticated');
+  const profileId = await getMyProfileId();
+  if (!profileId) throw new Error('Not authenticated');
 
   const { error } = await supabase.from('reviews').insert({
-    patient_id: user.id,
+    patient_id: profileId,
     doctor_id: data.doctorId,
     rating: data.rating,
     comment: data.comment,

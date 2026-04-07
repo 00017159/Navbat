@@ -2,11 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from './supabase';
 import {
   LayoutDashboard, Users, Calendar, LogOut,
-  Shield, Activity, UserCheck, Clock, Trash2
+  Shield, Activity, UserCheck, Clock, Trash2, HeartPulse
 } from 'lucide-react';
 import './App.css';
 
-type View = 'dashboard' | 'users' | 'appointments';
+type View = 'dashboard' | 'users' | 'appointments' | 'doctors';
 
 interface Profile {
   id: string;
@@ -61,9 +61,9 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Auth failed');
       const { data: profile } = await supabase.from('profiles').select('role').eq('auth_id', user.id).single();
-      if (profile?.role !== 'ADMIN') {
+      if (profile?.role !== 'ADMIN' && profile?.role !== 'DOCTOR') {
         await supabase.auth.signOut();
-        throw new Error('Access denied. Admin privileges required.');
+        throw new Error('Access denied. Staff privileges required.');
       }
       onLogin();
     } catch (e: any) {
@@ -342,6 +342,168 @@ function AppointmentsView({ appointments }: { appointments: Appointment[] }) {
   );
 }
 
+// ── Doctors Management ──────────────────────────────────────
+function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelete: (id: string) => void; onRefresh: () => void }) {
+  const [search, setSearch] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
+  // New Doctor State
+  const [doctorForm, setDoctorForm] = useState({
+    email: '',
+    first_name: '',
+    last_name: '',
+    specialty: 'General Practice',
+    experience_yrs: '5',
+    availability: 'Available Today',
+    bg: '#F3E8FF',
+    color: '#6B21A8'
+  });
+
+  const doctors = users.filter(u => u.role === 'DOCTOR');
+  const filtered = doctors.filter(u =>
+    u.email?.toLowerCase().includes(search.toLowerCase()) ||
+    u.first_name?.toLowerCase().includes(search.toLowerCase()) ||
+    u.last_name?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleAddDoctor = async () => {
+    if (!doctorForm.email || !doctorForm.first_name || !doctorForm.last_name) {
+      alert('Email, First Name, and Last Name are required.');
+      return;
+    }
+    setLoading(true);
+    try {
+      // Insert profile
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          email: doctorForm.email,
+          first_name: doctorForm.first_name,
+          last_name: doctorForm.last_name,
+          role: 'DOCTOR'
+        }).select().single();
+      
+      if (profileError) throw profileError;
+
+      // Insert doctor profile mapping
+      const { error: doctorProfileError } = await supabase
+        .from('doctor_profiles')
+        .insert({
+          user_id: profileData.id,
+          specialty: doctorForm.specialty,
+          experience_yrs: parseInt(doctorForm.experience_yrs),
+          availability: doctorForm.availability,
+          bg: doctorForm.bg,
+          color: doctorForm.color,
+          rating: 5.0,
+          review_count: 0
+        });
+
+      if (doctorProfileError) throw doctorProfileError;
+
+      setIsModalOpen(false);
+      onRefresh();
+      
+      // reset form
+      setDoctorForm({
+        email: '', first_name: '', last_name: '', specialty: 'General Practice',
+        experience_yrs: '5', availability: 'Available Today', bg: '#F3E8FF', color: '#6B21A8'
+      });
+    } catch (e: any) {
+      alert('Failed to add doctor: ' + e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h1>Doctor Directory</h1>
+          <p>Manage clinic providers and specialists</p>
+        </div>
+        <button className="btn-primary" onClick={() => setIsModalOpen(true)}>+ Add Doctor</button>
+      </div>
+
+      <div className="table-section">
+        <div className="table-header">
+          <h2>Active Providers</h2>
+          <span className="badge">{doctors.length} total</span>
+        </div>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search providers..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Provider</th>
+              <th>Specialty</th>
+              <th>Experience</th>
+              <th>Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length === 0 ? (
+              <tr><td colSpan={5} className="empty-state">No doctors found</td></tr>
+            ) : filtered.map(u => (
+              <tr key={u.id}>
+                <td>
+                  <div className="user-cell">
+                    <div className="user-avatar doctor">
+                      {(u.first_name || u.email || 'D')[0].toUpperCase()}
+                    </div>
+                    <div>
+                      <div className="user-name">Dr. {u.first_name} {u.last_name}</div>
+                      <div className="user-email">{u.email}</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span className="status-badge" style={{ background: '#F8FAFC', color: '#475569' }}>Registered</span></td>
+                <td>—</td>
+                <td style={{ color: '#64748B', fontSize: 13 }}>{new Date(u.created_at).toLocaleDateString()}</td>
+                <td>
+                  <button className="btn-delete" onClick={() => onDelete(u.id)}>
+                    <Trash2 size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {isModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15,23,42,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
+          <div className="login-card" style={{ width: 400, transform: 'none', background: 'white', padding: 24, borderRadius: 16 }}>
+            <h2 style={{ marginTop: 0, marginBottom: 16, fontFamily: 'Outfit', color: '#0F172A' }}>Add New Doctor</h2>
+            
+            <div className="form-group"><label>Email</label><input type="email" value={doctorForm.email} onChange={e => setDoctorForm({...doctorForm, email: e.target.value})} placeholder="dr.smith@navbat.uz" /></div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <div className="form-group" style={{ flex: 1 }}><label>First Name</label><input type="text" value={doctorForm.first_name} onChange={e => setDoctorForm({...doctorForm, first_name: e.target.value})} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>Last Name</label><input type="text" value={doctorForm.last_name} onChange={e => setDoctorForm({...doctorForm, last_name: e.target.value})} /></div>
+            </div>
+            <div className="form-group"><label>Specialty</label><input type="text" value={doctorForm.specialty} onChange={e => setDoctorForm({...doctorForm, specialty: e.target.value})} placeholder="e.g. Cardiologist" /></div>
+            
+            <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
+              <button className="btn-primary" style={{ flex: 1, background: '#F1F5F9', color: '#475569', boxShadow: 'none' }} onClick={() => setIsModalOpen(false)}>Cancel</button>
+              <button className="btn-primary" style={{ flex: 1 }} onClick={handleAddDoctor} disabled={loading}>{loading ? 'Creating...' : 'Create Doctor'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 // ── Main App ──────────────────────────────────────────────
 function App() {
   const [authed, setAuthed] = useState<boolean | null>(null);
@@ -349,6 +511,7 @@ function App() {
   const [users, setUsers] = useState<Profile[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<string>('');
 
   // Check existing session
   useEffect(() => {
@@ -359,11 +522,13 @@ function App() {
           .select('role')
           .eq('auth_id', session.user.id)
           .single();
-        if (profile?.role === 'ADMIN') {
+        if (profile?.role === 'ADMIN' || profile?.role === 'DOCTOR') {
+          setRole(profile.role);
           setAuthed(true);
         } else {
           await supabase.auth.signOut();
           setAuthed(false);
+          setRole('');
         }
       } else {
         setAuthed(false);
@@ -433,7 +598,7 @@ function App() {
           <div className="brand-icon"><Shield size={20} color="white" /></div>
           <div>
             <h2>ClinicUz</h2>
-            <span>Admin Portal</span>
+            <span>{role === 'ADMIN' ? 'Admin Portal' : 'Doctor Dashboard'}</span>
           </div>
         </div>
 
@@ -441,11 +606,20 @@ function App() {
           <button className={`nav-item ${view === 'dashboard' ? 'active' : ''}`} onClick={() => setView('dashboard')}>
             <LayoutDashboard size={18} /> Dashboard
           </button>
-          <button className={`nav-item ${view === 'users' ? 'active' : ''}`} onClick={() => setView('users')}>
-            <Users size={18} /> Users
-          </button>
+          
+          {role === 'ADMIN' && (
+            <>
+              <button className={`nav-item ${view === 'users' ? 'active' : ''}`} onClick={() => setView('users')}>
+                <Users size={18} /> Patients
+              </button>
+              <button className={`nav-item ${view === 'doctors' ? 'active' : ''}`} onClick={() => setView('doctors')}>
+                <HeartPulse size={18} /> Providers
+              </button>
+            </>
+          )}
+
           <button className={`nav-item ${view === 'appointments' ? 'active' : ''}`} onClick={() => setView('appointments')}>
-            <Calendar size={18} /> Appointments
+            <Calendar size={18} /> {role === 'ADMIN' ? 'All Appointments' : 'My Schedule'}
           </button>
           <button className="nav-item nav-item-logout" onClick={handleLogout}>
             <LogOut size={18} /> Sign Out
@@ -462,7 +636,8 @@ function App() {
         ) : (
           <>
             {view === 'dashboard' && <DashboardView users={users} appointments={appointments} />}
-            {view === 'users' && <UsersView users={users} onDelete={handleDeleteUser} />}
+            {view === 'users' && role === 'ADMIN' && <UsersView users={users.filter(u => u.role !== 'DOCTOR')} onDelete={handleDeleteUser} />}
+            {view === 'doctors' && role === 'ADMIN' && <DoctorsView users={users} onDelete={handleDeleteUser} onRefresh={fetchData} />}
             {view === 'appointments' && <AppointmentsView appointments={appointments} />}
           </>
         )}

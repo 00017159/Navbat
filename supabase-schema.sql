@@ -111,6 +111,14 @@ CREATE POLICY "Users create own reviews" ON reviews FOR INSERT
   WITH CHECK (patient_id IN (SELECT id FROM profiles WHERE auth_id = auth.uid()));
 
 -- Global Admin Bypasses
+CREATE POLICY "Admins can view all profiles" ON profiles FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
+CREATE POLICY "Admins can update all profiles" ON profiles FOR UPDATE USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
+CREATE POLICY "Admins can insert all profiles" ON profiles FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
+CREATE POLICY "Admins can delete all profiles" ON profiles FOR DELETE USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
+
+CREATE POLICY "Admins can update all doctor_profiles" ON doctor_profiles FOR UPDATE USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
+CREATE POLICY "Admins can delete all doctor_profiles" ON doctor_profiles FOR DELETE USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
+
 CREATE POLICY "Admins can view all appointments" ON appointments FOR SELECT
   USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
   
@@ -128,7 +136,9 @@ CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO public.profiles (auth_id, email, first_name)
-  VALUES (NEW.id, NEW.email, SPLIT_PART(NEW.email, '@', 1));
+  VALUES (NEW.id, NEW.email, SPLIT_PART(NEW.email, '@', 1))
+  ON CONFLICT (email)
+  DO UPDATE SET auth_id = EXCLUDED.auth_id;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

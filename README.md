@@ -1,56 +1,99 @@
-# Welcome to your Expo app 👋
+# ClinicUz 🏥
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+ClinicUz is a modern, reliable, and user-friendly mobile healthcare application designed to connect patients with medical specialists. Built dynamically with **React Native** and **Expo**, ClinicUz enables patients to browse doctors, check availability, query an AI Assistant, and easily book **free** in-person consultations.
 
-## Get started
+---
 
-1. Install dependencies
+## ✨ Key Features
 
-   ```bash
-   npm install
-   ```
+- **Robust Authentication:** Secure email/password login and registration powered by Supabase.
+- **Swipeable App Navigation:** Fluid edge-to-edge swipe navigation leveraging React Navigation `MaterialTopTabs`.
+- **Intelligent Booking System:** Filter doctors by specialty, search by name, and book specific calendar dates and hourly time slots.
+- **Appointment Management:** Track all your `Upcoming`, `Completed`, and `Cancelled` appointments from a dedicated dashboard.
+- **AI Medical Assistant:** Seamless OpenAI API integration offering smart medical triage, health advice, and persistent conversation history.
+- **Dynamic Dark Mode:** First-class dark mode support scaling automatically with your system device preferences to prevent eye strain.
+- **Notifications Hub:** Track system alerts and upcoming consultation changes with an integrated badge tracker system.
+- **Bulletproof State & Security:** Clean logout flows entirely wiping local navigation history, alongside Postgres Row Level Security restricting patient data access exclusively to themselves.
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## 🛠️ Technology Stack
 
-In the output, you'll find options to open the app in a
+- **Frontend Core:** [React Native](https://reactnative.dev/) & [Expo](https://expo.dev/) (SDK 50+)
+- **Routing:** [Expo Router](https://docs.expo.dev/router/introduction/) (File-based navigation)
+- **UI Components:** Built completely with custom vanilla stylesheets for maximal performance; Iconography by [Lucide React Native](https://lucide.dev/).
+- **Backend as a Service:** [Supabase](https://supabase.com/) (Fully manages Auth & PostgreSQL)
+- **Artificial Intelligence:** [OpenAI API](https://openai.com/) (GPT-3.5-Turbo)
+- **Language:** Fully typed in **TypeScript**.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 🚀 Getting Started
 
-## Get a fresh project
+Follow these instructions to get the project up and running on your local machine for development and testing.
 
-When you're ready, run:
+### 1. Prerequisites
+Ensure you have the following installed:
+- [Node.js](https://nodejs.org/) (LTS recommended)
+- [Git](https://git-scm.com/)
+- Expo Go App on your physical device (iOS/Android) 
+- A free [Supabase](https://supabase.com/) account
+- An [OpenAI](https://openai.com/) standard API key 
 
+### 2. Installation
+Clone the repository and install dependencies:
 ```bash
-npm run reset-project
+# Install dependencies
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 3. Environment Variables
+Create a `.env` file in the root directory of the project and add your database and AI credentials:
 
-### Other setup steps
+```env
+# Supabase Configuration
+EXPO_PUBLIC_SUPABASE_URL=your_supabase_project_url
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+# OpenAI Configuration
+EXPO_PUBLIC_OPENAI_API_KEY=your_openai_api_key
+```
 
-## Learn more
+### 4. Database Setup
+1. Log into your Supabase Dashboard.
+2. Navigate to the **SQL Editor**.
+3. Copy and paste the entire contents of `supabase-schema.sql` (found in the root directory).
+4. Run the script. This will automatically spin up tables for `profiles`, `doctor_profiles`, `appointments`, `medical_records`, install RLS permission rules, and automatically seed sample doctors for you!
 
-To learn more about developing your project with Expo, look at the following resources:
+### 5. Running the Application
+Start the Expo development server:
+```bash
+npx expo start -c
+```
+- **Android:** Press `a` in the terminal to open in a local Android Emulator.
+- **iOS:** Press `i` to open in the local iOS Simulator.
+- **Physical Device:** Scan the QR code displayed in the terminal with the Expo Go app.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+## 📁 Project Structure
 
-Join our community of developers creating universal apps.
+```text
+/
+├── assets/                 # Brand images, app icons, and fonts
+├── src/                    
+│   ├── app/                # Expo Router Screen configurations
+│   ├── components/         # Reusable structural components
+│   ├── services/           # Supabase connection, API integrations, and AI services
+│   └── constants/          # Static themes and configuration constants
+├── app.json                # Core Expo metadata and splash-screen constraints
+└── supabase-schema.sql     # Complete database deployment instructions
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+## 🔒 Security Summary
+Thanks to Supabase's heavily typed Auth implementation, user sessions are protected using JWTs. All primary tables utilize PostgreSQL **Row Level Security (RLS)** ensuring users only query, alter, or insert rows that explicitly belong to them.
+
+---
+*Created carefully with ❤️ for ClinicUz.*

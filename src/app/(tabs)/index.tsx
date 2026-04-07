@@ -172,7 +172,7 @@ export default function HomeScreen() {
 
         {/* Stats Row */}
         <View style={styles.statsRow}>
-          <TouchableOpacity style={[styles.statCard, { backgroundColor: colors.card }]} onPress={() => router.push('/(tabs)/appointments')}>
+          <TouchableOpacity style={[styles.statCard, { backgroundColor: colors.card }]} onPress={() => router.push('/(tabs)/appointments?tab=All' as any)}>
             <View style={[styles.statIconWrapper, { backgroundColor: dark ? '#1E3A5F' : '#EFF6FF' }]}>
               <Calendar color="#3B82F6" size={24} />
             </View>

@@ -74,12 +74,7 @@ export default function ProfileScreen() {
             try {
               await signOut();
             } finally {
-              navigation.dispatch(
-                CommonActions.reset({
-                  index: 0,
-                  routes: [{ name: 'index' }],
-                })
-              );
+              router.replace('/');
             }
           },
         },

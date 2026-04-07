@@ -110,6 +110,16 @@ CREATE POLICY "Reviews readable" ON reviews FOR SELECT USING (true);
 CREATE POLICY "Users create own reviews" ON reviews FOR INSERT
   WITH CHECK (patient_id IN (SELECT id FROM profiles WHERE auth_id = auth.uid()));
 
+-- Global Admin Bypasses
+CREATE POLICY "Admins can view all appointments" ON appointments FOR SELECT
+  USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
+  
+CREATE POLICY "Admins can update all appointments" ON appointments FOR UPDATE
+  USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
+  
+CREATE POLICY "Admins can delete all appointments" ON appointments FOR DELETE
+  USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
+
 -- ═══════════════════════════════════════
 -- TRIGGER: Auto-create profile on signup
 -- ═══════════════════════════════════════
@@ -142,3 +152,9 @@ INSERT INTO doctor_profiles (user_id, specialty, experience_yrs, rating, review_
   ('d0000001-0000-0000-0000-000000000002', 'Neurologist', 8, 4.9, 156, 'Next: Tomorrow', '#FFEDD5', '#C2410C'),
   ('d0000001-0000-0000-0000-000000000003', 'Pediatrician', 5, 4.7, 312, 'Available Today', '#F3E8FF', '#6B21A8'),
   ('d0000001-0000-0000-0000-000000000004', 'Dermatologist', 15, 4.5, 189, 'Available Tomorrow', '#E0F2FE', '#0369A1');
+
+-- ═══════════════════════════════════════
+-- MANUALLY PROMOTE FIRST ADMIN
+-- ═══════════════════════════════════════
+-- Run this individually after signing up your primary account:
+-- UPDATE public.profiles SET role = 'ADMIN' WHERE email = 'sadullayevshohjahon990@gmail.com';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, Switch, Linking } from 'react-native';
-import { User, Lock, HelpCircle, Info, ChevronRight, LogOut, Moon } from 'lucide-react-native';
+import { User, Lock, HelpCircle, Info, ChevronRight, LogOut, Moon, ShieldAlert } from 'lucide-react-native';
 import { useRouter, useNavigation } from 'expo-router';
 import { getCurrentUser, signOut } from '../../services/api';
 import { useTheme } from '../../services/theme';
@@ -146,6 +146,22 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           ))}
         </View>
+
+        {user?.role === 'ADMIN' && (
+          <TouchableOpacity 
+            style={[styles.settingsCard, { backgroundColor: '#FEF2F2', borderColor: '#FCA5A5', flexDirection: 'row', alignItems: 'center', paddingVertical: 16, marginBottom: 24 }]}
+            onPress={() => router.push('/admin' as any)}
+          >
+            <View style={[styles.settingsIcon, { backgroundColor: '#FEE2E2', marginRight: 16 }]}>
+              <ShieldAlert color="#EF4444" size={20} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.settingsItemTitle, { color: '#991B1B' }]}>System Admin Portal</Text>
+              <Text style={{ fontSize: 13, color: '#DC2626' }}>Manage users and database</Text>
+            </View>
+            <ChevronRight color="#EF4444" size={20} />
+          </TouchableOpacity>
+        )}
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <LogOut color="#EF4444" size={20} style={{ marginRight: 8 }} />

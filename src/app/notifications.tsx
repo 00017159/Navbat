@@ -1,0 +1,165 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { ArrowLeft, Bell, Calendar, FileText, CheckCircle } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import { useTheme } from '../services/theme';
+import { getAppointments } from '../services/api';
+
+type Notification = {
+  id: string;
+  title: string;
+  message: string;
+  time: string;
+  read: boolean;
+  icon: 'calendar' | 'file' | 'check';
+};
+
+export default function NotificationsScreen() {
+  const router = useRouter();
+  const { colors, dark } = useTheme();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  useEffect(() => {
+    loadNotifications();
+  }, []);
+
+  const loadNotifications = async () => {
+    try {
+      const appointments = await getAppointments();
+      const notifs: Notification[] = [];
+
+      // Generate notifications from upcoming appointments
+      (appointments || []).forEach((apt: any, i: number) => {
+        if (apt.status === 'UPCOMING') {
+          const date = new Date(apt.dateTime);
+          const doctorName = apt.doctor ? `${apt.doctor.firstName} ${apt.doctor.lastName}` : 'your doctor';
+          notifs.push({
+            id: `apt-${apt.id}`,
+            title: 'Upcoming Appointment',
+            message: `You have an appointment with ${doctorName} on ${date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`,
+            time: getRelativeTime(date),
+            read: i > 0,
+            icon: 'calendar',
+          });
+        }
+      });
+
+      // Add a welcome notification
+      notifs.push({
+        id: 'welcome',
+        title: 'Welcome to ClinicUz! 🎉',
+        message: 'Your healthcare companion is ready. Browse doctors and book your first appointment.',
+        time: 'Just now',
+        read: false,
+        icon: 'check',
+      });
+
+      setNotifications(notifs);
+    } catch {
+      setNotifications([{
+        id: 'welcome',
+        title: 'Welcome to ClinicUz! 🎉',
+        message: 'Your healthcare companion is ready. Browse doctors and book your first appointment.',
+        time: 'Just now',
+        read: false,
+        icon: 'check',
+      }]);
+    }
+  };
+
+  const getRelativeTime = (date: Date) => {
+    const now = new Date();
+    const diff = date.getTime() - now.getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    if (days > 1) return `in ${days} days`;
+    if (days === 1) return 'Tomorrow';
+    if (hours > 0) return `in ${hours}h`;
+    return 'Just now';
+  };
+
+  const getNotifIcon = (type: string) => {
+    switch (type) {
+      case 'calendar': return <Calendar color={colors.primary} size={20} />;
+      case 'file': return <FileText color="#10B981" size={20} />;
+      case 'check': return <CheckCircle color="#10B981" size={20} />;
+      default: return <Bell color={colors.primary} size={20} />;
+    }
+  };
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+          <ArrowLeft color={colors.text} size={24} />
+        </TouchableOpacity>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Notifications</Text>
+        <View style={{ width: 40 }} />
+      </View>
+
+      {unreadCount > 0 && (
+        <View style={[styles.unreadBanner, { backgroundColor: dark ? '#1E3A5F' : '#EFF6FF' }]}>
+          <Text style={[styles.unreadText, { color: colors.primary }]}>
+            {unreadCount} unread notification{unreadCount > 1 ? 's' : ''}
+          </Text>
+        </View>
+      )}
+
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {notifications.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Bell color={colors.textSecondary} size={48} />
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No notifications yet</Text>
+          </View>
+        ) : (
+          notifications.map(notif => (
+            <View
+              key={notif.id}
+              style={[
+                styles.notifCard,
+                { backgroundColor: colors.card, borderColor: colors.border },
+                !notif.read && { borderLeftWidth: 3, borderLeftColor: colors.primary },
+              ]}
+            >
+              <View style={[styles.notifIcon, { backgroundColor: dark ? '#334155' : '#EFF6FF' }]}>
+                {getNotifIcon(notif.icon)}
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.notifTitle, { color: colors.text }]}>{notif.title}</Text>
+                <Text style={[styles.notifMessage, { color: colors.textSecondary }]}>{notif.message}</Text>
+                <Text style={[styles.notifTime, { color: colors.textSecondary }]}>{notif.time}</Text>
+              </View>
+            </View>
+          ))
+        )}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  header: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    padding: 16, paddingTop: 20, borderBottomWidth: 1,
+  },
+  backBtn: { padding: 8 },
+  headerTitle: { fontSize: 18, fontWeight: 'bold' },
+  unreadBanner: { paddingHorizontal: 20, paddingVertical: 10 },
+  unreadText: { fontSize: 13, fontWeight: '600' },
+  scrollContent: { padding: 16 },
+  notifCard: {
+    flexDirection: 'row', alignItems: 'flex-start', padding: 16,
+    borderRadius: 16, borderWidth: 1, marginBottom: 12,
+  },
+  notifIcon: {
+    width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginRight: 12,
+  },
+  notifTitle: { fontSize: 15, fontWeight: '600', marginBottom: 4 },
+  notifMessage: { fontSize: 13, lineHeight: 18, marginBottom: 6 },
+  notifTime: { fontSize: 11 },
+  emptyState: { alignItems: 'center', marginTop: 80 },
+  emptyText: { fontSize: 16, marginTop: 16 },
+});

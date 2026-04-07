@@ -1,12 +1,12 @@
 import { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert, ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert, ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, Dimensions, Image } from 'react-native';
 import { Mail, ChevronUp, ArrowLeft, ShieldCheck } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { requestOtp, verifyOtp } from '../services/api';
 
 const { width } = Dimensions.get('window');
-const OTP_LENGTH = 8;
-const OTP_INPUT_SIZE = Math.min((width - 80) / OTP_LENGTH, 42);
+const OTP_LENGTH = 6;
+const OTP_INPUT_SIZE = Math.min((width - 80) / OTP_LENGTH, 48);
 
 type Step = 'email' | 'otp';
 
@@ -166,10 +166,8 @@ export default function LoginScreen() {
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
           
           <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <ChevronUp color="#fff" size={36} strokeWidth={3} />
-            </View>
-            <Text style={styles.brandTitle}>Navbat</Text>
+            <Image source={require('../../assets/images/clinicuz-logo.png')} style={{ width: 80, height: 80, borderRadius: 20, marginBottom: 12 }} resizeMode="contain" />
+            <Text style={styles.brandTitle}>ClinicUz</Text>
             <Text style={styles.brandSubtitle}>Your Healthcare Companion</Text>
           </View>
 

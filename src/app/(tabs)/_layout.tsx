@@ -1,50 +1,82 @@
-import { Tabs } from 'expo-router';
+import { withLayoutContext } from 'expo-router';
+import {
+  createMaterialTopTabNavigator,
+  MaterialTopTabNavigationOptions,
+  MaterialTopTabNavigationEventMap,
+} from '@react-navigation/material-top-tabs';
 import { Home, Calendar, ClipboardList, User } from 'lucide-react-native';
+import { useTheme } from '../../services/theme';
+
+const { Navigator } = createMaterialTopTabNavigator();
+
+export const MaterialTopTabs = withLayoutContext<
+  MaterialTopTabNavigationOptions,
+  typeof Navigator,
+  any,
+  MaterialTopTabNavigationEventMap
+>(Navigator);
 
 export default function TabLayout() {
+  const { dark, colors } = useTheme();
   return (
-    <Tabs screenOptions={{
-      tabBarActiveTintColor: '#1F61C3',
-      tabBarInactiveTintColor: '#A0AEC0',
-      headerShown: false,
-      tabBarStyle: {
-        height: 60,
-        paddingBottom: 8,
-        paddingTop: 8,
-        borderTopWidth: 1,
-        borderColor: '#E2E8F0',
-        elevation: 0,
-        backgroundColor: '#f8f9fa'
-      },
-    }}>
-      <Tabs.Screen
+    <MaterialTopTabs
+      tabBarPosition="bottom"
+      screenOptions={{
+        lazy: true,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
+        swipeEnabled: true,
+        tabBarIndicatorStyle: {
+          backgroundColor: colors.primary,
+          height: 3,
+          top: 0,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontFamily: 'System',
+          textTransform: 'none',
+          marginBottom: 4,
+          padding: 0,
+        },
+        tabBarStyle: {
+          height: 64,
+          justifyContent: 'center',
+          backgroundColor: dark ? '#1E293B' : '#f8f9fa',
+          borderTopWidth: 1,
+          borderColor: colors.border,
+          elevation: 0,
+          shadowOpacity: 0,
+        },
+      }}
+    >
+      <MaterialTopTabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <Home size={24} color={color} />,
+          tabBarIcon: ({ color }) => <Home size={22} color={color} />,
         }}
       />
-      <Tabs.Screen
+      <MaterialTopTabs.Screen
         name="appointments"
         options={{
           title: 'Appointments',
-          tabBarIcon: ({ color }) => <Calendar size={24} color={color} />,
+          tabBarIcon: ({ color }) => <Calendar size={22} color={color} />,
         }}
       />
-      <Tabs.Screen
+      <MaterialTopTabs.Screen
         name="records"
         options={{
           title: 'Records',
-          tabBarIcon: ({ color }) => <ClipboardList size={24} color={color} />,
+          tabBarIcon: ({ color }) => <ClipboardList size={22} color={color} />,
         }}
       />
-      <Tabs.Screen
+      <MaterialTopTabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color }) => <User size={24} color={color} />,
+          tabBarIcon: ({ color }) => <User size={22} color={color} />,
         }}
       />
-    </Tabs>
+    </MaterialTopTabs>
   );
 }

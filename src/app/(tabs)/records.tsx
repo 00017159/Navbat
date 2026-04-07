@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator, RefreshControl, Linking } from 'react-native';
 import { Activity, MessageSquare, Paperclip, ChevronRight, ChevronDown, ChevronUp, Download } from 'lucide-react-native';
 import { getRecords } from '../../services/api';
+import { useTheme } from '../../services/theme';
 
 // Live data only
 function getInitials(firstName: string, lastName: string) {
@@ -20,6 +21,7 @@ export default function RecordsScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const { colors, dark } = useTheme();
 
   const fetchData = useCallback(async () => {
     try {
@@ -86,22 +88,22 @@ export default function RecordsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Medical Records</Text>
-        <Text style={styles.headerSubtitle}>{records.length} record{records.length !== 1 ? 's' : ''}</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Medical Records</Text>
+        <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>{records.length} record{records.length !== 1 ? 's' : ''}</Text>
       </View>
 
       <ScrollView
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1E63D3']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
       >
         {records.length === 0 ? (
           <View style={styles.emptyState}>
-            <Activity color="#CBD5E1" size={48} />
-            <Text style={styles.emptyTitle}>No medical records</Text>
-            <Text style={styles.emptySubtitle}>Your medical records will appear here after doctor visits</Text>
+            <Activity color={colors.textSecondary} size={48} />
+            <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>No medical records</Text>
+            <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>Your medical records will appear here after doctor visits</Text>
           </View>
         ) : (
           records.map((record, index) => {
@@ -115,7 +117,7 @@ export default function RecordsScreen() {
             const attachments = record.attachments || [];
 
             return (
-              <View key={record.id} style={styles.card}>
+              <View key={record.id} style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 
                 {/* Doctor Info Row - Tappable to expand */}
                 <TouchableOpacity style={styles.doctorRow} onPress={() => toggleExpand(record.id)}>
@@ -123,23 +125,23 @@ export default function RecordsScreen() {
                     <Text style={[styles.avatarText, { color }]}>{initials}</Text>
                   </View>
                   <View style={styles.doctorInfo}>
-                    <Text style={styles.doctorName}>{doctor.firstName} {doctor.lastName}</Text>
-                    <Text style={styles.recordDate}>{date}</Text>
+                    <Text style={[styles.doctorName, { color: colors.text }]}>{doctor.firstName} {doctor.lastName}</Text>
+                    <Text style={[styles.recordDate, { color: colors.textSecondary }]}>{date}</Text>
                   </View>
                   {isExpanded
-                    ? <ChevronUp color="#9CA3AF" size={20} />
-                    : <ChevronDown color="#9CA3AF" size={20} />
+                    ? <ChevronUp color={colors.textSecondary} size={20} />
+                    : <ChevronDown color={colors.textSecondary} size={20} />
                   }
                 </TouchableOpacity>
 
                 {/* Diagnosis Section - Always visible */}
                 <View style={styles.diagnosisSection}>
-                  <View style={styles.pulseIconContainer}>
-                    <Activity color="#1E63D3" size={20} />
+                  <View style={[styles.pulseIconContainer, { backgroundColor: dark ? '#1E3A5F' : '#EFF6FF' }]}>
+                    <Activity color={colors.primary} size={20} />
                   </View>
                   <View>
-                    <Text style={styles.sectionLabelTxt}>Diagnosis</Text>
-                    <Text style={styles.diagnosisTitle}>{record.diagnosis}</Text>
+                    <Text style={[styles.sectionLabelTxt, { color: colors.textSecondary }]}>Diagnosis</Text>
+                    <Text style={[styles.diagnosisTitle, { color: colors.text }]}>{record.diagnosis}</Text>
                   </View>
                 </View>
 
@@ -149,15 +151,15 @@ export default function RecordsScreen() {
                     {/* Prescriptions Section */}
                     {prescriptions.length > 0 && (
                       <View style={styles.prescriptionsSection}>
-                        <Text style={styles.sectionLabelTxt}>Prescriptions</Text>
+                        <Text style={[styles.sectionLabelTxt, { color: colors.textSecondary }]}>Prescriptions</Text>
                         <View style={styles.tagsContainer}>
                           {prescriptions.map((med: string, idx: number) => (
                             <TouchableOpacity
                               key={idx}
-                              style={styles.prescriptionPill}
+                              style={[styles.prescriptionPill, { backgroundColor: dark ? '#1E3A5F' : '#EFF6FF' }]}
                               onPress={() => Alert.alert('Prescription', `${med}\n\nTake as directed by your doctor.`)}
                             >
-                              <Text style={styles.prescriptionText}>{med}</Text>
+                              <Text style={[styles.prescriptionText, { color: dark ? '#93C5FD' : '#1E63D3' }]}>{med}</Text>
                             </TouchableOpacity>
                           ))}
                         </View>
@@ -167,8 +169,8 @@ export default function RecordsScreen() {
                     {/* Notes Section */}
                     {record.notes && (
                       <View style={styles.notesSection}>
-                        <MessageSquare color="#9CA3AF" size={16} style={{ marginTop: 2, marginRight: 8 }} />
-                        <Text style={styles.notesText}>{record.notes}</Text>
+                        <MessageSquare color={colors.textSecondary} size={16} style={{ marginTop: 2, marginRight: 8 }} />
+                        <Text style={[styles.notesText, { color: colors.textSecondary }]}>{record.notes}</Text>
                       </View>
                     )}
 
@@ -178,20 +180,20 @@ export default function RecordsScreen() {
                         {attachments.map((file: string, idx: number) => (
                           <TouchableOpacity
                             key={idx}
-                            style={styles.attachmentPill}
+                            style={[styles.attachmentPill, { backgroundColor: dark ? '#1E3A5F' : '#EFF6FF', borderColor: dark ? '#1E40AF' : '#BFDBFE' }]}
                             onPress={() => handleAttachment(file)}
                           >
-                            <Paperclip color="#1E63D3" size={14} style={{ marginRight: 6 }} />
-                            <Text style={styles.attachmentText}>{file}</Text>
-                            <Download color="#1E63D3" size={12} style={{ marginLeft: 6 }} />
+                            <Paperclip color={dark ? '#93C5FD' : '#1E63D3'} size={14} style={{ marginRight: 6 }} />
+                            <Text style={[styles.attachmentText, { color: dark ? '#93C5FD' : '#1E63D3' }]}>{file}</Text>
+                            <Download color={dark ? '#93C5FD' : '#1E63D3'} size={12} style={{ marginLeft: 6 }} />
                           </TouchableOpacity>
                         ))}
                       </View>
                     )}
 
                     {/* Share Button */}
-                    <TouchableOpacity style={styles.shareBtn} onPress={() => handleShareRecord(record)}>
-                      <Text style={styles.shareBtnText}>Share Record</Text>
+                    <TouchableOpacity style={[styles.shareBtn, { backgroundColor: dark ? '#334155' : '#F1F5F9' }]} onPress={() => handleShareRecord(record)}>
+                      <Text style={[styles.shareBtnText, { color: dark ? '#CBD5E1' : '#64748B' }]}>Share Record</Text>
                     </TouchableOpacity>
                   </>
                 )}

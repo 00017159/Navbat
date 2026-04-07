@@ -1,19 +1,21 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, Switch } from 'react-native';
 import { User, Lock, HelpCircle, Info, ChevronRight, LogOut, Moon } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useNavigation } from 'expo-router';
 import { getCurrentUser, signOut } from '../../services/api';
 import { useTheme } from '../../services/theme';
+import { CommonActions } from '@react-navigation/native';
 
 const SETTINGS_ITEMS = [
   { id: 1, icon: 'User', title: 'Personal Information', description: 'Name, email, phone number' },
   { id: 3, icon: 'Lock', title: 'Privacy & Security', description: 'Password, 2FA, data' },
   { id: 4, icon: 'HelpCircle', title: 'Help & Support', description: 'FAQ, contact us, report' },
-  { id: 5, icon: 'Info', title: 'About Navbat', description: 'Version, terms, licenses' },
+  { id: 5, icon: 'Info', title: 'About ClinicUz', description: 'Version, terms, licenses' },
 ];
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
   const user = getCurrentUser();
   const { dark, toggle, colors } = useTheme();
 
@@ -37,21 +39,10 @@ export default function ProfileScreen() {
   const handleSettingsPress = (item: typeof SETTINGS_ITEMS[number]) => {
     switch (item.id) {
       case 1:
-        Alert.alert(
-          'Personal Information',
-          `Name: ${displayName}\nEmail: ${displayEmail}\nRole: ${displayRole}\n\nEditing will be available in the next update.`,
-        );
+        router.push('/personal-info' as any);
         break;
       case 3:
-        Alert.alert(
-          'Privacy & Security',
-          'Security options:',
-          [
-            { text: 'Change Password', onPress: () => Alert.alert('Change Password', 'Password change feature coming soon.') },
-            { text: 'Enable 2FA', onPress: () => Alert.alert('Two-Factor Auth', '2FA setup coming in the next update.') },
-            { text: 'Cancel', style: 'cancel' },
-          ]
-        );
+        router.push('/privacy' as any);
         break;
       case 4:
         Alert.alert(
@@ -59,16 +50,13 @@ export default function ProfileScreen() {
           'How can we help?',
           [
             { text: 'FAQ', onPress: () => Alert.alert('FAQ', 'Frequently asked questions will be available soon.') },
-            { text: 'Contact Support', onPress: () => Alert.alert('Contact', 'Email: support@navbat.uz\nPhone: +998 71 555 0000') },
+            { text: 'Contact Support', onPress: () => Alert.alert('Contact', 'Email: support@clinicuz.com\nPhone: +998 71 555 0000') },
             { text: 'Cancel', style: 'cancel' },
           ]
         );
         break;
       case 5:
-        Alert.alert(
-          'About Navbat',
-          'Navbat v1.0.0\n\nYour Healthcare Companion\n\n© 2026 Navbat. All rights reserved.\n\nBuilt with ❤️ in Tashkent, Uzbekistan',
-        );
+        router.push('/about' as any);
         break;
     }
   };
@@ -83,8 +71,16 @@ export default function ProfileScreen() {
           text: 'Log Out',
           style: 'destructive',
           onPress: async () => {
-            await signOut();
-            router.replace('/');
+            try {
+              await signOut();
+            } finally {
+              navigation.dispatch(
+                CommonActions.reset({
+                  index: 0,
+                  routes: [{ name: 'index' }],
+                })
+              );
+            }
           },
         },
       ]
@@ -158,7 +154,7 @@ export default function ProfileScreen() {
           <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>
 
-        <Text style={[styles.versionText, { color: colors.textSecondary }]}>Navbat v1.0.0</Text>
+        <Text style={[styles.versionText, { color: colors.textSecondary }]}>ClinicUz v1.0.0</Text>
 
       </ScrollView>
     </SafeAreaView>

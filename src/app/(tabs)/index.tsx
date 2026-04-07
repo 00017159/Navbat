@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Alert, ActivityIndicator, RefreshControl } from 'react-native';
-import { Search, Calendar, CheckCircle2, Users, Star } from 'lucide-react-native';
+import { Bell, Search, Calendar, CheckCircle2, Users, Star, Bot } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { getDoctors, getAppointments, getCurrentUser } from '../../services/api';
+import { useTheme } from '../../services/theme';
 
 const CATEGORIES = ['All', 'Cardiologist', 'Neurologist', 'Pediatrician', 'Dentist', 'Orthopedic'];
 
@@ -38,6 +39,8 @@ export default function HomeScreen() {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [hasUnread, setHasUnread] = useState(true);
+  const { colors, dark } = useTheme();
   const user = getCurrentUser();
 
   const fetchData = useCallback(async () => {
@@ -100,7 +103,8 @@ export default function HomeScreen() {
   };
 
   const handleNotifications = () => {
-    Alert.alert('Notifications', 'You have 2 new notifications:\n\n• Appointment with Dr. Yusupova tomorrow\n• Lab results are ready');
+    setHasUnread(false);
+    router.push('/notifications' as any);
   };
 
   const handleSearchSubmit = () => {
@@ -122,30 +126,38 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1E63D3']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
       >
         
         {/* Header Section */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greetingText}>{getGreeting()},</Text>
+            <Text style={[styles.greetingText, { color: colors.textSecondary }]}>{getGreeting()},</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.userName}>{user?.firstName || 'Alisher'} <Text style={{ fontSize: 24 }}>👋</Text></Text>
+              <Text style={[styles.userName, { color: colors.text }]}>{user?.firstName || 'User'} <Text style={{ fontSize: 24 }}>👋</Text></Text>
             </View>
           </View>
+          <TouchableOpacity style={[styles.notificationBtn, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={handleNotifications}>
+            <Bell color={colors.text} size={24} />
+            {hasUnread && appointments.filter(a => a.status === 'UPCOMING').length > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{appointments.filter(a => a.status === 'UPCOMING').length}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
         </View>
 
         {/* Search Bar */}
-        <View style={styles.searchContainer}>
-          <Search color="#9CA3AF" size={20} style={styles.searchIcon} />
+        <View style={[styles.searchContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Search color={colors.textSecondary} size={20} style={styles.searchIcon} />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: colors.text }]}
             placeholder="Search doctors, specializations..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.textSecondary}
             value={searchQuery}
             onChangeText={setSearchQuery}
             onSubmitEditing={handleSearchSubmit}
@@ -153,40 +165,40 @@ export default function HomeScreen() {
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <Text style={{ color: '#9CA3AF', fontSize: 18, padding: 4 }}>✕</Text>
+              <Text style={{ color: colors.textSecondary, fontSize: 18, padding: 4 }}>✕</Text>
             </TouchableOpacity>
           )}
         </View>
 
         {/* Stats Row */}
         <View style={styles.statsRow}>
-          <TouchableOpacity style={styles.statCard} onPress={() => router.push('/(tabs)/appointments')}>
-            <View style={[styles.statIconWrapper, { backgroundColor: '#EFF6FF' }]}>
+          <TouchableOpacity style={[styles.statCard, { backgroundColor: colors.card }]} onPress={() => router.push('/(tabs)/appointments')}>
+            <View style={[styles.statIconWrapper, { backgroundColor: dark ? '#1E3A5F' : '#EFF6FF' }]}>
               <Calendar color="#3B82F6" size={24} />
             </View>
-            <Text style={[styles.statValue, { color: '#1E40AF' }]}>{appointments.length}</Text>
-            <Text style={styles.statTitle}>Appointments</Text>
+            <Text style={[styles.statValue, { color: dark ? '#93C5FD' : '#1E40AF' }]}>{appointments.length}</Text>
+            <Text style={[styles.statTitle, { color: colors.textSecondary }]}>Appointments</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.statCard} onPress={() => router.push('/(tabs)/appointments')}>
-            <View style={[styles.statIconWrapper, { backgroundColor: '#ECFDF5' }]}>
+          <TouchableOpacity style={[styles.statCard, { backgroundColor: colors.card }]} onPress={() => router.push('/(tabs)/appointments')}>
+            <View style={[styles.statIconWrapper, { backgroundColor: dark ? '#064E3B' : '#ECFDF5' }]}>
               <CheckCircle2 color="#10B981" size={24} />
             </View>
-            <Text style={[styles.statValue, { color: '#065F46' }]}>{completedCount}</Text>
-            <Text style={styles.statTitle}>Completed</Text>
+            <Text style={[styles.statValue, { color: dark ? '#6EE7B7' : '#065F46' }]}>{completedCount}</Text>
+            <Text style={[styles.statTitle, { color: colors.textSecondary }]}>Completed</Text>
           </TouchableOpacity>
-          <View style={styles.statCard}>
-            <View style={[styles.statIconWrapper, { backgroundColor: '#F0FDF4' }]}>
+          <View style={[styles.statCard, { backgroundColor: colors.card }]}>
+            <View style={[styles.statIconWrapper, { backgroundColor: dark ? '#134E4A' : '#F0FDF4' }]}>
               <Users color="#14B8A6" size={24} />
             </View>
-            <Text style={[styles.statValue, { color: '#0F766E' }]}>{doctors.length}</Text>
-            <Text style={styles.statTitle}>Doctors</Text>
+            <Text style={[styles.statValue, { color: dark ? '#5EEAD4' : '#0F766E' }]}>{doctors.length}</Text>
+            <Text style={[styles.statTitle, { color: colors.textSecondary }]}>Doctors</Text>
           </View>
         </View>
 
         {/* Doctors Section Header */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Doctors</Text>
-          <Text style={styles.sectionSubtitle}>{filteredDoctors.length} available</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Doctors</Text>
+          <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>{filteredDoctors.length} available</Text>
         </View>
 
         {/* Categories Tabs */}
@@ -195,9 +207,9 @@ export default function HomeScreen() {
             <TouchableOpacity 
               key={cat} 
               onPress={() => setActiveTab(cat)}
-              style={[styles.categoryPill, activeTab === cat && styles.categoryPillActive]}
+              style={[styles.categoryPill, { backgroundColor: colors.card, borderColor: colors.border }, activeTab === cat && styles.categoryPillActive]}
             >
-              <Text style={[styles.categoryText, activeTab === cat && styles.categoryTextActive]}>{cat}</Text>
+              <Text style={[styles.categoryText, { color: colors.textSecondary }, activeTab === cat && styles.categoryTextActive]}>{cat}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -225,7 +237,7 @@ export default function HomeScreen() {
               return (
                 <TouchableOpacity
                   key={doc.id}
-                  style={styles.doctorCard}
+                  style={[styles.doctorCard, { backgroundColor: colors.card }]}
                   activeOpacity={0.7}
                   onPress={() => handleBookDoctor(doc)}
                 >
@@ -234,16 +246,14 @@ export default function HomeScreen() {
                       <Text style={[styles.doctorAvatarText, { color: textColor }]}>{initials}</Text>
                     </View>
                     <View style={styles.doctorInfo}>
-                      <Text style={styles.doctorName}>{doc.firstName} {doc.lastName}</Text>
-                      <Text style={styles.doctorSpecialty}>{specialty}</Text>
+                      <Text style={[styles.doctorName, { color: colors.text }]}>{doc.firstName} {doc.lastName}</Text>
+                      <Text style={[styles.doctorSpecialty, { color: colors.textSecondary }]}>{specialty}</Text>
                       <View style={styles.ratingRow}>
                         <Star color="#F59E0B" fill="#F59E0B" size={14} />
                         <Text style={styles.ratingText}>{rating || '4.8'}</Text>
                         <Text style={styles.ratingReviews}>({reviewCount})</Text>
                         <Text style={styles.dotSeparator}>•</Text>
                         <Text style={styles.expText}>{experience}y exp</Text>
-                        <Text style={styles.dotSeparator}>•</Text>
-                        <Text style={[styles.priceText, { color: '#10B981' }]}>Free</Text>
                       </View>
                     </View>
                     <View style={styles.statusDotWrapper}>
@@ -271,6 +281,16 @@ export default function HomeScreen() {
         </View>
 
       </ScrollView>
+
+      {/* AI Floating Button */}
+      <TouchableOpacity
+        style={styles.aiButton}
+        onPress={() => router.push('/ai-chat' as any)}
+        activeOpacity={0.85}
+      >
+        <Bot color="#fff" size={24} />
+        <Text style={styles.aiButtonText}>AI</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -348,4 +368,13 @@ const styles = StyleSheet.create({
   emptyState: { alignItems: 'center', padding: 40 },
   emptyStateText: { fontSize: 16, color: '#64748B', marginBottom: 12 },
   emptyStateAction: { fontSize: 14, fontWeight: 'bold', color: '#1E63D3' },
+  aiButton: {
+    position: 'absolute', bottom: 24, right: 20,
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    backgroundColor: '#10B981', borderRadius: 28,
+    paddingHorizontal: 20, paddingVertical: 14,
+    shadowColor: '#10B981', shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35, shadowRadius: 12, elevation: 8,
+  },
+  aiButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
 });

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator, RefreshControl } from 'react-native';
 import { Calendar, Video, MapPin, FileText, Clock, XCircle, CheckCircle } from 'lucide-react-native';
 import { getAppointments, createAppointment } from '../../services/api';
+import { useTheme } from '../../services/theme';
 
 const TABS = ['All', 'Upcoming', 'Completed', 'Cancelled'];
 
@@ -38,6 +39,7 @@ export default function AppointmentsScreen() {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const { colors, dark } = useTheme();
 
   const fetchData = useCallback(async () => {
     try {
@@ -92,19 +94,13 @@ export default function AppointmentsScreen() {
     );
   };
 
-  const handleReschedule = (appointment: any) => {
-    Alert.alert(
-      'Reschedule',
-      `Rescheduling appointment with ${appointment.doctor?.firstName} ${appointment.doctor?.lastName}.\n\nThis feature will be available soon.`,
-      [{ text: 'OK' }]
-    );
-  };
+
 
   const getStatusDisplay = (status: string, dateTime: string): { label: string; bgColor: string; textColor: string } => {
-    if (status === 'COMPLETED') return { label: 'Completed', bgColor: '#ECFDF5', textColor: '#10B981' };
-    if (status === 'CANCELLED') return { label: 'Cancelled', bgColor: '#FEF2F2', textColor: '#EF4444' };
-    if (isUpcoming(dateTime)) return { label: 'Upcoming', bgColor: '#EFF6FF', textColor: '#1E63D3' };
-    return { label: status, bgColor: '#F1F5F9', textColor: '#64748B' };
+    if (status === 'COMPLETED') return { label: 'Completed', bgColor: dark ? '#064E3B' : '#ECFDF5', textColor: dark ? '#6EE7B7' : '#10B981' };
+    if (status === 'CANCELLED') return { label: 'Cancelled', bgColor: dark ? '#7F1D1D' : '#FEF2F2', textColor: dark ? '#FCA5A5' : '#EF4444' };
+    if (isUpcoming(dateTime)) return { label: 'Upcoming', bgColor: dark ? '#1E3A5F' : '#EFF6FF', textColor: dark ? '#93C5FD' : '#1E63D3' };
+    return { label: status, bgColor: dark ? '#334155' : '#F1F5F9', textColor: dark ? '#94A3B8' : '#64748B' };
   };
 
   const getTabCount = (tab: string) => {
@@ -125,9 +121,9 @@ export default function AppointmentsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Appointments</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Appointments</Text>
       </View>
 
       <View style={styles.tabsContainer}>
@@ -135,10 +131,10 @@ export default function AppointmentsScreen() {
           {TABS.map(tab => (
             <TouchableOpacity 
               key={tab} 
-              style={[styles.tabButton, activeTab === tab && styles.activeTabButton]}
+              style={[styles.tabButton, { backgroundColor: colors.card, borderColor: colors.border }, activeTab === tab && styles.activeTabButton]}
               onPress={() => setActiveTab(tab)}
             >
-              <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
+              <Text style={[styles.tabText, { color: colors.textSecondary }, activeTab === tab && styles.activeTabText]}>
                 {tab} {getTabCount(tab) > 0 ? `(${getTabCount(tab)})` : ''}
               </Text>
             </TouchableOpacity>
@@ -149,13 +145,13 @@ export default function AppointmentsScreen() {
       <ScrollView
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#1E63D3']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
       >
         {filteredAppointments.length === 0 ? (
           <View style={styles.emptyState}>
-            <Calendar color="#CBD5E1" size={48} />
-            <Text style={styles.emptyTitle}>No {activeTab.toLowerCase()} appointments</Text>
-            <Text style={styles.emptySubtitle}>Your {activeTab.toLowerCase()} appointments will appear here</Text>
+            <Calendar color={colors.textSecondary} size={48} />
+            <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>No {activeTab.toLowerCase()} appointments</Text>
+            <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>Your {activeTab.toLowerCase()} appointments will appear here</Text>
           </View>
         ) : (
           filteredAppointments.map((app, index) => {
@@ -167,15 +163,15 @@ export default function AppointmentsScreen() {
             const isActive = app.status !== 'COMPLETED' && app.status !== 'CANCELLED';
 
             return (
-              <View key={app.id} style={styles.card}>
+              <View key={app.id} style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 
                 <View style={styles.cardHeader}>
                   <View style={[styles.avatar, { backgroundColor: bg }]}>
                     <Text style={[styles.avatarText, { color }]}>{initials}</Text>
                   </View>
                   <View style={styles.doctorInfo}>
-                    <Text style={styles.doctorName}>{doctor.firstName} {doctor.lastName}</Text>
-                    <Text style={styles.specialty}>{doctor.doctorProfile?.specialty || 'Specialist'}</Text>
+                    <Text style={[styles.doctorName, { color: colors.text }]}>{doctor.firstName} {doctor.lastName}</Text>
+                    <Text style={[styles.specialty, { color: colors.textSecondary }]}>{doctor.doctorProfile?.specialty || 'Specialist'}</Text>
                   </View>
                   <View style={[styles.statusPill, { backgroundColor: statusInfo.bgColor }]}>
                     <Text style={[styles.statusText, { color: statusInfo.textColor }]}>
@@ -185,41 +181,37 @@ export default function AppointmentsScreen() {
                 </View>
 
                 <View style={styles.detailsRow}>
-                  <Calendar color="#9CA3AF" size={16} />
-                  <Text style={styles.detailText}>{formatDate(app.dateTime)}</Text>
-                  <Clock color="#9CA3AF" size={16} style={{ marginLeft: 16 }} />
-                  <Text style={styles.detailText}>{formatTime(app.dateTime)}</Text>
+                  <Calendar color={colors.textSecondary} size={16} />
+                  <Text style={[styles.detailText, { color: colors.textSecondary }]}>{formatDate(app.dateTime)}</Text>
+                  <Clock color={colors.textSecondary} size={16} style={{ marginLeft: 16 }} />
+                  <Text style={[styles.detailText, { color: colors.textSecondary }]}>{formatTime(app.dateTime)}</Text>
                 </View>
 
                 <View style={styles.detailsRow}>
-                  {app.type === 'IN_PERSON' ? <MapPin color="#9CA3AF" size={16} /> : <Video color="#9CA3AF" size={16} />}
-                  <Text style={styles.detailText}>{app.type === 'IN_PERSON' ? 'In-Person Visit' : 'Online Consultation'}</Text>
+                  {app.type === 'IN_PERSON' ? <MapPin color={colors.textSecondary} size={16} /> : <Video color={colors.textSecondary} size={16} />}
+                  <Text style={[styles.detailText, { color: colors.textSecondary }]}>{app.type === 'IN_PERSON' ? 'In-Person Visit' : 'Online Consultation'}</Text>
                 </View>
 
                 {app.notes && (
                   <View style={styles.detailsRow}>
-                    <FileText color="#9CA3AF" size={16} />
-                    <Text style={styles.detailText}>{app.notes}</Text>
+                    <FileText color={colors.textSecondary} size={16} />
+                    <Text style={[styles.detailText, { color: colors.textSecondary }]}>{app.notes}</Text>
                   </View>
                 )}
 
-                <Text style={styles.priceText}>{formatPrice(app.price || '0')}</Text>
 
-                {/* Action Buttons */}
+
                 {isActive && (
                   <View style={styles.actionsRow}>
-                    <TouchableOpacity style={styles.rescheduleBtn} onPress={() => handleReschedule(app)}>
-                      <Text style={styles.rescheduleBtnText}>Reschedule</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.cancelBtn} onPress={() => handleCancelAppointment(app)}>
-                      <Text style={styles.cancelBtnText}>Cancel</Text>
+                    <TouchableOpacity style={[styles.cancelBtn, { backgroundColor: dark ? '#7F1D1D' : '#FEF2F2', flex: 1 }]} onPress={() => handleCancelAppointment(app)}>
+                      <Text style={[styles.cancelBtnText, { color: dark ? '#FCA5A5' : '#EF4444' }]}>Cancel Appointment</Text>
                     </TouchableOpacity>
                   </View>
                 )}
 
                 {app.status === 'COMPLETED' && (
-                  <TouchableOpacity style={styles.reviewBtn} onPress={() => Alert.alert('Review', 'Leave a review feature coming soon!')}>
-                    <Text style={styles.reviewBtnText}>Leave a Review ★</Text>
+                  <TouchableOpacity style={[styles.reviewBtn, { backgroundColor: dark ? '#064E3B' : '#ECFDF5' }]} onPress={() => Alert.alert('Review', 'Leave a review feature coming soon!')}>
+                    <Text style={[styles.reviewBtnText, { color: dark ? '#6EE7B7' : '#10B981' }]}>Leave a Review ★</Text>
                   </TouchableOpacity>
                 )}
               </View>

@@ -179,7 +179,7 @@ export default function HomeScreen() {
             <Text style={[styles.statValue, { color: dark ? '#93C5FD' : '#1E40AF' }]}>{appointments.length}</Text>
             <Text style={[styles.statTitle, { color: colors.textSecondary }]}>Appointments</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.statCard, { backgroundColor: colors.card }]} onPress={() => router.push('/(tabs)/appointments')}>
+          <TouchableOpacity style={[styles.statCard, { backgroundColor: colors.card }]} onPress={() => router.push('/(tabs)/appointments?tab=Completed' as any)}>
             <View style={[styles.statIconWrapper, { backgroundColor: dark ? '#064E3B' : '#ECFDF5' }]}>
               <CheckCircle2 color="#10B981" size={24} />
             </View>

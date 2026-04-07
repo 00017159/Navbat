@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Ale
 import { Calendar, Video, MapPin, FileText, Clock, XCircle, CheckCircle } from 'lucide-react-native';
 import { getAppointments, createAppointment } from '../../services/api';
 import { useTheme } from '../../services/theme';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 const TABS = ['All', 'Upcoming', 'Completed', 'Cancelled'];
 
@@ -35,11 +36,19 @@ const AVATAR_COLORS = ['#fef3c7', '#ffedd5', '#e0f2fe', '#fce7f3', '#dcfce7'];
 const TEXT_COLORS = ['#92400e', '#c2410c', '#0369a1', '#be185d', '#166534'];
 
 export default function AppointmentsScreen() {
-  const [activeTab, setActiveTab] = useState('All');
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const [activeTab, setActiveTab] = useState(params.tab ? (params.tab as string) : 'All');
   const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { colors, dark } = useTheme();
+
+  useEffect(() => {
+    if (params.tab) {
+      setActiveTab(params.tab as string);
+    }
+  }, [params.tab]);
 
   const fetchData = useCallback(async () => {
     try {

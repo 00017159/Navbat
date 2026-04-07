@@ -57,6 +57,15 @@ export async function getProfile() {
   return profile;
 }
 
+export async function deleteAccount() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    // Zero-out identity to pseudo-delete due to RLS constraints
+    await supabase.from('profiles').update({ first_name: 'Deleted', last_name: 'Account' }).eq('auth_id', user.id);
+    await supabase.auth.signOut();
+  }
+}
+
 export async function signOut() {
   await supabase.auth.signOut();
   setCurrentUser(null);

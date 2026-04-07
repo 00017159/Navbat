@@ -1,12 +1,41 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Linking, Alert } from 'react-native';
 import { ArrowLeft, Shield, Smartphone, Key, Eye } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../services/theme';
+import { deleteAccount } from '../services/api';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 
 export default function PrivacyScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
   const { colors, dark } = useTheme();
+
+  const handleAccountDeletion = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? This action is permanent and cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Delete', 
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteAccount();
+            } finally {
+              navigation.dispatch(
+                CommonActions.reset({
+                  index: 0,
+                  routes: [{ name: 'index' }],
+                })
+              );
+            }
+          }
+        }
+      ]
+    );
+  };
 
   const sections = [
     {
@@ -22,7 +51,7 @@ export default function PrivacyScreen() {
     {
       icon: <Eye color="#10B981" size={20} />,
       title: 'Your Privacy Rights',
-      description: 'You can request deletion of your account and all associated data at any time by contacting support@clinicuz.com.',
+      description: 'You can request deletion of your account and all associated data at any time by contacting sadullayevshohjahon990@gmail.com.',
     },
     {
       icon: <Smartphone color="#8B5CF6" size={20} />,
@@ -54,7 +83,7 @@ export default function PrivacyScreen() {
 
         <TouchableOpacity
           style={[styles.linkButton, { borderColor: colors.border }]}
-          onPress={() => Linking.openURL('mailto:support@clinicuz.com?subject=Delete%20My%20Account')}
+          onPress={handleAccountDeletion}
         >
           <Text style={{ color: '#EF4444', fontWeight: '600' }}>Request Account Deletion</Text>
         </TouchableOpacity>

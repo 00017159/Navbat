@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, Switch } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, Switch, Linking } from 'react-native';
 import { User, Lock, HelpCircle, Info, ChevronRight, LogOut, Moon } from 'lucide-react-native';
 import { useRouter, useNavigation } from 'expo-router';
 import { getCurrentUser, signOut } from '../../services/api';
@@ -46,11 +46,11 @@ export default function ProfileScreen() {
         break;
       case 4:
         Alert.alert(
-          'Help & Support',
-          'How can we help?',
+          'Contact Support',
+          'sadullayevshohjahon990@gmail.com\n+998907192922',
           [
-            { text: 'FAQ', onPress: () => Alert.alert('FAQ', 'Frequently asked questions will be available soon.') },
-            { text: 'Contact Support', onPress: () => Alert.alert('Contact', 'Email: support@clinicuz.com\nPhone: +998 71 555 0000') },
+            { text: 'Email', onPress: () => Linking.openURL('mailto:sadullayevshohjahon990@gmail.com').catch(() => Alert.alert('Error', 'Unable to open email client')) },
+            { text: 'Call', onPress: () => Linking.openURL('tel:+998907192922').catch(() => Alert.alert('Error', 'Unable to open dialer')) },
             { text: 'Cancel', style: 'cancel' },
           ]
         );

@@ -26,8 +26,6 @@ CREATE TABLE doctor_profiles (
   experience_yrs INT DEFAULT 0,
   rating FLOAT DEFAULT 0.0,
   review_count INT DEFAULT 0,
-  price_amount FLOAT DEFAULT 0,
-  currency TEXT DEFAULT 'UZS',
   availability TEXT,
   bg TEXT,
   color TEXT
@@ -42,7 +40,6 @@ CREATE TABLE appointments (
   date_time TIMESTAMPTZ NOT NULL,
   type consultation_type DEFAULT 'IN_PERSON',
   notes TEXT,
-  price TEXT,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
@@ -140,8 +137,8 @@ INSERT INTO profiles (id, email, role, first_name, last_name) VALUES
   ('d0000001-0000-0000-0000-000000000003', 'sarvinoz@navbat.uz', 'DOCTOR', 'Dr. Sarvinoz', 'Rahmonova'),
   ('d0000001-0000-0000-0000-000000000004', 'davron@navbat.uz', 'DOCTOR', 'Dr. Davron', 'Umarov');
 
-INSERT INTO doctor_profiles (user_id, specialty, experience_yrs, rating, review_count, price_amount, currency, availability, bg, color) VALUES
-  ('d0000001-0000-0000-0000-000000000001', 'Cardiologist', 12, 4.8, 248, 150000, 'so''m', 'Available Today', '#FEF3C7', '#92400E'),
-  ('d0000001-0000-0000-0000-000000000002', 'Neurologist', 8, 4.9, 156, 180000, 'so''m', 'Next: Tomorrow', '#FFEDD5', '#C2410C'),
-  ('d0000001-0000-0000-0000-000000000003', 'Pediatrician', 5, 4.7, 312, 120000, 'so''m', 'Available Today', '#F3E8FF', '#6B21A8'),
-  ('d0000001-0000-0000-0000-000000000004', 'Dermatologist', 15, 4.5, 189, 200000, 'so''m', 'Available Tomorrow', '#E0F2FE', '#0369A1');
+INSERT INTO doctor_profiles (user_id, specialty, experience_yrs, rating, review_count, availability, bg, color) VALUES
+  ('d0000001-0000-0000-0000-000000000001', 'Cardiologist', 12, 4.8, 248, 'Available Today', '#FEF3C7', '#92400E'),
+  ('d0000001-0000-0000-0000-000000000002', 'Neurologist', 8, 4.9, 156, 'Next: Tomorrow', '#FFEDD5', '#C2410C'),
+  ('d0000001-0000-0000-0000-000000000003', 'Pediatrician', 5, 4.7, 312, 'Available Today', '#F3E8FF', '#6B21A8'),
+  ('d0000001-0000-0000-0000-000000000004', 'Dermatologist', 15, 4.5, 189, 'Available Tomorrow', '#E0F2FE', '#0369A1');

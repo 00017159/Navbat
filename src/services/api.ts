@@ -239,30 +239,3 @@ export async function createReview(data: { doctorId: string; rating: number; com
   if (error) throw new Error(error.message);
   return { message: 'Review submitted' };
 }
-
-// ─── Admin Endpoints ─────────────────────────────────────
-
-export async function getAllUsers() {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .order('created_at', { ascending: false });
-  if (error) throw new Error(error.message);
-  return data || [];
-}
-
-export async function getGlobalAppointments() {
-  const { data, error } = await supabase
-    .from('appointments')
-    .select('*, patient:profiles!patient_id(first_name, last_name, email), doctor:profiles!doctor_id(first_name, last_name)')
-    .order('date_time', { ascending: false });
-  if (error) throw new Error(error.message);
-  return data || [];
-}
-
-export async function deleteUserAccount(profileId: string) {
-  // Hard delete a profile via Admin
-  const { error } = await supabase.from('profiles').delete().eq('id', profileId);
-  if (error) throw new Error(error.message);
-  return true;
-}

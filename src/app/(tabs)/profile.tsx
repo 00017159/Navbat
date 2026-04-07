@@ -74,7 +74,10 @@ export default function ProfileScreen() {
             try {
               await signOut();
             } finally {
-              router.replace('/');
+              navigation.getParent()?.reset({
+                index: 0,
+                routes: [{ name: 'index' }],
+              });
             }
           },
         },

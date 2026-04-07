@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator, TextInput } from 'react-native';
 import { ArrowLeft, Star, Clock, MapPin, Calendar, FileText, CheckCircle } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useTheme } from '../../services/theme';
 import { createAppointment } from '../../services/api';
 
 const AVATAR_COLORS = ['#fef3c7', '#ffedd5', '#e0f2fe', '#fce7f3', '#dcfce7', '#f3e8ff'];
@@ -17,11 +18,17 @@ function generateTimeSlots() {
   return slots;
 }
 
-// Generate next 14 days
+// Generate dates: rest of this month + next month
 function generateDates() {
   const dates = [];
   const today = new Date();
-  for (let i = 0; i < 14; i++) {
+  // Get remaining days this month
+  const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+  const daysRemaining = daysInMonth - today.getDate();
+  // Also add next month
+  const daysInNextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0).getDate();
+  const totalDays = daysRemaining + daysInNextMonth + 1; // +1 for today
+  for (let i = 0; i < totalDays; i++) {
     const d = new Date(today);
     d.setDate(today.getDate() + i);
     dates.push(d);
@@ -51,6 +58,7 @@ function isToday(date: Date) {
 export default function DoctorBookingScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
+  const { colors, dark } = useTheme();
 
   // Parse doctor data from params
   const doctorName = (params.name as string) || 'Doctor';
@@ -99,12 +107,12 @@ export default function DoctorBookingScreen() {
 
   if (booked) {
     return (
-      <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center', padding: 40 }]}>
+      <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center', padding: 40, backgroundColor: colors.background }]}>
         <View style={styles.successCircle}>
           <CheckCircle color="#FFF" size={48} />
         </View>
-        <Text style={styles.successTitle}>Appointment Booked!</Text>
-        <Text style={styles.successSubtitle}>
+        <Text style={[styles.successTitle, { color: colors.text }]}>Appointment Booked!</Text>
+        <Text style={[styles.successSubtitle, { color: colors.textSecondary }]}>
           Your appointment with {doctorName} has been scheduled for{'\n'}
           {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} at {selectedTime}
         </Text>
@@ -119,51 +127,48 @@ export default function DoctorBookingScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={styles.headerBar}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ArrowLeft color="#111827" size={24} />
+        <TouchableOpacity onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}>
+          <ArrowLeft color={colors.text} size={24} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Book Appointment</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Book Appointment</Text>
         <View style={{ width: 40 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
         {/* Doctor Info Card */}
-        <View style={styles.doctorCard}>
+        <View style={[styles.doctorCard, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}>
           <View style={[styles.avatar, { backgroundColor: AVATAR_COLORS[colorIndex] }]}>
             <Text style={[styles.avatarText, { color: TEXT_COLORS[colorIndex] }]}>{initials}</Text>
           </View>
           <View style={styles.doctorInfo}>
-            <Text style={styles.doctorName}>{doctorName}</Text>
-            <Text style={styles.doctorSpecialty}>{specialty}</Text>
+            <Text style={[styles.doctorName, { color: colors.text }]}>{doctorName}</Text>
+            <Text style={[styles.doctorSpecialty, { color: colors.textSecondary }]}>{specialty}</Text>
             <View style={styles.ratingRow}>
               <Star color="#F59E0B" fill="#F59E0B" size={14} />
-              <Text style={styles.ratingText}>{rating}</Text>
+              <Text style={[styles.ratingText, { color: colors.text }]}>{rating}</Text>
               <Text style={styles.ratingCount}>({reviews} reviews)</Text>
               <Text style={styles.dot}>•</Text>
               <Text style={styles.expText}>{experience}y exp</Text>
             </View>
           </View>
-          <View style={styles.priceTag}>
-            <Text style={[styles.priceTagText, { color: '#10B981' }]}>Free</Text>
-          </View>
         </View>
 
         {/* Consultation Type */}
-        <View style={[styles.typeCard, styles.typeCardActive, { marginBottom: 28 }]}>
+        <View style={[styles.typeCard, styles.typeCardActive, { marginBottom: 28, backgroundColor: dark ? '#1E3A5F' : '#EFF6FF', borderColor: '#1E63D3' }]}>
           <MapPin color="#1E63D3" size={24} />
           <Text style={[styles.typeText, styles.typeTextActive]}>In-Person</Text>
-          <Text style={styles.typeSubtext}>Visit clinic</Text>
+          <Text style={[styles.typeSubtext, { color: colors.textSecondary }]}>Visit clinic</Text>
         </View>
 
         {/* Date Selection */}
-        <Text style={styles.sectionTitle}>
-          <Calendar color="#111827" size={16} /> Select Date
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>
+          <Calendar color={colors.text} size={16} /> Select Date
         </Text>
-        <Text style={styles.monthLabel}>{formatMonth(selectedDate)}</Text>
+        <Text style={[styles.monthLabel, { color: colors.textSecondary }]}>{formatMonth(selectedDate)}</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dateScroll}>
           {dates.map((date, index) => {
             const selected = date.toDateString() === selectedDate.toDateString();
@@ -171,21 +176,21 @@ export default function DoctorBookingScreen() {
             return (
               <TouchableOpacity
                 key={index}
-                style={[styles.dateCard, selected && styles.dateCardActive]}
+                style={[styles.dateCard, { backgroundColor: colors.card, borderColor: colors.border }, selected && styles.dateCardActive]}
                 onPress={() => setSelectedDate(date)}
               >
-                <Text style={[styles.dateDayLabel, selected && styles.dateDayLabelActive]}>
+                <Text style={[styles.dateDayLabel, { color: colors.textSecondary }, selected && styles.dateDayLabelActive]}>
                   {today ? 'Today' : formatDateLabel(date)}
                 </Text>
-                <Text style={[styles.dateNum, selected && styles.dateNumActive]}>{formatDateNum(date)}</Text>
+                <Text style={[styles.dateNum, { color: colors.text }, selected && styles.dateNumActive]}>{formatDateNum(date)}</Text>
               </TouchableOpacity>
             );
           })}
         </ScrollView>
 
         {/* Time Selection */}
-        <Text style={styles.sectionTitle}>
-          <Clock color="#111827" size={16} /> Select Time
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>
+          <Clock color={colors.text} size={16} /> Select Time
         </Text>
         <View style={styles.timeGrid}>
           {timeSlots.map(slot => {
@@ -193,23 +198,23 @@ export default function DoctorBookingScreen() {
             return (
               <TouchableOpacity
                 key={slot}
-                style={[styles.timeSlot, selected && styles.timeSlotActive]}
+                style={[styles.timeSlot, { backgroundColor: colors.card, borderColor: colors.border }, selected && styles.timeSlotActive]}
                 onPress={() => setSelectedTime(slot)}
               >
-                <Text style={[styles.timeSlotText, selected && styles.timeSlotTextActive]}>{slot}</Text>
+                <Text style={[styles.timeSlotText, { color: colors.textSecondary }, selected && styles.timeSlotTextActive]}>{slot}</Text>
               </TouchableOpacity>
             );
           })}
         </View>
 
         {/* Notes */}
-        <Text style={styles.sectionTitle}>
-          <FileText color="#111827" size={16} /> Notes (Optional)
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>
+          <FileText color={colors.text} size={16} /> Notes (Optional)
         </Text>
         <TextInput
-          style={styles.notesInput}
+          style={[styles.notesInput, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
           placeholder="Describe your symptoms or reason for visit..."
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={colors.textSecondary}
           value={notes}
           onChangeText={setNotes}
           multiline
@@ -219,27 +224,23 @@ export default function DoctorBookingScreen() {
 
         {/* Summary */}
         {selectedTime ? (
-          <View style={styles.summaryCard}>
-            <Text style={styles.summaryTitle}>Appointment Summary</Text>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Doctor</Text>
-              <Text style={styles.summaryValue}>{doctorName}</Text>
+          <View style={[styles.summaryCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <Text style={[styles.summaryTitle, { color: colors.text }]}>Appointment Summary</Text>
+            <View style={[styles.summaryRow, { borderBottomColor: colors.border }]}>
+              <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Doctor</Text>
+              <Text style={[styles.summaryValue, { color: colors.text }]}>{doctorName}</Text>
             </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Date</Text>
-              <Text style={styles.summaryValue}>{selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</Text>
+            <View style={[styles.summaryRow, { borderBottomColor: colors.border }]}>
+              <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Date</Text>
+              <Text style={[styles.summaryValue, { color: colors.text }]}>{selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</Text>
             </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Time</Text>
-              <Text style={styles.summaryValue}>{selectedTime}</Text>
+            <View style={[styles.summaryRow, { borderBottomColor: colors.border }]}>
+              <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Time</Text>
+              <Text style={[styles.summaryValue, { color: colors.text }]}>{selectedTime}</Text>
             </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Type</Text>
-              <Text style={styles.summaryValue}>In-Person Visit</Text>
-            </View>
-            <View style={[styles.summaryRow, { borderBottomWidth: 0 }]}>
-              <Text style={styles.summaryLabel}>Price</Text>
-              <Text style={[styles.summaryValue, { color: '#10B981', fontWeight: 'bold' }]}>Free</Text>
+            <View style={[styles.summaryRow, { borderBottomColor: colors.border, borderBottomWidth: 0 }]}>
+              <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Type</Text>
+              <Text style={[styles.summaryValue, { color: colors.text }]}>In-Person Visit</Text>
             </View>
           </View>
         ) : null}
@@ -252,7 +253,7 @@ export default function DoctorBookingScreen() {
         >
           {loading
             ? <ActivityIndicator color="#FFF" />
-            : <Text style={styles.bookButtonText}>Confirm Booking — Free</Text>
+            : <Text style={styles.bookButtonText}>Confirm Booking</Text>
           }
         </TouchableOpacity>
 

@@ -101,9 +101,15 @@ CREATE POLICY "Users update own appointments" ON appointments FOR UPDATE
     OR doctor_id IN (SELECT id FROM profiles WHERE auth_id = auth.uid())
   );
 
--- Medical records: patients see their own
+-- Medical records: patients see their own, doctors insert and see
 CREATE POLICY "Patients see own records" ON medical_records FOR SELECT
   USING (patient_id IN (SELECT id FROM profiles WHERE auth_id = auth.uid()));
+
+CREATE POLICY "Doctors see patient records" ON medical_records FOR SELECT
+  USING (doctor_id IN (SELECT id FROM profiles WHERE auth_id = auth.uid()));
+
+CREATE POLICY "Doctors insert records" ON medical_records FOR INSERT
+  WITH CHECK (doctor_id IN (SELECT id FROM profiles WHERE auth_id = auth.uid()));
 
 -- Reviews: everyone can read, authenticated users can create
 CREATE POLICY "Reviews readable" ON reviews FOR SELECT USING (true);
@@ -126,6 +132,15 @@ CREATE POLICY "Admins can update all appointments" ON appointments FOR UPDATE
   USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
   
 CREATE POLICY "Admins can delete all appointments" ON appointments FOR DELETE
+  USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
+
+CREATE POLICY "Admins view all records" ON medical_records FOR SELECT
+  USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
+CREATE POLICY "Admins insert all records" ON medical_records FOR INSERT
+  WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
+CREATE POLICY "Admins update all records" ON medical_records FOR UPDATE
+  USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
+CREATE POLICY "Admins delete all records" ON medical_records FOR DELETE
   USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
 
 -- ═══════════════════════════════════════

@@ -1,36 +1,63 @@
 # ClinicUz 🏥
 
-ClinicUz is a modern, reliable, and user-friendly mobile healthcare application designed to connect patients with medical specialists. Built dynamically with **React Native** and **Expo**, ClinicUz enables patients to browse doctors, check availability, query an AI Assistant, and easily book **free** in-person consultations.
+ClinicUz is a comprehensive, production-ready Dual-Platform Healthcare System designed to bridge the gap between patients, medical specialists, and clinical administration. 
+
+The system operates across a **Patient-Facing Mobile Application** and an **Administrative Web Portal**, both unified securely through a centralized PostgreSQL backend.
 
 ---
 
-## ✨ Key Features
+## ✨ System Architecture Overview
 
-- **Robust Authentication:** Secure email/password login and registration powered by Supabase.
-- **Swipeable App Navigation:** Fluid edge-to-edge swipe navigation leveraging React Navigation `MaterialTopTabs`.
-- **Intelligent Booking System:** Filter doctors by specialty, search by name, and book specific calendar dates and hourly time slots.
-- **Appointment Management:** Track all your `Upcoming`, `Completed`, and `Cancelled` appointments from a dedicated dashboard.
-- **AI Medical Assistant:** Seamless OpenAI API integration offering smart medical triage, health advice, and persistent conversation history.
-- **Dynamic Dark Mode:** First-class dark mode support scaling automatically with your system device preferences to prevent eye strain.
-- **Notifications Hub:** Track system alerts and upcoming consultation changes with an integrated badge tracker system.
-- **Bulletproof State & Security:** Clean logout flows entirely wiping local navigation history, alongside Postgres Row Level Security restricting patient data access exclusively to themselves.
+The codebase operates natively as a monorepo containing two dedicated frontends hooked up to a unified backend ecosystem:
+
+### 1. Patient Mobile Application (React Native / Expo)
+The primary mobile interface where users register accounts and leverage healthcare tools:
+- **Interactive Triage:** An AI-powered triage assistant running on OpenAI's GPT-3.5-Turbo providing pre-visit guidance.
+- **Provider Searching:** Search and filter capabilities bridging dynamic specialty endpoints (e.g. Cardiologists, Dentists).
+- **Appointment Booking:** Seamlessly book physical or virtual consultations with verified doctors in real-time.
+- **Medical Documentation Pipeline:** The app securely downloads official medical records dynamically synthesized natively as **A4-sized PDF Documents** to the user’s mobile file system using `expo-print` and `expo-sharing`.
+- **UI Framework:** Responsive fluid routing utilizing `expo-router` with Tab and Stack Navigators. Native glassmorphism implemented through `expo-glass-effect`.
+
+### 2. Clinical Administration Portal (React / Vite)
+A private web dashboard accessible exclusively to authenticated internal team members (`ADMIN` and `DOCTOR` roles).
+- **Dual-Role Navigation:** Dynamic rendering blocks standard doctors from accessing root administrative controls, isolating them cleanly to only their patient queues.
+- **Provider Onboarding System:** A rich interface to perform full CRUD operations adding new specialist doctors to the mobile app seamlessly.
+- **Prescriptive Analytics:** A custom-built pipeline wherein Doctors can pull historical appointments and write official "Symptoms and Prescriptive Diagnosis" directly to the database. These securely push directly to the patient's mobile app timeline.
+- **UI Framework:** Lightning-fast single-page interface bundled by **Vite** using pure Vanilla CSS specifically architected around a sleek, dark-mode styling scheme.
+
+### 3. Backend Architecture (Supabase / Postgres)
+- **Email OTP Authentication:** Passwordless, highly-secure One-Time-Password architecture. Upon a user's first login, PostgreSQL triggers naturally hook into the execution and auto-generate linked profile rows without manual setup.
+- **Dynamic Policy Enforcement (RLS):** Strict Row-Level-Security (RLS) policies completely isolate data layers. Patients can only query and read data matching their `auth.uid()`, while `SECURITY DEFINER` Postgres functions safely elevate system administrators to access the holistic DB.
+- **Schema Management:** All logic lives centrally in `supabase-schema.sql`, featuring structured foreign-key mapping across `profiles`, `doctor_profiles`, `appointments`, `medical_records`, and `reviews`.
 
 ---
 
-## 🛠️ Technology Stack
+## 🛠️ Complete Technology Stack
 
-- **Frontend Core:** [React Native](https://reactnative.dev/) & [Expo](https://expo.dev/) (SDK 50+)
-- **Routing:** [Expo Router](https://docs.expo.dev/router/introduction/) (File-based navigation)
-- **UI Components:** Built completely with custom vanilla stylesheets for maximal performance; Iconography by [Lucide React Native](https://lucide.dev/).
-- **Backend as a Service:** [Supabase](https://supabase.com/) (Fully manages Auth & PostgreSQL)
-- **Artificial Intelligence:** [OpenAI API](https://openai.com/) (GPT-3.5-Turbo)
-- **Language:** Fully typed in **TypeScript**.
+### Mobile Application
+- **Core Framework:** [React Native](https://reactnative.dev/) v0.81.5 & [Expo](https://expo.dev/) SDK 54
+- **Routing:** [Expo Router](https://docs.expo.dev/router/introduction/) / [React Navigation](https://reactnavigation.org/) v7 (Stack & Top Tabs)
+- **Local Caching:** `@react-native-async-storage/async-storage`
+- **File Management & Exportation:** `expo-print` (HTML-to-PDF Conversion) & `expo-sharing` (OS-level device file routing)
+- **Iconography:** `lucide-react-native`
+
+### Web Administration Portal
+- **Framework & Bundler:** [React](https://reactjs.org/) v19 & [Vite](https://vitejs.dev/) v8
+- **Language Compiler:** TypeScript
+- **Styling:** Custom Vanilla CSS properties scoped to Deep-Slate Dark Theme
+- **Data Fetching:** Isomorphic Supabase configuration allowing real-time mapping natively in the browser.
+
+### Cloud Infrastructure
+- **Relational Database:** [Supabase PostgreSQL](https://supabase.com/)
+- **Authentication:** Supabase Auth (Email OTP Strategy)
+- **DevOps:** [GitHub Actions](https://github.com/features/actions) YAML pipelines performing Continuous Integration builds sequentially testing both TS configurations natively across Node instances.
+- **Generative AI Backend:** [OpenAI API](https://openai.com/) GPT-3.5-Turbo for Natural Language Processing routines.
 
 ---
 
 ## 🚀 Getting Started
 
-Follow these instructions to get the project up and running on your local machine for development and testing.
+Follow these instructions to get the mono-repo up and running on your local machine for development and testing.
 
 ### 1. Prerequisites
 Ensure you have the following installed:
@@ -41,59 +68,57 @@ Ensure you have the following installed:
 - An [OpenAI](https://openai.com/) standard API key 
 
 ### 2. Installation
-Clone the repository and install dependencies:
+Clone the repository and install dependencies at both root levels:
 ```bash
-# Install dependencies
+# Install mobile dependencies
+npm install
+
+# Install web portal dependencies
+cd admin-portal
 npm install
 ```
 
 ### 3. Environment Variables
-Create a `.env` file in the root directory of the project and add your database and AI credentials:
+Create `.env` files in both the root directory and the `/admin-portal/` directory, adding your credentials:
 
-```env
-# Supabase Configuration
+```bash
+# Root Directory (.env)
 EXPO_PUBLIC_SUPABASE_URL=your_supabase_project_url
 EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# OpenAI Configuration
 EXPO_PUBLIC_OPENAI_API_KEY=your_openai_api_key
+
+# Admin Portal (/admin-portal/.env)
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 ### 4. Database Setup
 1. Log into your Supabase Dashboard.
 2. Navigate to the **SQL Editor**.
 3. Copy and paste the entire contents of `supabase-schema.sql` (found in the root directory).
-4. Run the script. This will automatically spin up tables for `profiles`, `doctor_profiles`, `appointments`, `medical_records`, install RLS permission rules, and automatically seed sample doctors for you!
+4. Run the script. This fully synchronizes the tables, bypass authorizations, and SQL views.
 
 ### 5. Running the Application
-Start the Expo development server:
+
+To boot up the complete system ecosystem, run two terminal windows.
+
+**Terminal 1 (Mobile Patient Application):**
 ```bash
 npx expo start -c
 ```
-- **Android:** Press `a` in the terminal to open in a local Android Emulator.
-- **iOS:** Press `i` to open in the local iOS Simulator.
-- **Physical Device:** Scan the QR code displayed in the terminal with the Expo Go app.
+- Open with **iOS Simulator** (`i`), **Android Emulator** (`a`), or physical device QR scan.
 
----
-
-## 📁 Project Structure
-
-```text
-/
-├── assets/                 # Brand images, app icons, and fonts
-├── src/                    
-│   ├── app/                # Expo Router Screen configurations
-│   ├── components/         # Reusable structural components
-│   ├── services/           # Supabase connection, API integrations, and AI services
-│   └── constants/          # Static themes and configuration constants
-├── app.json                # Core Expo metadata and splash-screen constraints
-└── supabase-schema.sql     # Complete database deployment instructions
+**Terminal 2 (Admin Portal Dashboard):**
+```bash
+cd admin-portal
+npm run dev
 ```
+- Will deploy natively on `http://localhost:5173`. Simply sign in using a registered `ADMIN` email dynamically seeded in your Supabase DB.
 
 ---
 
-## 🔒 Security Summary
-Thanks to Supabase's heavily typed Auth implementation, user sessions are protected using JWTs. All primary tables utilize PostgreSQL **Row Level Security (RLS)** ensuring users only query, alter, or insert rows that explicitly belong to them.
+## 🔒 State & Security Rules
+All global state flows uniquely down to the `current_user` variables, mapping instantly to Postgres tables where data mutation is guarded aggressively. Bypasses are deployed uniquely in the schema layer via `is_admin()` custom functions stopping infinite recursive row loops during multi-role policy evaluations.
 
 ---
-*Created carefully with ❤️ for ClinicUz.*
+*Developed securely and rapidly for ClinicUz.*

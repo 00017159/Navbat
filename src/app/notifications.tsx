@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
-import { ArrowLeft, Bell, Calendar, FileText, CheckCircle } from 'lucide-react-native';
+import { ArrowLeft, Bell, Calendar, FileText, CheckCircle, CheckCheck } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../services/theme';
 import { getAppointments } from '../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Notification = {
   id: string;
@@ -26,45 +27,57 @@ export default function NotificationsScreen() {
   const loadNotifications = async () => {
     try {
       const appointments = await getAppointments();
+      const lastReadTime = await AsyncStorage.getItem('notif_last_read');
+      const lastRead = lastReadTime ? parseInt(lastReadTime, 10) : 0;
       const notifs: Notification[] = [];
 
       // Generate notifications from upcoming appointments
-      (appointments || []).forEach((apt: any, i: number) => {
+      (appointments || []).forEach((apt: any) => {
         if (apt.status === 'UPCOMING') {
           const date = new Date(apt.dateTime);
           const doctorName = apt.doctor ? `${apt.doctor.firstName} ${apt.doctor.lastName}` : 'your doctor';
+          const createdAt = new Date(apt.createdAt || apt.dateTime).getTime();
           notifs.push({
             id: `apt-${apt.id}`,
             title: 'Upcoming Appointment',
             message: `You have an appointment with ${doctorName} on ${date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`,
             time: getRelativeTime(date),
-            read: i > 0,
+            read: createdAt <= lastRead,
             icon: 'calendar',
           });
         }
       });
 
-      // Add a welcome notification
+      // Add a welcome notification (always considered old if user has marked before)
       notifs.push({
         id: 'welcome',
         title: 'Welcome to ClinicUz! 🎉',
         message: 'Your healthcare companion is ready. Browse doctors and book your first appointment.',
         time: 'Just now',
-        read: false,
+        read: lastRead > 0,
         icon: 'check',
       });
 
       setNotifications(notifs);
     } catch {
+      const lastReadTime = await AsyncStorage.getItem('notif_last_read');
+      const lastRead = lastReadTime ? parseInt(lastReadTime, 10) : 0;
       setNotifications([{
         id: 'welcome',
         title: 'Welcome to ClinicUz! 🎉',
         message: 'Your healthcare companion is ready. Browse doctors and book your first appointment.',
         time: 'Just now',
-        read: false,
+        read: lastRead > 0,
         icon: 'check',
       }]);
     }
+  };
+
+  const markAllAsRead = async () => {
+    const hasUnread = notifications.some(n => !n.read);
+    if (!hasUnread) return;
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    await AsyncStorage.setItem('notif_last_read', Date.now().toString());
   };
 
   const getRelativeTime = (date: Date) => {
@@ -96,7 +109,9 @@ export default function NotificationsScreen() {
           <ArrowLeft color={colors.text} size={24} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Notifications</Text>
-        <View style={{ width: 40 }} />
+        <TouchableOpacity onPress={markAllAsRead} style={styles.backBtn} disabled={unreadCount === 0}>
+          <CheckCheck color={unreadCount > 0 ? colors.primary : colors.textSecondary} size={24} />
+        </TouchableOpacity>
       </View>
 
       {unreadCount > 0 && (

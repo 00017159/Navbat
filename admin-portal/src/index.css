@@ -90,7 +90,7 @@ body {
   letter-spacing: 0.5px;
 }
 
-.form-group input {
+.form-group input, .form-group textarea {
   width: 100%;
   padding: 14px 16px;
   border-radius: 12px;
@@ -103,7 +103,7 @@ body {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.form-group input:focus {
+.form-group input:focus, .form-group textarea:focus {
   border-color: var(--accent-blue);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }

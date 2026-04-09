@@ -123,6 +123,29 @@ export async function getDoctor(id: string) {
   return data;
 }
 
+// Check real-time slots booked
+export async function getDoctorAppointmentsForDate(doctorId: string, dateString: string) {
+  const startOfDay = new Date(dateString);
+  startOfDay.setHours(0, 0, 0, 0);
+  const endOfDay = new Date(dateString);
+  endOfDay.setHours(23, 59, 59, 999);
+
+  const { data, error } = await supabase
+    .from('appointments')
+    .select('date_time')
+    .eq('doctor_id', doctorId)
+    .neq('status', 'CANCELLED')
+    .gte('date_time', startOfDay.toISOString())
+    .lte('date_time', endOfDay.toISOString());
+  
+  if (error) return [];
+  
+  return data.map(d => {
+    const date = new Date(d.date_time);
+    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+  });
+}
+
 // Helper: get current user's profile id
 async function getMyProfileId(): Promise<string | null> {
   const { data: { user } } = await supabase.auth.getUser();
@@ -151,6 +174,7 @@ export async function getAppointments() {
   // Transform to match frontend format
   return (data || []).map(app => ({
     id: app.id,
+    doctorId: app.doctor_id,
     status: app.status,
     dateTime: app.date_time,
     type: app.type,
@@ -172,6 +196,19 @@ export async function createAppointment(data: {
 }) {
   const profileId = await getMyProfileId();
   if (!profileId) throw new Error('Not authenticated');
+
+  // Check overlap dynamically preventing double booking
+  const { data: existing } = await supabase
+    .from('appointments')
+    .select('id')
+    .eq('doctor_id', data.doctorId)
+    .eq('date_time', data.dateTime)
+    .neq('status', 'CANCELLED')
+    .single();
+
+  if (existing) {
+    throw new Error('This slot is already booked.');
+  }
 
   const { error } = await supabase.from('appointments').insert({
     patient_id: profileId,

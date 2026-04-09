@@ -26,13 +26,25 @@ export default function NotificationsScreen() {
 
   const loadNotifications = async () => {
     try {
-      const appointments = await getAppointments();
-      const lastReadTime = await AsyncStorage.getItem('notif_last_read');
-      const lastRead = lastReadTime ? parseInt(lastReadTime, 10) : 0;
+      let appointments: any[] = [];
+      try {
+        appointments = (await getAppointments()) || [];
+      } catch (e) {
+        console.warn('Failed to fetch appointments for notifications:', e);
+      }
+
+      let lastRead = 0;
+      try {
+        const lastReadTime = await AsyncStorage.getItem('notif_last_read');
+        lastRead = lastReadTime ? parseInt(lastReadTime, 10) : 0;
+      } catch (e) {
+        console.warn('Failed to read notifications from AsyncStorage:', e);
+      }
+
       const notifs: Notification[] = [];
 
       // Generate notifications from upcoming appointments
-      (appointments || []).forEach((apt: any) => {
+      appointments.forEach((apt: any) => {
         if (apt.status === 'UPCOMING') {
           const date = new Date(apt.dateTime);
           const doctorName = apt.doctor ? `${apt.doctor.firstName} ${apt.doctor.lastName}` : 'your doctor';
@@ -48,7 +60,7 @@ export default function NotificationsScreen() {
         }
       });
 
-      // Add a welcome notification (always considered old if user has marked before)
+      // Add a welcome notification
       notifs.push({
         id: 'welcome',
         title: 'Welcome to ClinicUz! 🎉',
@@ -59,15 +71,15 @@ export default function NotificationsScreen() {
       });
 
       setNotifications(notifs);
-    } catch {
-      const lastReadTime = await AsyncStorage.getItem('notif_last_read');
-      const lastRead = lastReadTime ? parseInt(lastReadTime, 10) : 0;
+    } catch (err) {
+      console.error('Critical error in loadNotifications:', err);
+      // Fallback state that won't crash the component
       setNotifications([{
         id: 'welcome',
         title: 'Welcome to ClinicUz! 🎉',
-        message: 'Your healthcare companion is ready. Browse doctors and book your first appointment.',
+        message: 'Your healthcare companion is ready.',
         time: 'Just now',
-        read: lastRead > 0,
+        read: true,
         icon: 'check',
       }]);
     }

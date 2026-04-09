@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator, RefreshControl } from 'react-native';
-import { Calendar, Video, MapPin, FileText, Clock, XCircle, CheckCircle } from 'lucide-react-native';
-import { getAppointments, createAppointment } from '../../services/api';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator, RefreshControl, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { Calendar, Video, MapPin, FileText, Clock, XCircle, CheckCircle, Star, X } from 'lucide-react-native';
+import { getAppointments, createAppointment, createReview } from '../../services/api';
 import { useTheme } from '../../services/theme';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
@@ -103,13 +103,44 @@ export default function AppointmentsScreen() {
     );
   };
 
+  // Review modal state
+  const [reviewModalVisible, setReviewModalVisible] = useState(false);
+  const [reviewAppointment, setReviewAppointment] = useState<any>(null);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState('');
+  const [submittingReview, setSubmittingReview] = useState(false);
 
+  const handleLeaveReview = (app: any) => {
+    setReviewAppointment(app);
+    setReviewRating(5);
+    setReviewComment('');
+    setReviewModalVisible(true);
+  };
 
-  const getStatusDisplay = (status: string, dateTime: string): { label: string; bgColor: string; textColor: string } => {
-    if (status === 'COMPLETED') return { label: 'Completed', bgColor: dark ? '#064E3B' : '#ECFDF5', textColor: dark ? '#6EE7B7' : '#10B981' };
+  const submitReview = async () => {
+    if (!reviewAppointment) return;
+    setSubmittingReview(true);
+    try {
+      const doctor = reviewAppointment.doctor || {};
+      await createReview({
+        doctorId: reviewAppointment.doctorId || reviewAppointment.doctor_id,
+        rating: reviewRating,
+        comment: reviewComment || undefined,
+      });
+      Alert.alert('Thank You!', `Your review for Dr. ${doctor.firstName} ${doctor.lastName} has been submitted.`);
+      setReviewModalVisible(false);
+    } catch (e: any) {
+      Alert.alert('Error', e.message || 'Failed to submit review.');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  const getStatusDisplay = (status: string, dateTime: string) => {
+    if (status === 'COMPLETED') return { label: 'Completed', bgColor: dark ? '#1E3A5F' : '#EFF6FF', textColor: dark ? '#93C5FD' : '#1E63D3' };
     if (status === 'CANCELLED') return { label: 'Cancelled', bgColor: dark ? '#7F1D1D' : '#FEF2F2', textColor: dark ? '#FCA5A5' : '#EF4444' };
     if (isUpcoming(dateTime)) return { label: 'Upcoming', bgColor: dark ? '#1E3A5F' : '#EFF6FF', textColor: dark ? '#93C5FD' : '#1E63D3' };
-    return { label: status, bgColor: dark ? '#334155' : '#F1F5F9', textColor: dark ? '#94A3B8' : '#64748B' };
+    return { label: 'Passed', bgColor: dark ? '#334155' : '#F1F5F9', textColor: dark ? '#94A3B8' : '#64748B' };
   };
 
   const getTabCount = (tab: string) => {
@@ -210,7 +241,8 @@ export default function AppointmentsScreen() {
 
 
 
-                {isActive && (
+                {/* Cancel only for truly upcoming (not passed, not completed, not cancelled) */}
+                {isActive && isUpcoming(app.dateTime) && (
                   <View style={styles.actionsRow}>
                     <TouchableOpacity style={[styles.cancelBtn, { backgroundColor: dark ? '#7F1D1D' : '#FEF2F2', flex: 1 }]} onPress={() => handleCancelAppointment(app)}>
                       <Text style={[styles.cancelBtnText, { color: dark ? '#FCA5A5' : '#EF4444' }]}>Cancel Appointment</Text>
@@ -218,8 +250,9 @@ export default function AppointmentsScreen() {
                   </View>
                 )}
 
-                {app.status === 'COMPLETED' && (
-                  <TouchableOpacity style={[styles.reviewBtn, { backgroundColor: dark ? '#064E3B' : '#ECFDF5' }]} onPress={() => Alert.alert('Review', 'Leave a review feature coming soon!')}>
+                {/* Leave a Review for passed or completed appointments */}
+                {(app.status === 'COMPLETED' || (isActive && !isUpcoming(app.dateTime))) && (
+                  <TouchableOpacity style={[styles.reviewBtn, { backgroundColor: dark ? '#064E3B' : '#ECFDF5' }]} onPress={() => handleLeaveReview(app)}>
                     <Text style={[styles.reviewBtnText, { color: dark ? '#6EE7B7' : '#10B981' }]}>Leave a Review ★</Text>
                   </TouchableOpacity>
                 )}
@@ -228,6 +261,62 @@ export default function AppointmentsScreen() {
           })
         )}
       </ScrollView>
+
+      {/* Review Modal */}
+      <Modal visible={reviewModalVisible} transparent animationType="slide">
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <View style={styles.modalOverlay}>
+            <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end' }} keyboardShouldPersistTaps="handled">
+              <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+                <View style={styles.modalHeader}>
+                  <Text style={[styles.modalTitle, { color: colors.text }]}>Leave a Review</Text>
+                  <TouchableOpacity onPress={() => setReviewModalVisible(false)}>
+                    <X color={colors.textSecondary} size={24} />
+                  </TouchableOpacity>
+                </View>
+                {reviewAppointment && (
+                  <Text style={[styles.modalSubtitle, { color: colors.textSecondary }]}>
+                    Dr. {reviewAppointment.doctor?.firstName} {reviewAppointment.doctor?.lastName}
+                  </Text>
+                )}
+
+                <Text style={[styles.ratingLabel, { color: colors.text }]}>Rating</Text>
+                <View style={styles.starsRow}>
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <TouchableOpacity key={star} onPress={() => setReviewRating(star)} style={{ padding: 4 }}>
+                      <Star
+                        color="#F59E0B"
+                        fill={star <= reviewRating ? '#F59E0B' : 'transparent'}
+                        size={36}
+                      />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+
+                <Text style={[styles.ratingLabel, { color: colors.text }]}>Comment (optional)</Text>
+                <TextInput
+                  style={[styles.commentInput, { backgroundColor: colors.background, color: colors.text, borderColor: colors.border }]}
+                  placeholder="Share your experience..."
+                  placeholderTextColor={colors.textSecondary}
+                  value={reviewComment}
+                  onChangeText={setReviewComment}
+                  multiline
+                  numberOfLines={4}
+                  textAlignVertical="top"
+                />
+
+                <TouchableOpacity
+                  style={[styles.submitReviewBtn, submittingReview && { opacity: 0.6 }]}
+                  onPress={submitReview}
+                  disabled={submittingReview}
+                >
+                  <Text style={styles.submitReviewBtnText}>{submittingReview ? 'Submitting...' : 'Submit Review'}</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -282,4 +371,29 @@ const styles = StyleSheet.create({
   emptyState: { alignItems: 'center', paddingVertical: 60 },
   emptyTitle: { fontSize: 18, fontWeight: 'bold', color: '#64748B', marginTop: 16, marginBottom: 8 },
   emptySubtitle: { fontSize: 14, color: '#9CA3AF', textAlign: 'center' },
+  modalOverlay: {
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    padding: 24, paddingBottom: 40,
+  },
+  modalHeader: {
+    flexDirection: 'row', justifyContent: 'space-between',
+    alignItems: 'center', marginBottom: 4,
+  },
+  modalTitle: { fontSize: 20, fontWeight: 'bold' },
+  modalSubtitle: { fontSize: 14, marginBottom: 20 },
+  ratingLabel: { fontSize: 14, fontWeight: '600', marginBottom: 8, marginTop: 8 },
+  starsRow: { flexDirection: 'row', justifyContent: 'center', marginBottom: 16 },
+  commentInput: {
+    borderWidth: 1, borderRadius: 12, padding: 12,
+    fontSize: 14, minHeight: 100, marginBottom: 20,
+  },
+  submitReviewBtn: {
+    backgroundColor: '#1E63D3', borderRadius: 14,
+    paddingVertical: 14, alignItems: 'center',
+  },
+  submitReviewBtnText: { color: '#FFF', fontSize: 16, fontWeight: 'bold' },
 });

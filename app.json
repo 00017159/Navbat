@@ -29,10 +29,10 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#111C2B",
-          "image": "./assets/images/clinicuz-logo.png",
+          "image": "./assets/images/clinicuz-logo-clean.png",
           "imageWidth": 200,
           "android": {
-            "image": "./assets/images/clinicuz-logo.png",
+            "image": "./assets/images/clinicuz-logo-clean.png",
             "imageWidth": 200
           }
         }

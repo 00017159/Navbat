@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Alert, ActivityIndicator, RefreshControl } from 'react-native';
 import { Bell, Search, Calendar, CheckCircle2, Users, Star, Bot } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { getDoctors, getAppointments, getCurrentUser } from '../../services/api';
 import { useTheme } from '../../services/theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Live data only
 
@@ -37,7 +38,7 @@ export default function HomeScreen() {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [hasUnread, setHasUnread] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(0);
   const { colors, dark } = useTheme();
   const user = getCurrentUser();
 
@@ -69,6 +70,30 @@ export default function HomeScreen() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Check unread status whenever appointments change or screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      const checkUnread = async () => {
+        try {
+          const lastReadTime = await AsyncStorage.getItem('notif_last_read');
+          const lastRead = lastReadTime ? parseInt(lastReadTime, 10) : 0;
+          
+          const upcoming = appointments.filter(a => a.status === 'UPCOMING');
+          const unread = upcoming.filter(a => {
+            const createdAt = new Date(a.createdAt || a.dateTime).getTime();
+            return createdAt > lastRead;
+          });
+          
+          setUnreadCount(unread.length);
+        } catch (e) {
+          console.warn('Error checking unread status:', e);
+        }
+      };
+      
+      checkUnread();
+    }, [appointments])
+  );
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -144,9 +169,9 @@ export default function HomeScreen() {
           </View>
           <TouchableOpacity style={[styles.notificationBtn, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={handleNotifications}>
             <Bell color={colors.text} size={24} />
-            {hasUnread && appointments.filter(a => a.status === 'UPCOMING').length > 0 && (
+            {unreadCount > 0 && (
               <View style={styles.badge}>
-                <Text style={styles.badgeText}>{appointments.filter(a => a.status === 'UPCOMING').length}</Text>
+                <Text style={styles.badgeText}>{unreadCount}</Text>
               </View>
             )}
           </TouchableOpacity>

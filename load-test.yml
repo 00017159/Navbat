@@ -1,0 +1,30 @@
+config:
+  target: "https://fuckrhsrqgseidbxymjj.supabase.co"
+  phases:
+    - duration: 60
+      arrivalRate: 1
+      rampTo: 5
+      name: "Phase 1: Warm up (Gently waking up the server)"
+    - duration: 180
+      arrivalRate: 5
+      rampTo: 20
+      name: "Phase 2: Realistic Morning Load"
+  defaults:
+    headers:
+      apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1Y2tyaHNycWdzZWlkYnh5bWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NDk0MTcsImV4cCI6MjA5MTAyNTQxN30.LdjR3W2oDJ6UgWsKKwELHt8rVZyxiKCInrmdnupbTTc"
+      Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1Y2tyaHNycWdzZWlkYnh5bWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NDk0MTcsImV4cCI6MjA5MTAyNTQxN30.LdjR3W2oDJ6UgWsKKwELHt8rVZyxiKCInrmdnupbTTc"
+
+scenarios:
+  - name: "Active Patient Session"
+    flow:
+      - get:
+          url: "/rest/v1/"
+      - think: 3 # User wait time (realistic)
+      
+      - get:
+          url: "/rest/v1/profiles?role=eq.DOCTOR&select=*,doctor_profiles(*)"
+      - think: 5 # User browsing doctors
+      
+      - get:
+          url: "/rest/v1/appointments?select=*&limit=5"
+      - think: 4 # User checking their schedule

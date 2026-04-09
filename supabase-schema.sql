@@ -163,22 +163,6 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- ═══════════════════════════════════════
--- SEED: Sample doctors (no auth account needed)
--- ═══════════════════════════════════════
-
-INSERT INTO profiles (id, email, role, first_name, last_name) VALUES
-  ('d0000001-0000-0000-0000-000000000001', 'malika@navbat.uz', 'DOCTOR', 'Dr. Malika', 'Yusupova'),
-  ('d0000001-0000-0000-0000-000000000002', 'jasur@navbat.uz', 'DOCTOR', 'Dr. Jasur', 'Toshmatov'),
-  ('d0000001-0000-0000-0000-000000000003', 'sarvinoz@navbat.uz', 'DOCTOR', 'Dr. Sarvinoz', 'Rahmonova'),
-  ('d0000001-0000-0000-0000-000000000004', 'davron@navbat.uz', 'DOCTOR', 'Dr. Davron', 'Umarov');
-
-INSERT INTO doctor_profiles (user_id, specialty, experience_yrs, rating, review_count, availability, bg, color) VALUES
-  ('d0000001-0000-0000-0000-000000000001', 'Cardiologist', 12, 4.8, 248, 'Available Today', '#FEF3C7', '#92400E'),
-  ('d0000001-0000-0000-0000-000000000002', 'Neurologist', 8, 4.9, 156, 'Next: Tomorrow', '#FFEDD5', '#C2410C'),
-  ('d0000001-0000-0000-0000-000000000003', 'Pediatrician', 5, 4.7, 312, 'Available Today', '#F3E8FF', '#6B21A8'),
-  ('d0000001-0000-0000-0000-000000000004', 'Dermatologist', 15, 4.5, 189, 'Available Tomorrow', '#E0F2FE', '#0369A1');
-
--- ═══════════════════════════════════════
 -- MANUALLY PROMOTE FIRST ADMIN
 -- ═══════════════════════════════════════
 -- Run this individually after signing up your primary account:

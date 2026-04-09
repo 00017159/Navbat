@@ -1,4 +1,4 @@
-# ClinicUz 🏥
+# ClinicUz
 
 ClinicUz is a comprehensive, production-ready Dual-Platform Healthcare System designed to bridge the gap between patients, medical specialists, and clinical administration. 
 
@@ -6,7 +6,7 @@ The system operates across a **Patient-Facing Mobile Application** and an **Admi
 
 ---
 
-## ✨ System Architecture Overview
+## System Architecture Overview
 
 The codebase operates natively as a monorepo containing two dedicated frontends hooked up to a unified backend ecosystem:
 
@@ -32,7 +32,7 @@ A private web dashboard accessible exclusively to authenticated internal team me
 
 ---
 
-## 🛠️ Complete Technology Stack
+## Complete Technology Stack
 
 ### Mobile Application
 - **Core Framework:** [React Native](https://reactnative.dev/) v0.81.5 & [Expo](https://expo.dev/) SDK 54
@@ -124,7 +124,7 @@ npm test
 
 ---
 
-## 🛡️ Technical Audit & Security Architecture
+## Technical Audit & Security Architecture
 The ClinicUz system is built with a "Security-by-Design" philosophy, verified through a comprehensive technical audit:
 
 - **Row-Level Security (RLS)**: Data is guarded at the database layer. No API endpoint can access user data without a valid JWT matching the `patient_id`.

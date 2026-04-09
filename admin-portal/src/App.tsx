@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from './supabase';
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase';
+import { createClient } from '@supabase/supabase-js';
 import {
   LayoutDashboard, Users, Calendar, LogOut,
-  Shield, Activity, UserCheck, Clock, Trash2, HeartPulse
+  Shield, Activity, UserCheck, Clock, Trash2, HeartPulse, FileText, Eye, EyeOff
 } from 'lucide-react';
 import './App.css';
 
-type View = 'dashboard' | 'users' | 'appointments' | 'doctors';
+type View = 'dashboard' | 'users' | 'appointments' | 'doctors' | 'records';
 
 interface Profile {
   id: string;
@@ -28,12 +29,15 @@ interface Appointment {
 }
 
 // ── Login Screen ──────────────────────────────────────────
-function LoginScreen({ onLogin }: { onLogin: (role: string) => void }) {
+function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) => void }) {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
+  const [password, setPassword] = useState('');
   const [step, setStep] = useState<'email' | 'otp'>('email');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [loginMode, setLoginMode] = useState<'otp' | 'password'>('otp');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleRequestOtp = async () => {
     if (!email.includes('@')) { setError('Enter a valid email'); return; }
@@ -57,15 +61,7 @@ function LoginScreen({ onLogin }: { onLogin: (role: string) => void }) {
     try {
       const { error: e } = await supabase.auth.verifyOtp({ email, token: otp, type: 'email' });
       if (e) throw e;
-      // Check if user is admin
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Auth failed');
-      const { data: profile } = await supabase.from('profiles').select('role').eq('auth_id', user.id).single();
-      if (profile?.role !== 'ADMIN' && profile?.role !== 'DOCTOR') {
-        await supabase.auth.signOut();
-        throw new Error('Access denied. Staff privileges required.');
-      }
-      onLogin(profile.role);
+      await resolveLogin();
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -73,51 +69,134 @@ function LoginScreen({ onLogin }: { onLogin: (role: string) => void }) {
     }
   };
 
+  const handlePasswordLogin = async () => {
+    if (!email.includes('@')) { setError('Enter a valid email'); return; }
+    if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
+    setLoading(true);
+    setError('');
+    try {
+      const { error: e } = await supabase.auth.signInWithPassword({ email, password });
+      if (e) throw e;
+      await resolveLogin();
+    } catch (e: any) {
+      setError(e.message === 'Invalid login credentials' ? 'Invalid email or password.' : e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resolveLogin = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Auth failed');
+    const { data: profile } = await supabase.from('profiles').select('role, id').eq('auth_id', user.id).single();
+    if (profile?.role !== 'ADMIN' && profile?.role !== 'DOCTOR') {
+      await supabase.auth.signOut();
+      throw new Error('Access denied. Staff privileges required.');
+    }
+    onLogin(profile.role, profile.id);
+  };
+
   return (
     <div className="login-container">
       <div className="login-card">
-        <h1>ClinicUz Admin</h1>
-        <p>Sign in with your administrator email to manage the system.</p>
+        <h1>ClinicUz Portal</h1>
+        <p>Sign in with your staff credentials to access the system.</p>
 
         {error && <div className="login-error">{error}</div>}
 
-        {step === 'email' ? (
+        {/* Mode toggle */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+          <button
+            className={`btn-primary`}
+            style={{ flex: 1, fontSize: 13, padding: '8px 0', background: loginMode === 'otp' ? '#1E63D3' : '#1E293B', border: loginMode === 'otp' ? 'none' : '1px solid #334155', boxShadow: loginMode === 'otp' ? undefined : 'none' }}
+            onClick={() => { setLoginMode('otp'); setStep('email'); setError(''); }}
+          >
+            OTP Login
+          </button>
+          <button
+            className={`btn-primary`}
+            style={{ flex: 1, fontSize: 13, padding: '8px 0', background: loginMode === 'password' ? '#1E63D3' : '#1E293B', border: loginMode === 'password' ? 'none' : '1px solid #334155', boxShadow: loginMode === 'password' ? undefined : 'none' }}
+            onClick={() => { setLoginMode('password'); setStep('email'); setError(''); }}
+          >
+            Password Login
+          </button>
+        </div>
+
+        {loginMode === 'otp' ? (
+          // OTP Flow
+          step === 'email' ? (
+            <>
+              <div className="form-group">
+                <label>Email Address</label>
+                <input
+                  type="email"
+                  placeholder="admin@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleRequestOtp()}
+                />
+              </div>
+              <button className="btn-primary" onClick={handleRequestOtp} disabled={loading}>
+                {loading ? 'Sending...' : 'Send Verification Code'}
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="form-group">
+                <label>Verification Code</label>
+                <input
+                  type="text"
+                  placeholder="Enter 6-digit code"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  onKeyDown={(e) => e.key === 'Enter' && handleVerifyOtp()}
+                  maxLength={6}
+                />
+              </div>
+              <button className="btn-primary" onClick={handleVerifyOtp} disabled={loading}>
+                {loading ? 'Verifying...' : 'Sign In'}
+              </button>
+              <button
+                style={{ marginTop: 12, background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', fontSize: 13, fontFamily: 'Inter' }}
+                onClick={() => { setStep('email'); setOtp(''); setError(''); }}
+              >
+                ← Back to email
+              </button>
+            </>
+          )
+        ) : (
+          // Password Flow
           <>
             <div className="form-group">
               <label>Email Address</label>
               <input
                 type="email"
-                placeholder="admin@example.com"
+                placeholder="doctor@navbat.uz"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleRequestOtp()}
+                onKeyDown={(e) => e.key === 'Enter' && handlePasswordLogin()}
               />
             </div>
-            <button className="btn-primary" onClick={handleRequestOtp} disabled={loading}>
-              {loading ? 'Sending...' : 'Send Verification Code'}
-            </button>
-          </>
-        ) : (
-          <>
             <div className="form-group">
-              <label>Verification Code</label>
-              <input
-                type="text"
-                placeholder="Enter 6-digit code"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                onKeyDown={(e) => e.key === 'Enter' && handleVerifyOtp()}
-                maxLength={6}
-              />
+              <label>Password</label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handlePasswordLogin()}
+                />
+                <button
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}
+                >
+                  {showPassword ? <EyeOff size={16} color="#64748B" /> : <Eye size={16} color="#64748B" />}
+                </button>
+              </div>
             </div>
-            <button className="btn-primary" onClick={handleVerifyOtp} disabled={loading}>
-              {loading ? 'Verifying...' : 'Sign In'}
-            </button>
-            <button
-              style={{ marginTop: 12, background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', fontSize: 13, fontFamily: 'Inter' }}
-              onClick={() => { setStep('email'); setOtp(''); setError(''); }}
-            >
-              ← Back to email
+            <button className="btn-primary" onClick={handlePasswordLogin} disabled={loading}>
+              {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </>
         )}
@@ -347,7 +426,7 @@ function AppointmentsView({ appointments, role, onRefresh }: { appointments: App
               <th>Date & Time</th>
               <th>Type</th>
               <th>Status</th>
-              <th>{role === 'DOCTOR' ? 'Actions' : 'Notes'}</th>
+              <th>{role === 'DOCTOR' || role === 'ADMIN' ? 'Actions' : 'Notes'}</th>
             </tr>
           </thead>
           <tbody>
@@ -371,7 +450,7 @@ function AppointmentsView({ appointments, role, onRefresh }: { appointments: App
                 <td style={{ color: '#94A3B8' }}>{a.type}</td>
                 <td><span className={`status-badge ${a.status?.toLowerCase()}`}>{a.status}</span></td>
                 <td>
-                  {role === 'DOCTOR' && a.status !== 'COMPLETED' ? (
+                  {(role === 'DOCTOR' || role === 'ADMIN') && a.status !== 'COMPLETED' ? (
                     <button className="btn-primary" style={{ padding: '6px 12px', fontSize: 12 }} onClick={() => { setSelectedAppt(a); setIsModalOpen(true); }}>
                       Write Record
                     </button>
@@ -384,15 +463,15 @@ function AppointmentsView({ appointments, role, onRefresh }: { appointments: App
       </div>
 
       {isModalOpen && selectedAppt && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15,23,42,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-          <div className="login-card" style={{ width: 500, transform: 'none', background: 'white', padding: 24, borderRadius: 16 }}>
-            <h2 style={{ marginTop: 0, marginBottom: 8, fontFamily: 'Outfit', color: '#0F172A' }}>Clinical Record</h2>
-            <p style={{ color: '#64748B', marginBottom: 20 }}>Patient: <strong>{selectedAppt.patient?.first_name} {selectedAppt.patient?.last_name}</strong></p>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(11,17,32,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
+          <div className="login-card" style={{ width: 500, transform: 'none', padding: 24, borderRadius: 16 }}>
+            <h2 style={{ marginTop: 0, marginBottom: 8, fontFamily: 'Outfit', color: '#F1F5F9' }}>Clinical Record</h2>
+            <p style={{ color: '#94A3B8', marginBottom: 20 }}>Patient: <strong style={{ color: '#F1F5F9' }}>{selectedAppt.patient?.first_name} {selectedAppt.patient?.last_name}</strong></p>
             
             <div className="form-group">
               <label>Diagnosis / Symptoms</label>
               <textarea 
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid #E2E8F0', fontFamily: 'Inter', fontSize: 14, minHeight: 80, resize: 'vertical' }}
+                style={{ minHeight: 80, resize: 'vertical' }}
                 value={recordForm.diagnosis} 
                 onChange={e => setRecordForm({...recordForm, diagnosis: e.target.value})} 
                 placeholder="Observed symptoms and final diagnosis..." 
@@ -402,7 +481,7 @@ function AppointmentsView({ appointments, role, onRefresh }: { appointments: App
             <div className="form-group">
               <label>Prescriptions & Suggestions</label>
               <textarea 
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid #E2E8F0', fontFamily: 'Inter', fontSize: 14, minHeight: 80, resize: 'vertical' }}
+                style={{ minHeight: 80, resize: 'vertical' }}
                 value={recordForm.notes} 
                 onChange={e => setRecordForm({...recordForm, notes: e.target.value})} 
                 placeholder="Medications, rest details, treatment plan..." 
@@ -410,7 +489,7 @@ function AppointmentsView({ appointments, role, onRefresh }: { appointments: App
             </div>
             
             <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
-              <button className="btn-primary" style={{ flex: 1, background: '#F1F5F9', color: '#475569', boxShadow: 'none' }} onClick={() => setIsModalOpen(false)}>Cancel</button>
+              <button className="btn-primary" style={{ flex: 1, background: '#1E293B', color: '#F1F5F9', border: '1px solid #334155', boxShadow: 'none' }} onClick={() => setIsModalOpen(false)}>Cancel</button>
               <button className="btn-primary" style={{ flex: 1, background: '#10B981' }} onClick={handleAddRecord} disabled={loading}>{loading ? 'Saving...' : 'Save & Complete'}</button>
             </div>
           </div>
@@ -431,6 +510,7 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
     email: '',
     first_name: '',
     last_name: '',
+    password: '',
     specialty: 'General Practice',
     experience_yrs: '5',
     availability: 'Available Today',
@@ -452,9 +532,13 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
       alert('Email, First Name, and Last Name are required.');
       return;
     }
+    if (!doctorForm.password || doctorForm.password.length < 6) {
+      alert('Password must be at least 6 characters.');
+      return;
+    }
     setLoading(true);
     try {
-      // Insert profile
+      // 1. Insert profile first (without auth_id)
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .insert({
@@ -466,7 +550,23 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
       
       if (profileError) throw profileError;
 
-      // Insert doctor profile mapping
+      // 2. Create auth account via a temporary client (so admin session stays intact)
+      const tempClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const { error: signUpError } = await tempClient.auth.signUp({
+        email: doctorForm.email,
+        password: doctorForm.password,
+        options: {
+          data: { role: 'DOCTOR' }
+        }
+      });
+
+      if (signUpError) {
+        // Rollback profile if auth creation fails
+        await supabase.from('profiles').delete().eq('id', profileData.id);
+        throw signUpError;
+      }
+
+      // 3. Insert doctor profile mapping
       const { error: doctorProfileError } = await supabase
         .from('doctor_profiles')
         .insert({
@@ -486,14 +586,19 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
 
       setIsModalOpen(false);
       onRefresh();
+      alert(`Doctor ${doctorForm.first_name} ${doctorForm.last_name} created!\n\nLogin credentials:\nEmail: ${doctorForm.email}\nPassword: ${doctorForm.password}`);
       
       // reset form
       setDoctorForm({
-        email: '', first_name: '', last_name: '', specialty: 'General Practice',
+        email: '', first_name: '', last_name: '', password: '', specialty: 'General Practice',
         experience_yrs: '5', availability: 'Available Today', bg: '#F3E8FF', color: '#6B21A8', description: '', clinic_name: ''
       });
     } catch (e: any) {
-      alert('Failed to add doctor: ' + e.message);
+      if (e.code === '23505') {
+        alert('Failed to add doctor: An account with this email already exists in the system.');
+      } else {
+        alert('Failed to add doctor: ' + e.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -564,11 +669,15 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
       </div>
 
       {isModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15,23,42,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-          <div className="login-card" style={{ width: 400, transform: 'none', background: 'white', padding: 24, borderRadius: 16 }}>
-            <h2 style={{ marginTop: 0, marginBottom: 16, fontFamily: 'Outfit', color: '#0F172A' }}>Add New Doctor</h2>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(11,17,32,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
+          <div className="login-card" style={{ width: 400, transform: 'none', padding: 24, borderRadius: 16 }}>
+            <h2 style={{ marginTop: 0, marginBottom: 16, fontFamily: 'Outfit', color: '#F1F5F9' }}>Add New Doctor</h2>
             
             <div className="form-group"><label>Email</label><input type="email" value={doctorForm.email} onChange={e => setDoctorForm({...doctorForm, email: e.target.value})} placeholder="dr.smith@navbat.uz" /></div>
+            <div className="form-group">
+              <label>Password (doctor will use this to log in)</label>
+              <input type="text" value={doctorForm.password} onChange={e => setDoctorForm({...doctorForm, password: e.target.value})} placeholder="Min 6 characters" />
+            </div>
             <div style={{ display: 'flex', gap: 12 }}>
               <div className="form-group" style={{ flex: 1 }}><label>First Name</label><input type="text" value={doctorForm.first_name} onChange={e => setDoctorForm({...doctorForm, first_name: e.target.value})} /></div>
               <div className="form-group" style={{ flex: 1 }}><label>Last Name</label><input type="text" value={doctorForm.last_name} onChange={e => setDoctorForm({...doctorForm, last_name: e.target.value})} /></div>
@@ -581,7 +690,7 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
             <div className="form-group">
               <label>Doctor Bio / Description</label>
               <textarea 
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: '1px solid #E2E8F0', fontFamily: 'Inter', fontSize: 14, minHeight: 80, resize: 'vertical' }}
+                style={{ minHeight: 80, resize: 'vertical' }}
                 value={doctorForm.description} 
                 onChange={e => setDoctorForm({...doctorForm, description: e.target.value})} 
                 placeholder="Write a brief background about the doctor..." 
@@ -589,12 +698,116 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
             </div>
             
             <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
-              <button className="btn-primary" style={{ flex: 1, background: '#F1F5F9', color: '#475569', boxShadow: 'none' }} onClick={() => setIsModalOpen(false)}>Cancel</button>
+              <button className="btn-primary" style={{ flex: 1, background: '#1E293B', color: '#F1F5F9', border: '1px solid #334155', boxShadow: 'none' }} onClick={() => setIsModalOpen(false)}>Cancel</button>
               <button className="btn-primary" style={{ flex: 1 }} onClick={handleAddDoctor} disabled={loading}>{loading ? 'Creating...' : 'Create Doctor'}</button>
             </div>
           </div>
         </div>
       )}
+    </>
+  );
+}
+
+// ── Medical Records (Doctor View) ─────────────────────────
+interface MedicalRecord {
+  id: string;
+  diagnosis: string;
+  notes: string;
+  date: string;
+  prescriptions: string[];
+  patient: { first_name: string; last_name: string; email: string } | null;
+}
+
+function RecordsView({ doctorProfileId }: { doctorProfileId: string }) {
+  const [records, setRecords] = useState<MedicalRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    fetchRecords();
+  }, [doctorProfileId]);
+
+  const fetchRecords = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('medical_records')
+        .select('*, patient:profiles!patient_id(first_name, last_name, email)')
+        .eq('doctor_id', doctorProfileId)
+        .order('date', { ascending: false });
+
+      if (error) throw error;
+      setRecords(data || []);
+    } catch (e) {
+      console.error('Fetch records error:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filtered = records.filter(r =>
+    r.diagnosis?.toLowerCase().includes(search.toLowerCase()) ||
+    r.patient?.first_name?.toLowerCase().includes(search.toLowerCase()) ||
+    r.patient?.last_name?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  if (loading) {
+    return <div className="loading-screen" style={{ minHeight: 400 }}><div className="spinner" /></div>;
+  }
+
+  return (
+    <>
+      <div className="page-header">
+        <h1>Medical Records</h1>
+        <p>Records you have written for your patients</p>
+      </div>
+
+      <div className="table-section">
+        <div className="table-header">
+          <h2>My Records</h2>
+          <span className="badge">{records.length} total</span>
+        </div>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search by patient name or diagnosis..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Patient</th>
+              <th>Diagnosis</th>
+              <th>Notes / Prescriptions</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length === 0 ? (
+              <tr><td colSpan={4} className="empty-state">No records found</td></tr>
+            ) : filtered.map(r => (
+              <tr key={r.id}>
+                <td>
+                  <div className="user-cell">
+                    <div className="user-avatar patient">
+                      {(r.patient?.first_name || 'P')[0].toUpperCase()}
+                    </div>
+                    <div>
+                      <div className="user-name">{r.patient ? `${r.patient.first_name} ${r.patient.last_name}` : '—'}</div>
+                      <div className="user-email">{r.patient?.email || ''}</div>
+                    </div>
+                  </div>
+                </td>
+                <td style={{ maxWidth: 200 }}>{r.diagnosis}</td>
+                <td style={{ maxWidth: 250, color: '#94A3B8', fontSize: 13 }}>{r.notes || '—'}</td>
+                <td style={{ color: '#64748B', fontSize: 13 }}>{new Date(r.date).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }
@@ -607,6 +820,7 @@ function App() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<string>('');
+  const [profileId, setProfileId] = useState<string>('');
 
   // Check existing session
   useEffect(() => {
@@ -614,11 +828,12 @@ function App() {
       if (session) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('role')
+          .select('role, id')
           .eq('auth_id', session.user.id)
           .single();
         if (profile?.role === 'ADMIN' || profile?.role === 'DOCTOR') {
           setRole(profile.role);
+          setProfileId(profile.id);
           setAuthed(true);
         } else {
           await supabase.auth.signOut();
@@ -682,8 +897,9 @@ function App() {
 
   // Not logged in
   if (!authed) {
-    return <LoginScreen onLogin={(assignedRole) => {
+    return <LoginScreen onLogin={(assignedRole, pid) => {
       setRole(assignedRole);
+      setProfileId(pid);
       setAuthed(true);
     }} />;
   }
@@ -719,6 +935,13 @@ function App() {
           <button className={`nav-item ${view === 'appointments' ? 'active' : ''}`} onClick={() => setView('appointments')}>
             <Calendar size={18} /> {role === 'ADMIN' ? 'All Appointments' : 'My Schedule'}
           </button>
+
+          {role === 'DOCTOR' && (
+            <button className={`nav-item ${view === 'records' ? 'active' : ''}`} onClick={() => setView('records')}>
+              <FileText size={18} /> My Records
+            </button>
+          )}
+
           <button className="nav-item nav-item-logout" onClick={handleLogout}>
             <LogOut size={18} /> Sign Out
           </button>
@@ -733,10 +956,11 @@ function App() {
           </div>
         ) : (
           <>
-            {view === 'dashboard' && <DashboardView users={users} appointments={appointments} />}
+            {view === 'dashboard' && <DashboardView users={users} appointments={role === 'DOCTOR' ? appointments.filter((a: any) => a.doctor_id === profileId) : appointments} />}
             {view === 'users' && role === 'ADMIN' && <UsersView users={users.filter(u => u.role !== 'DOCTOR')} onDelete={handleDeleteUser} />}
             {view === 'doctors' && role === 'ADMIN' && <DoctorsView users={users} onDelete={handleDeleteUser} onRefresh={fetchData} />}
-            {view === 'appointments' && <AppointmentsView appointments={appointments} role={role} onRefresh={fetchData} />}
+            {view === 'appointments' && <AppointmentsView appointments={role === 'DOCTOR' ? appointments.filter((a: any) => a.doctor_id === profileId) : appointments} role={role} onRefresh={fetchData} />}
+            {view === 'records' && role === 'DOCTOR' && <RecordsView doctorProfileId={profileId} />}
           </>
         )}
       </main>

@@ -167,8 +167,6 @@ export default function LoginScreen() {
           
           <View style={styles.header}>
             <Image source={require('../../assets/images/clinicuz-logo.png')} style={{ width: 80, height: 80, borderRadius: 20, marginBottom: 12 }} resizeMode="contain" />
-            <Text style={styles.brandTitle}>ClinicUz</Text>
-            <Text style={styles.brandSubtitle}>Your Healthcare Companion</Text>
           </View>
 
           <View style={styles.formCard}>

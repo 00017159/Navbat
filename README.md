@@ -1,5 +1,4 @@
-# ClinicUz
-
+# ClinicUz 
 ClinicUz is a comprehensive, production-ready Dual-Platform Healthcare System designed to bridge the gap between patients, medical specialists, and clinical administration. 
 
 The system operates across a **Patient-Facing Mobile Application** and an **Administrative Web Portal**, both unified securely through a centralized PostgreSQL backend.
@@ -32,7 +31,7 @@ A private web dashboard accessible exclusively to authenticated internal team me
 
 ---
 
-## Complete Technology Stack
+##  Complete Technology Stack
 
 ### Mobile Application
 - **Core Framework:** [React Native](https://reactnative.dev/) v0.81.5 & [Expo](https://expo.dev/) SDK 54
@@ -49,10 +48,9 @@ A private web dashboard accessible exclusively to authenticated internal team me
 
 ### Cloud Infrastructure
 - **Relational Database:** [Supabase PostgreSQL](https://supabase.com/)
-- **Authentication:** Supabase Auth (Email OTP & Password Login Strategies)
-- **Deployment & Hosting:** [Vercel](https://vercel.com/) (Production-grade global CDN for Admin Portal)
+- **Authentication:** Supabase Auth (Email OTP Strategy)
+- **DevOps:** [GitHub Actions](https://github.com/features/actions) YAML pipelines performing Continuous Integration builds sequentially testing both TS configurations natively across Node instances.
 - **Generative AI Backend:** [OpenAI API](https://openai.com/) GPT-3.5-Turbo for Natural Language Processing routines.
-- **Continuous Quality:** Automated **Jest** testing suite ensuring core API and service stability.
 
 ---
 
@@ -114,23 +112,12 @@ npx expo start -c
 cd admin-portal
 npm run dev
 ```
-- Will deploy natively on `http://localhost:5173`. Simply sign in using a registered `ADMIN` or `DOCTOR` account.
-
-### 6. Running Tests
-The project uses **Jest** for unit and integration testing. To run the test suite:
-```bash
-npm test
-```
+- Will deploy natively on `http://localhost:5173`. Simply sign in using a registered `ADMIN` email dynamically seeded in your Supabase DB.
 
 ---
 
-## Technical Audit & Security Architecture
-The ClinicUz system is built with a "Security-by-Design" philosophy, verified through a comprehensive technical audit:
-
-- **Row-Level Security (RLS)**: Data is guarded at the database layer. No API endpoint can access user data without a valid JWT matching the `patient_id`.
-- **Service-Oriented Patterns**: Business logic is decoupled from the UI in `api.ts`, promoting clean code and easier security auditing.
-- **Production Infrastructure**: The Admin Portal uses a hardened Vercel deployment pipeline, ensuring global availability and SSL encryption by default.
-- **Infrastructure Integrity**: Leveraging Supabase's serverless PostgreSQL gives us enterprise-grade data durability and managed authentication out of the box.
+##  State & Security Rules
+All global state flows uniquely down to the `current_user` variables, mapping instantly to Postgres tables where data mutation is guarded aggressively. Bypasses are deployed uniquely in the schema layer via `is_admin()` custom functions stopping infinite recursive row loops during multi-role policy evaluations.
 
 ---
-*Developed securely and rapidly for ClinicUz.*
+*Developed securely for ClinicUz.*

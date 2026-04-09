@@ -129,7 +129,6 @@ export default function HomeScreen() {
   };
 
   const handleNotifications = () => {
-    setHasUnread(false);
     router.push('/notifications' as any);
   };
 

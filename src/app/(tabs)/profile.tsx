@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, Switch, Linking } from 'react-native';
 import { User, Lock, HelpCircle, Info, ChevronRight, LogOut, Moon } from 'lucide-react-native';
-import { useRouter, useNavigation } from 'expo-router';
+import { useRouter, useNavigation, useFocusEffect } from 'expo-router';
 import { getCurrentUser, signOut } from '../../services/api';
 import { useTheme } from '../../services/theme';
 import { CommonActions } from '@react-navigation/native';
@@ -16,8 +16,15 @@ const SETTINGS_ITEMS = [
 export default function ProfileScreen() {
   const router = useRouter();
   const navigation = useNavigation();
-  const user = getCurrentUser();
   const { dark, toggle, colors } = useTheme();
+
+  const [user, setUser] = useState(getCurrentUser());
+
+  useFocusEffect(
+    useCallback(() => {
+      setUser(getCurrentUser());
+    }, [])
+  );
 
   const displayRole = user?.role === 'DOCTOR' ? 'Doctor' : user?.role === 'ADMIN' ? 'Admin' : 'Patient';
   const displayName = user ? `${user.firstName} ${user.lastName}` : 'User';

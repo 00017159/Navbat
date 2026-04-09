@@ -138,8 +138,7 @@ npx artillery run stress-test.yml
 npx artillery run spike-test.yml
 ```
 
-> [!NOTE]
-> **Performance Tip**: On the Supabase Free Tier, the shared CPU is the main bottleneck. For production environments with high concurrent traffic (over 100 users), upgrading to the **Supabase Pro Tier** is recommended to maintain response times under 1 second.
+
 
 ---
 

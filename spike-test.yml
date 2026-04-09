@@ -1,0 +1,28 @@
+config:
+  target: "https://fuckrhsrqgseidbxymjj.supabase.co"
+  phases:
+    - duration: 30
+      arrivalRate: 1
+      name: "Phase 1: Quiet Before the Storm"
+    - duration: 10
+      arrivalRate: 20
+      name: "Phase 2: THE SPIKE (50 Users in 10 Seconds!)"
+    - duration: 60
+      arrivalRate: 1
+      name: "Phase 3: Cool Down"
+  defaults:
+    headers:
+      apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1Y2tyaHNycWdzZWlkYnh5bWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NDk0MTcsImV4cCI6MjA5MTAyNTQxN30.LdjR3W2oDJ6UgWsKKwELHt8rVZyxiKCInrmdnupbTTc"
+      Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1Y2tyaHNycWdzZWlkYnh5bWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NDk0MTcsImV4cCI6MjA5MTAyNTQxN30.LdjR3W2oDJ6UgWsKKwELHt8rVZyxiKCInrmdnupbTTc"
+
+scenarios:
+  - name: "Sudden Visitor"
+    flow:
+      - get:
+          url: "/rest/v1/"
+      - think: 2
+      - get:
+          url: "/rest/v1/profiles?role=eq.DOCTOR&select=*,doctor_profiles(*)"
+      - think: 2
+      - get:
+          url: "/rest/v1/appointments?select=*&limit=5"

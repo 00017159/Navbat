@@ -79,7 +79,8 @@ export default function RecordsScreen() {
         <html>
           <head>
             <style>
-              body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; color: #333; }
+              @page { margin: 0; }
+              body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; margin: 20px; color: #333; }
               .header { text-align: center; border-bottom: 2px solid #1E63D3; padding-bottom: 20px; margin-bottom: 30px; }
               .title { font-size: 28px; color: #1E63D3; margin: 0; }
               .subtitle { font-size: 14px; color: #666; margin-top: 5px; }

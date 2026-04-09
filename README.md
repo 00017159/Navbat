@@ -116,6 +116,33 @@ npm run dev
 
 ---
 
+##  Performance & Concurrency Testing
+
+ClinicUz includes a professional load testing suite powered by **Artillery** to ensure the system can handle patient traffic surges.
+
+### Testing Levels
+1.  **Load Test (`load-test.yml`)**: Simulates normal daily traffic (~20-50 users with realistic pacing).
+2.  **Stress Test (`stress-test.yml`)**: Pushes the system to its breaking point (100+ concurrent users) to identify hardware limits.
+3.  **Spike Test (`spike-test.yml`)**: Simulates a sudden influx of users (50 users in 10 seconds) to test rapid scalability.
+
+### How to Run Tests
+Ensure you have the dependencies installed, then run any of the following commands in the root directory:
+```bash
+# Run a standard load test
+npx artillery run load-test.yml
+
+# Run a stress test to find the crash point
+npx artillery run stress-test.yml
+
+# Run a spike test for sudden traffic bursts
+npx artillery run spike-test.yml
+```
+
+> [!NOTE]
+> **Performance Tip**: On the Supabase Free Tier, the shared CPU is the main bottleneck. For production environments with high concurrent traffic (over 100 users), upgrading to the **Supabase Pro Tier** is recommended to maintain response times under 1 second.
+
+---
+
 ##  State & Security Rules
 All global state flows uniquely down to the `current_user` variables, mapping instantly to Postgres tables where data mutation is guarded aggressively. Bypasses are deployed uniquely in the schema layer via `is_admin()` custom functions stopping infinite recursive row loops during multi-role policy evaluations.
 

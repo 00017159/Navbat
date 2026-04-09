@@ -1,0 +1,28 @@
+config:
+  target: "https://fuckrhsrqgseidbxymjj.supabase.co"
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      rampTo: 20
+      name: "Phase 1: High Base Load"
+    - duration: 300
+      arrivalRate: 20
+      rampTo: 150
+      name: "Phase 2: THE STRESS TEST (Pushing to the breaking point)"
+  defaults:
+    headers:
+      apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1Y2tyaHNycWdzZWlkYnh5bWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NDk0MTcsImV4cCI6MjA5MTAyNTQxN30.LdjR3W2oDJ6UgWsKKwELHt8rVZyxiKCInrmdnupbTTc"
+      Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1Y2tyaHNycWdzZWlkYnh5bWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NDk0MTcsImV4cCI6MjA5MTAyNTQxN30.LdjR3W2oDJ6UgWsKKwELHt8rVZyxiKCInrmdnupbTTc"
+
+scenarios:
+  - name: "Intensive User Session"
+    flow:
+      - get:
+          url: "/rest/v1/"
+      - think: 1
+      - get:
+          url: "/rest/v1/profiles?role=eq.DOCTOR&select=*,doctor_profiles(*)"
+      - think: 1
+      - get:
+          url: "/rest/v1/appointments?select=*&limit=20"
+      - think: 1

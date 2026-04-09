@@ -1,19 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator, TextInput } from 'react-native';
-import { ArrowLeft, Star, Clock, MapPin, Calendar, FileText, CheckCircle } from 'lucide-react-native';
+import { ArrowLeft, Star, Clock, MapPin, Calendar, FileText, CheckCircle, MessageSquare, ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '../../services/theme';
-import { createAppointment } from '../../services/api';
+import { createAppointment, getDoctorAppointmentsForDate, getReviews } from '../../services/api';
 
 const AVATAR_COLORS = ['#fef3c7', '#ffedd5', '#e0f2fe', '#fce7f3', '#dcfce7', '#f3e8ff'];
 const TEXT_COLORS = ['#92400e', '#c2410c', '#0369a1', '#be185d', '#166534', '#7e22ce'];
 
 // Generate time slots
-function generateTimeSlots() {
+function generateTimeSlots(date?: Date) {
   const slots = [];
+  const now = new Date();
+  const isToday = date && date.toDateString() === now.toDateString();
+  const currentMins = now.getHours() * 60 + now.getMinutes();
+
   for (let h = 9; h <= 17; h++) {
-    slots.push(`${h.toString().padStart(2, '0')}:00`);
-    if (h < 17) slots.push(`${h.toString().padStart(2, '0')}:30`);
+    const min00 = h * 60;
+    const min30 = h * 60 + 30;
+    
+    if (!isToday || min00 > currentMins) {
+      slots.push(`${h.toString().padStart(2, '0')}:00`);
+    }
+    if (h < 17 && (!isToday || min30 > currentMins)) {
+      slots.push(`${h.toString().padStart(2, '0')}:30`);
+    }
   }
   return slots;
 }
@@ -71,13 +82,53 @@ export default function DoctorBookingScreen() {
   const colorIndex = (doctorId?.charCodeAt(0) || 0) % AVATAR_COLORS.length;
 
   const dates = generateDates();
-  const timeSlots = generateTimeSlots();
-
   const [selectedDate, setSelectedDate] = useState<Date>(dates[0]);
+  const timeSlots = generateTimeSlots(selectedDate);
+
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [booked, setBooked] = useState(false);
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  const [doctorReviews, setDoctorReviews] = useState<any[]>([]);
+  const [profileExpanded, setProfileExpanded] = useState(false);
+
+  // Fetch reviews from DB
+  useEffect(() => {
+    async function fetchReviews() {
+      if (!doctorId) return;
+      try {
+        const data = await getReviews(doctorId);
+        setDoctorReviews(data);
+      } catch {}
+    }
+    fetchReviews();
+  }, [doctorId]);
+
+  // Compute live rating from reviews
+  const liveRating = doctorReviews.length > 0
+    ? (doctorReviews.reduce((sum: number, r: any) => sum + r.rating, 0) / doctorReviews.length).toFixed(1)
+    : rating;
+  const liveReviewCount = doctorReviews.length > 0 ? doctorReviews.length.toString() : reviews;
+
+  // Fetch pre-booked slots from DB
+  useEffect(() => {
+    async function fetchBooked() {
+      if (!doctorId || !selectedDate) return;
+      const slots = await getDoctorAppointmentsForDate(doctorId, selectedDate.toISOString());
+      setBookedSlots(slots);
+    }
+    fetchBooked();
+  }, [doctorId, selectedDate]);
+
+  const availableTimeSlots = timeSlots.filter(s => !bookedSlots.includes(s));
+
+  // Reset selected time if it becomes invalid on a different day
+  useEffect(() => {
+    if (selectedTime && !availableTimeSlots.includes(selectedTime)) {
+      setSelectedTime('');
+    }
+  }, [selectedDate, availableTimeSlots]);
 
   const handleBook = async () => {
     if (!selectedTime) {
@@ -139,23 +190,75 @@ export default function DoctorBookingScreen() {
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
-        {/* Doctor Info Card */}
-        <View style={[styles.doctorCard, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}>
-          <View style={[styles.avatar, { backgroundColor: AVATAR_COLORS[colorIndex] }]}>
-            <Text style={[styles.avatarText, { color: TEXT_COLORS[colorIndex] }]}>{initials}</Text>
-          </View>
-          <View style={styles.doctorInfo}>
-            <Text style={[styles.doctorName, { color: colors.text }]}>{doctorName}</Text>
-            <Text style={[styles.doctorSpecialty, { color: colors.textSecondary }]}>{specialty}</Text>
-            <View style={styles.ratingRow}>
-              <Star color="#F59E0B" fill="#F59E0B" size={14} />
-              <Text style={[styles.ratingText, { color: colors.text }]}>{rating}</Text>
-              <Text style={styles.ratingCount}>({reviews} reviews)</Text>
-              <Text style={styles.dot}>•</Text>
-              <Text style={styles.expText}>{experience}y exp</Text>
+        {/* Doctor Info Card - Tappable to expand */}
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => setProfileExpanded(!profileExpanded)}
+          style={[styles.doctorCard, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1, flexDirection: 'column' }]}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={[styles.avatar, { backgroundColor: AVATAR_COLORS[colorIndex] }]}>
+              <Text style={[styles.avatarText, { color: TEXT_COLORS[colorIndex] }]}>{initials}</Text>
             </View>
+            <View style={styles.doctorInfo}>
+              <Text style={[styles.doctorName, { color: colors.text }]}>{doctorName}</Text>
+              <Text style={[styles.doctorSpecialty, { color: colors.textSecondary }]}>{specialty}</Text>
+              <View style={styles.ratingRow}>
+                <Star color="#F59E0B" fill="#F59E0B" size={14} />
+                <Text style={[styles.ratingText, { color: colors.text }]}>{liveRating}</Text>
+                <Text style={styles.ratingCount}>({liveReviewCount} reviews)</Text>
+                <Text style={styles.dot}>•</Text>
+                <Text style={styles.expText}>{experience}y exp</Text>
+              </View>
+            </View>
+            {profileExpanded
+              ? <ChevronUp color={colors.textSecondary} size={20} />
+              : <ChevronDown color={colors.textSecondary} size={20} />
+            }
           </View>
-        </View>
+
+          {/* Expanded reviews */}
+          {profileExpanded && (
+            <View style={{ marginTop: 16, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 14 }}>
+              <Text style={{ fontSize: 15, fontWeight: '700', color: colors.text, marginBottom: 12 }}>
+                Patient Reviews ({doctorReviews.length})
+              </Text>
+              {doctorReviews.length === 0 ? (
+                <Text style={{ fontSize: 13, color: colors.textSecondary, fontStyle: 'italic' }}>No reviews yet. Be the first to review!</Text>
+              ) : (
+                doctorReviews.slice(0, 10).map((review: any, idx: number) => {
+                  const patientName = review.patient
+                    ? `${review.patient.first_name || ''} ${review.patient.last_name || ''}`.trim()
+                    : 'Anonymous';
+                  const reviewDate = new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                  return (
+                    <View key={review.id || idx} style={[styles.reviewCard, { backgroundColor: dark ? '#1E293B' : '#F8FAFC', borderColor: colors.border }]}>
+                      <View style={styles.reviewHeader}>
+                        <View style={[styles.reviewAvatar, { backgroundColor: AVATAR_COLORS[idx % AVATAR_COLORS.length] }]}>
+                          <Text style={{ color: TEXT_COLORS[idx % TEXT_COLORS.length], fontWeight: 'bold', fontSize: 14 }}>
+                            {patientName.charAt(0).toUpperCase()}
+                          </Text>
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <Text style={[styles.reviewName, { color: colors.text }]}>{patientName}</Text>
+                          <Text style={{ fontSize: 11, color: colors.textSecondary }}>{reviewDate}</Text>
+                        </View>
+                        <View style={styles.reviewStars}>
+                          {[1, 2, 3, 4, 5].map(s => (
+                            <Star key={s} color="#F59E0B" fill={s <= review.rating ? '#F59E0B' : 'transparent'} size={12} />
+                          ))}
+                        </View>
+                      </View>
+                      {review.comment && (
+                        <Text style={[styles.reviewComment, { color: colors.textSecondary }]}>{review.comment}</Text>
+                      )}
+                    </View>
+                  );
+                })
+              )}
+            </View>
+          )}
+        </TouchableOpacity>
 
         {/* Consultation Type */}
         <View style={[styles.typeCard, styles.typeCardActive, { marginBottom: 28, backgroundColor: dark ? '#1E3A5F' : '#EFF6FF', borderColor: '#1E63D3' }]}>
@@ -193,18 +296,22 @@ export default function DoctorBookingScreen() {
           <Clock color={colors.text} size={16} /> Select Time
         </Text>
         <View style={styles.timeGrid}>
-          {timeSlots.map(slot => {
-            const selected = slot === selectedTime;
-            return (
-              <TouchableOpacity
-                key={slot}
-                style={[styles.timeSlot, { backgroundColor: colors.card, borderColor: colors.border }, selected && styles.timeSlotActive]}
-                onPress={() => setSelectedTime(slot)}
-              >
-                <Text style={[styles.timeSlotText, { color: colors.textSecondary }, selected && styles.timeSlotTextActive]}>{slot}</Text>
-              </TouchableOpacity>
-            );
-          })}
+          {availableTimeSlots.length === 0 ? (
+            <Text style={{ color: colors.textSecondary, fontStyle: 'italic', paddingVertical: 10 }}>No slots available for this date.</Text>
+          ) : (
+            availableTimeSlots.map(slot => {
+              const selected = slot === selectedTime;
+              return (
+                <TouchableOpacity
+                  key={slot}
+                  style={[styles.timeSlot, { backgroundColor: colors.card, borderColor: colors.border }, selected && styles.timeSlotActive]}
+                  onPress={() => setSelectedTime(slot)}
+                >
+                  <Text style={[styles.timeSlotText, { color: colors.textSecondary }, selected && styles.timeSlotTextActive]}>{slot}</Text>
+                </TouchableOpacity>
+              );
+            })
+          )}
         </View>
 
         {/* Notes */}
@@ -371,4 +478,20 @@ const styles = StyleSheet.create({
   successButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
   successSecondary: { paddingVertical: 12 },
   successSecondaryText: { fontSize: 14, color: '#64748B' },
+
+  // Reviews
+  reviewCard: {
+    borderRadius: 16, padding: 14, marginBottom: 10,
+    borderWidth: 1,
+  },
+  reviewHeader: {
+    flexDirection: 'row', alignItems: 'center', marginBottom: 8,
+  },
+  reviewAvatar: {
+    width: 32, height: 32, borderRadius: 16,
+    alignItems: 'center', justifyContent: 'center', marginRight: 10,
+  },
+  reviewName: { fontSize: 13, fontWeight: '600' },
+  reviewStars: { flexDirection: 'row', gap: 2 },
+  reviewComment: { fontSize: 13, lineHeight: 18 },
 });

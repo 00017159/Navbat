@@ -5,8 +5,6 @@ import { useRouter } from 'expo-router';
 import { getDoctors, getAppointments, getCurrentUser } from '../../services/api';
 import { useTheme } from '../../services/theme';
 
-const CATEGORIES = ['All', 'Cardiologist', 'Neurologist', 'Pediatrician', 'Dentist', 'Orthopedic'];
-
 // Live data only
 
 function getGreeting() {
@@ -76,6 +74,9 @@ export default function HomeScreen() {
     setRefreshing(true);
     fetchData();
   }, [fetchData]);
+
+  // Dynamically compute categories from active doctors
+  const computedCategories = ['All', ...Array.from(new Set(doctors.map(d => d.doctorProfile?.specialty).filter(Boolean)))];
 
   // Filter doctors by category and search
   const filteredDoctors = doctors.filter(doc => {
@@ -203,10 +204,10 @@ export default function HomeScreen() {
 
         {/* Categories Tabs */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll}>
-          {CATEGORIES.map(cat => (
+          {computedCategories.map(cat => (
             <TouchableOpacity 
               key={cat} 
-              onPress={() => setActiveTab(cat)}
+              onPress={() => setActiveTab(cat as string)}
               style={[styles.categoryPill, { backgroundColor: colors.card, borderColor: colors.border }, activeTab === cat && styles.categoryPillActive]}
             >
               <Text style={[styles.categoryText, { color: colors.textSecondary }, activeTab === cat && styles.categoryTextActive]}>{cat}</Text>

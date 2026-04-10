@@ -171,7 +171,7 @@ function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) =
               <label>Email Address</label>
               <input
                 type="email"
-                placeholder="doctor@navbat.uz"
+                placeholder="doctor@clinic.uz"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handlePasswordLogin()}
@@ -673,7 +673,7 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
           <div className="login-card" style={{ width: 400, transform: 'none', padding: 24, borderRadius: 16 }}>
             <h2 style={{ marginTop: 0, marginBottom: 16, fontFamily: 'Outfit', color: '#F1F5F9' }}>Add New Doctor</h2>
             
-            <div className="form-group"><label>Email</label><input type="email" value={doctorForm.email} onChange={e => setDoctorForm({...doctorForm, email: e.target.value})} placeholder="dr.smith@navbat.uz" /></div>
+            <div className="form-group"><label>Email</label><input type="email" value={doctorForm.email} onChange={e => setDoctorForm({...doctorForm, email: e.target.value})} placeholder="dr.smith@clinic.uz" /></div>
             <div className="form-group">
               <label>Password (doctor will use this to log in)</label>
               <input type="text" value={doctorForm.password} onChange={e => setDoctorForm({...doctorForm, password: e.target.value})} placeholder="Min 6 characters" />

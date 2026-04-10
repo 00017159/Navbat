@@ -8,9 +8,12 @@
     "scheme": "clinicuz",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/images/clinicuz-logo.png",
+      "bundleIdentifier": "uz.clinicuz.app",
+      "supportsTablet": true
     },
     "android": {
+      "package": "uz.clinicuz.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

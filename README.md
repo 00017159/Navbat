@@ -1,7 +1,7 @@
 # ClinicUz 
 ClinicUz is a comprehensive, production-ready Dual-Platform Healthcare System designed to bridge the gap between patients, medical specialists, and clinical administration. 
 
-The system operates across a **Patient-Facing Mobile Application** and an **Administrative Web Portal**, both unified securely through a centralized PostgreSQL backend.
+The system operates across a **Patient-Facing Mobile Application** and an **Administrative Web Portal**, both unified securely through a centralized **Supabase** backend.
 
 ---
 
@@ -24,10 +24,11 @@ A private web dashboard accessible exclusively to authenticated internal team me
 - **Prescriptive Analytics:** A custom-built pipeline wherein Doctors can pull historical appointments and write official "Symptoms and Prescriptive Diagnosis" directly to the database. These securely push directly to the patient's mobile app timeline.
 - **UI Framework:** Lightning-fast single-page interface bundled by **Vite** using pure Vanilla CSS specifically architected around a sleek, dark-mode styling scheme.
 
-### 3. Backend Architecture (Supabase / Postgres)
-- **Email OTP Authentication:** Passwordless, highly-secure One-Time-Password architecture. Upon a user's first login, PostgreSQL triggers naturally hook into the execution and auto-generate linked profile rows without manual setup.
-- **Dynamic Policy Enforcement (RLS):** Strict Row-Level-Security (RLS) policies completely isolate data layers. Patients can only query and read data matching their `auth.uid()`, while `SECURITY DEFINER` Postgres functions safely elevate system administrators to access the holistic DB.
-- **Schema Management:** All logic lives centrally in `supabase-schema.sql`, featuring structured foreign-key mapping across `profiles`, `doctor_profiles`, `appointments`, `medical_records`, and `reviews`.
+### 3. Backend Powerhouse (Supabase)
+- **Unified Identity:** Powered by **Supabase Auth** using an Email OTP strategy for highly secure, passwordless logins.
+- **Automated Workflows:** **PostgreSQL triggers** automatically initialize user profiles and link roles upon first registration.
+- **Advanced Security:** Strict **Row-Level-Security (RLS)** policies ensure patients only access their own data while enabling administrative oversight.
+- **Schema Control:** A centralized `supabase-schema.sql` manages all relationships across profiles, appointments, and medical records.
 
 ---
 
@@ -47,7 +48,7 @@ A private web dashboard accessible exclusively to authenticated internal team me
 - **Data Fetching:** Isomorphic Supabase configuration allowing real-time mapping natively in the browser.
 
 ### Cloud Infrastructure
-- **Relational Database:** [Supabase PostgreSQL](https://supabase.com/)
+- **Backend Platform:** [Supabase](https://supabase.com/) (Database, Auth, and Realtime Engine)
 - **Authentication:** Supabase Auth (Email OTP Strategy)
 - **DevOps:** [GitHub Actions](https://github.com/features/actions) YAML pipelines performing Continuous Integration builds sequentially testing both TS configurations natively across Node instances.
 - **Generative AI Backend:** [OpenAI API](https://openai.com/) GPT-3.5-Turbo for Natural Language Processing routines.

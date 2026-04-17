@@ -1,5 +1,9 @@
 # ClinicUz 
+
 ClinicUz is a comprehensive, production-ready Dual-Platform Healthcare System designed to bridge the gap between patients, medical specialists, and clinical administration. 
+
+🌐 **Live Admin Portal Deployment:** [https://clinicuzadminportal.vercel.app/](https://clinicuzadminportal.vercel.app/)  
+*(The web administration dashboard is fully deployed and hosted via Vercel for immediate cloud access.)*
 
 The system operates across a **Patient-Facing Mobile Application** and an **Administrative Web Portal**, both unified securely through a centralized **Supabase** backend.
 

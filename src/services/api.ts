@@ -31,11 +31,18 @@ export async function verifyOtp(email: string, code: string) {
     .eq('auth_id', data.user?.id)
     .single();
 
+  // Block doctors and admins from signing into the patient app
+  const userRole = profile?.role || 'PATIENT';
+  if (userRole === 'DOCTOR' || userRole === 'ADMIN') {
+    await supabase.auth.signOut();
+    throw new Error('Doctor accounts cannot sign in to the patient app. Please use the Admin Portal instead.');
+  }
+
   const user = {
     id: profile?.id || data.user?.id,
     authId: data.user?.id,
     email: data.user?.email,
-    role: profile?.role || 'PATIENT',
+    role: userRole,
     firstName: profile?.first_name || email.split('@')[0],
     lastName: profile?.last_name || '',
   };

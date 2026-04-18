@@ -1,11 +1,21 @@
-import { useState, useEffect, useCallback } from 'react';
-import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase';
 import { createClient } from '@supabase/supabase-js';
 import {
-  LayoutDashboard, Users, Calendar, LogOut,
-  Shield, Activity, UserCheck, Clock, Trash2, HeartPulse, FileText, Eye, EyeOff
+  Activity,
+  Calendar,
+  Clock,
+  Eye, EyeOff,
+  FileText,
+  HeartPulse,
+  LayoutDashboard,
+  LogOut,
+  Shield,
+  Trash2,
+  UserCheck,
+  Users
 } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import './App.css';
+import { supabase, SUPABASE_ANON_KEY, SUPABASE_URL } from './supabase';
 
 type View = 'dashboard' | 'users' | 'appointments' | 'doctors' | 'records';
 
@@ -111,14 +121,14 @@ function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) =
             style={{ flex: 1, fontSize: 13, padding: '8px 0', background: loginMode === 'otp' ? '#1E63D3' : '#1E293B', border: loginMode === 'otp' ? 'none' : '1px solid #334155', boxShadow: loginMode === 'otp' ? undefined : 'none' }}
             onClick={() => { setLoginMode('otp'); setStep('email'); setError(''); }}
           >
-            OTP Login
+            Admin Login
           </button>
           <button
             className={`btn-primary`}
             style={{ flex: 1, fontSize: 13, padding: '8px 0', background: loginMode === 'password' ? '#1E63D3' : '#1E293B', border: loginMode === 'password' ? 'none' : '1px solid #334155', boxShadow: loginMode === 'password' ? undefined : 'none' }}
             onClick={() => { setLoginMode('password'); setStep('email'); setError(''); }}
           >
-            Password Login
+            Doctors Login
           </button>
         </div>
 
@@ -356,7 +366,7 @@ function AppointmentsView({ appointments, role, onRefresh }: { appointments: App
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
   const [loading, setLoading] = useState(false);
-  
+
   const [recordForm, setRecordForm] = useState({
     diagnosis: '',
     notes: ''
@@ -384,10 +394,10 @@ function AppointmentsView({ appointments, role, onRefresh }: { appointments: App
         date: new Date().toISOString()
       });
       if (error) throw error;
-      
+
       // Update appointment status to COMPLETED
       await supabase.from('appointments').update({ status: 'COMPLETED' }).eq('id', selectedAppt.id);
-      
+
       setIsModalOpen(false);
       onRefresh();
       setRecordForm({ diagnosis: '', notes: '' });
@@ -467,27 +477,27 @@ function AppointmentsView({ appointments, role, onRefresh }: { appointments: App
           <div className="login-card" style={{ width: 500, transform: 'none', padding: 24, borderRadius: 16 }}>
             <h2 style={{ marginTop: 0, marginBottom: 8, fontFamily: 'Outfit', color: '#F1F5F9' }}>Clinical Record</h2>
             <p style={{ color: '#94A3B8', marginBottom: 20 }}>Patient: <strong style={{ color: '#F1F5F9' }}>{selectedAppt.patient?.first_name} {selectedAppt.patient?.last_name}</strong></p>
-            
+
             <div className="form-group">
               <label>Diagnosis / Symptoms</label>
-              <textarea 
+              <textarea
                 style={{ minHeight: 80, resize: 'vertical' }}
-                value={recordForm.diagnosis} 
-                onChange={e => setRecordForm({...recordForm, diagnosis: e.target.value})} 
-                placeholder="Observed symptoms and final diagnosis..." 
+                value={recordForm.diagnosis}
+                onChange={e => setRecordForm({ ...recordForm, diagnosis: e.target.value })}
+                placeholder="Observed symptoms and final diagnosis..."
               />
             </div>
-            
+
             <div className="form-group">
               <label>Prescriptions & Suggestions</label>
-              <textarea 
+              <textarea
                 style={{ minHeight: 80, resize: 'vertical' }}
-                value={recordForm.notes} 
-                onChange={e => setRecordForm({...recordForm, notes: e.target.value})} 
-                placeholder="Medications, rest details, treatment plan..." 
+                value={recordForm.notes}
+                onChange={e => setRecordForm({ ...recordForm, notes: e.target.value })}
+                placeholder="Medications, rest details, treatment plan..."
               />
             </div>
-            
+
             <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
               <button className="btn-primary" style={{ flex: 1, background: '#1E293B', color: '#F1F5F9', border: '1px solid #334155', boxShadow: 'none' }} onClick={() => setIsModalOpen(false)}>Cancel</button>
               <button className="btn-primary" style={{ flex: 1, background: '#10B981' }} onClick={handleAddRecord} disabled={loading}>{loading ? 'Saving...' : 'Save & Complete'}</button>
@@ -504,7 +514,7 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   // New Doctor State
   const [doctorForm, setDoctorForm] = useState({
     email: '',
@@ -547,7 +557,7 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
           last_name: doctorForm.last_name,
           role: 'DOCTOR'
         }).select().single();
-      
+
       if (profileError) throw profileError;
 
       // 2. Create auth account via a temporary client (so admin session stays intact)
@@ -587,7 +597,7 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
       setIsModalOpen(false);
       onRefresh();
       alert(`Doctor ${doctorForm.first_name} ${doctorForm.last_name} created!\n\nLogin credentials:\nEmail: ${doctorForm.email}\nPassword: ${doctorForm.password}`);
-      
+
       // reset form
       setDoctorForm({
         email: '', first_name: '', last_name: '', password: '', specialty: 'General Practice',
@@ -672,31 +682,31 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(11,17,32,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
           <div className="login-card" style={{ width: 400, transform: 'none', padding: 24, borderRadius: 16 }}>
             <h2 style={{ marginTop: 0, marginBottom: 16, fontFamily: 'Outfit', color: '#F1F5F9' }}>Add New Doctor</h2>
-            
-            <div className="form-group"><label>Email</label><input type="email" value={doctorForm.email} onChange={e => setDoctorForm({...doctorForm, email: e.target.value})} placeholder="dr.smith@clinic.uz" /></div>
+
+            <div className="form-group"><label>Email</label><input type="email" value={doctorForm.email} onChange={e => setDoctorForm({ ...doctorForm, email: e.target.value })} placeholder="dr.smith@clinic.uz" /></div>
             <div className="form-group">
               <label>Password (doctor will use this to log in)</label>
-              <input type="text" value={doctorForm.password} onChange={e => setDoctorForm({...doctorForm, password: e.target.value})} placeholder="Min 6 characters" />
+              <input type="text" value={doctorForm.password} onChange={e => setDoctorForm({ ...doctorForm, password: e.target.value })} placeholder="Min 6 characters" />
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
-              <div className="form-group" style={{ flex: 1 }}><label>First Name</label><input type="text" value={doctorForm.first_name} onChange={e => setDoctorForm({...doctorForm, first_name: e.target.value})} /></div>
-              <div className="form-group" style={{ flex: 1 }}><label>Last Name</label><input type="text" value={doctorForm.last_name} onChange={e => setDoctorForm({...doctorForm, last_name: e.target.value})} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>First Name</label><input type="text" value={doctorForm.first_name} onChange={e => setDoctorForm({ ...doctorForm, first_name: e.target.value })} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>Last Name</label><input type="text" value={doctorForm.last_name} onChange={e => setDoctorForm({ ...doctorForm, last_name: e.target.value })} /></div>
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
-              <div className="form-group" style={{ flex: 1 }}><label>Specialty</label><input type="text" value={doctorForm.specialty} onChange={e => setDoctorForm({...doctorForm, specialty: e.target.value})} placeholder="e.g. Cardiologist" /></div>
-              <div className="form-group" style={{ flex: 1 }}><label>Clinic Name</label><input type="text" value={doctorForm.clinic_name} onChange={e => setDoctorForm({...doctorForm, clinic_name: e.target.value})} placeholder="Main Medical Center" /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>Specialty</label><input type="text" value={doctorForm.specialty} onChange={e => setDoctorForm({ ...doctorForm, specialty: e.target.value })} placeholder="e.g. Cardiologist" /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>Clinic Name</label><input type="text" value={doctorForm.clinic_name} onChange={e => setDoctorForm({ ...doctorForm, clinic_name: e.target.value })} placeholder="Main Medical Center" /></div>
             </div>
-            
+
             <div className="form-group">
               <label>Doctor Bio / Description</label>
-              <textarea 
+              <textarea
                 style={{ minHeight: 80, resize: 'vertical' }}
-                value={doctorForm.description} 
-                onChange={e => setDoctorForm({...doctorForm, description: e.target.value})} 
-                placeholder="Write a brief background about the doctor..." 
+                value={doctorForm.description}
+                onChange={e => setDoctorForm({ ...doctorForm, description: e.target.value })}
+                placeholder="Write a brief background about the doctor..."
               />
             </div>
-            
+
             <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
               <button className="btn-primary" style={{ flex: 1, background: '#1E293B', color: '#F1F5F9', border: '1px solid #334155', boxShadow: 'none' }} onClick={() => setIsModalOpen(false)}>Cancel</button>
               <button className="btn-primary" style={{ flex: 1 }} onClick={handleAddDoctor} disabled={loading}>{loading ? 'Creating...' : 'Create Doctor'}</button>
@@ -920,7 +930,7 @@ function App() {
           <button className={`nav-item ${view === 'dashboard' ? 'active' : ''}`} onClick={() => setView('dashboard')}>
             <LayoutDashboard size={18} /> Dashboard
           </button>
-          
+
           {role === 'ADMIN' && (
             <>
               <button className={`nav-item ${view === 'users' ? 'active' : ''}`} onClick={() => setView('users')}>

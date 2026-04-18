@@ -143,7 +143,26 @@ npx artillery run stress-test.yml
 npx artillery run spike-test.yml
 ```
 
+---
 
+##  Automated Testing Infrastructure
+
+The completely configured testing architecture spans across unit testing, web browser automation, and native mobile flows.
+
+### 1. Web Portal Unit Testing (Vitest)
+Unit tests ensure discrete Web Admin interface components render properly without external dependencies.
+- **Tools:** Vitest, React Testing Library, JSDOM.
+- **Command:** `npm run test` (inside `admin-portal/`).
+
+### 2. Web Portal End-to-End Testing (Playwright)
+Playwright spins up real Chromium browsers to physically click through the Admin login systems.
+- **Tools:** Playwright.
+- **Command:** `npm run test:e2e` (inside `admin-portal/`).
+
+### 3. Mobile App End-to-End Testing (Maestro)
+Cross-platform native mobile interface testing mimicking organic physical touch interactions on phones.
+- **Tools:** Maestro CLI.
+- **Command:** `npm run test:e2e` (inside root directory `/`, requires Android Emulator available).
 
 ---
 

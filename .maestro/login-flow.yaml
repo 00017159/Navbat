@@ -1,0 +1,8 @@
+appId: com.clinicuz.app 
+---
+- launchApp
+- tapOn:
+    id: "email-input" # Note: You'll need to add testID="email-input" to your React Native TextInput
+- inputText: "testpatient@clinic.uz"
+- tapOn: "Send Verification Code"
+- assertVisible: "Verification Code"

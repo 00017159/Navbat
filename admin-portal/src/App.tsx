@@ -366,7 +366,7 @@ function UsersView({ users, onDelete }: { users: Profile[]; onDelete: (id: strin
 }
 
 // ── Appointments Management ───────────────────────────────
-function AppointmentsView({ appointments, role, onRefresh, profileId }: { appointments: Appointment[]; role: string; onRefresh: () => void; profileId: string }) {
+function AppointmentsView({ appointments, role, onRefresh }: { appointments: Appointment[]; role: string; onRefresh: () => void; profileId?: string }) {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);

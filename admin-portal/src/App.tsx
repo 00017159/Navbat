@@ -1,23 +1,28 @@
 import { createClient } from '@supabase/supabase-js';
 import {
   Activity,
+  Building2,
   Calendar,
   Clock,
+  Download,
   Eye, EyeOff,
   FileText,
   HeartPulse,
   LayoutDashboard,
   LogOut,
+  Menu,
   Shield,
   Trash2,
   UserCheck,
-  Users
+  Users,
+  X
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import * as XLSX from 'xlsx';
 import './App.css';
 import { supabase, SUPABASE_ANON_KEY, SUPABASE_URL } from './supabase';
 
-type View = 'dashboard' | 'users' | 'appointments' | 'doctors' | 'records';
+type View = 'dashboard' | 'users' | 'appointments' | 'doctors' | 'records' | 'clinics';
 
 interface Profile {
   id: string;
@@ -361,7 +366,7 @@ function UsersView({ users, onDelete }: { users: Profile[]; onDelete: (id: strin
 }
 
 // ── Appointments Management ───────────────────────────────
-function AppointmentsView({ appointments, role, onRefresh }: { appointments: Appointment[]; role: string; onRefresh: () => void }) {
+function AppointmentsView({ appointments, role, onRefresh, profileId }: { appointments: Appointment[]; role: string; onRefresh: () => void; profileId: string }) {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
@@ -408,11 +413,55 @@ function AppointmentsView({ appointments, role, onRefresh }: { appointments: App
     }
   };
 
+  const handleDownloadXlsx = () => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const monthName = now.toLocaleString('default', { month: 'long' });
+
+    const monthlyAppts = appointments.filter(a => {
+      const d = new Date(a.date_time);
+      return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+    });
+
+    const rows = monthlyAppts.map(a => ({
+      'Patient Name': a.patient ? `${a.patient.first_name} ${a.patient.last_name}` : '—',
+      'Email': a.patient?.email || '—',
+      'Date & Time': new Date(a.date_time).toLocaleString(),
+      'Type': a.type,
+      'Status': a.status,
+      'Notes': a.notes || '—'
+    }));
+
+    if (rows.length === 0) {
+      alert('No appointments found for ' + monthName + ' ' + currentYear);
+      return;
+    }
+
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, `${monthName} ${currentYear}`);
+
+    const colWidths = Object.keys(rows[0]).map(key => ({
+      wch: Math.max(key.length, ...rows.map(r => String((r as any)[key] || '').length))
+    }));
+    ws['!cols'] = colWidths;
+
+    XLSX.writeFile(wb, `patients_${monthName}_${currentYear}.xlsx`);
+  };
+
   return (
     <>
-      <div className="page-header">
-        <h1>Appointments</h1>
-        <p>All clinic appointments across the system</p>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h1>{role === 'DOCTOR' ? 'My Schedule' : 'Appointments'}</h1>
+          <p>{role === 'DOCTOR' ? 'Your upcoming and past appointments' : 'All clinic appointments across the system'}</p>
+        </div>
+        {role === 'DOCTOR' && (
+          <button className="btn-primary" style={{ width: 'auto', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: 8 }} onClick={handleDownloadXlsx}>
+            <Download size={16} /> Monthly Report
+          </button>
+        )}
       </div>
 
       <div className="table-section">
@@ -822,6 +871,183 @@ function RecordsView({ doctorProfileId }: { doctorProfileId: string }) {
   );
 }
 
+// ── Clinics Management ────────────────────────────────────
+interface Clinic {
+  id: string;
+  name: string;
+  location: string;
+  description: string;
+  created_at: string;
+}
+
+function ClinicsView() {
+  const [clinics, setClinics] = useState<Clinic[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({ name: '', location: '', description: '' });
+
+  useEffect(() => { fetchClinics(); }, []);
+
+  const fetchClinics = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('clinics')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      setClinics(data || []);
+    } catch (e) {
+      console.error('Fetch clinics error:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddClinic = async () => {
+    if (!form.name || !form.location) {
+      alert('Clinic name and location are required.');
+      return;
+    }
+    setSaving(true);
+    try {
+      const { error } = await supabase.from('clinics').insert({
+        name: form.name,
+        location: form.location,
+        description: form.description
+      });
+      if (error) throw error;
+      setIsModalOpen(false);
+      setForm({ name: '', location: '', description: '' });
+      fetchClinics();
+    } catch (e: any) {
+      alert('Failed to add clinic: ' + e.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteClinic = async (id: string) => {
+    if (!confirm('Delete this clinic? This cannot be undone.')) return;
+    try {
+      const { error } = await supabase.from('clinics').delete().eq('id', id);
+      if (error) throw error;
+      fetchClinics();
+    } catch (e: any) {
+      alert('Failed to delete: ' + e.message);
+    }
+  };
+
+  const filtered = clinics.filter(c =>
+    c.name?.toLowerCase().includes(search.toLowerCase()) ||
+    c.location?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  if (loading) {
+    return <div className="loading-screen" style={{ minHeight: 400 }}><div className="spinner" /></div>;
+  }
+
+  return (
+    <>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h1>Clinics</h1>
+          <p>Manage clinic locations and details</p>
+        </div>
+        <button className="btn-primary" style={{ width: 'auto', padding: '10px 20px' }} onClick={() => setIsModalOpen(true)}>+ Add Clinic</button>
+      </div>
+
+      <div className="table-section">
+        <div className="table-header">
+          <h2>All Clinics</h2>
+          <span className="badge">{clinics.length} total</span>
+        </div>
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search by name or location..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <div className="table-scroll-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Clinic Name</th>
+                <th>Location</th>
+                <th>Description</th>
+                <th>Added</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr><td colSpan={5} className="empty-state">No clinics found</td></tr>
+              ) : filtered.map(c => (
+                <tr key={c.id}>
+                  <td>
+                    <div className="user-cell">
+                      <div className="user-avatar" style={{ background: 'rgba(6, 182, 212, 0.15)', color: 'var(--accent-cyan)' }}>
+                        <Building2 size={16} />
+                      </div>
+                      <div className="user-name">{c.name}</div>
+                    </div>
+                  </td>
+                  <td style={{ color: '#94A3B8' }}>{c.location}</td>
+                  <td style={{ color: '#64748B', fontSize: 13, maxWidth: 250, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.description || '—'}</td>
+                  <td style={{ color: '#64748B', fontSize: 13 }}>{new Date(c.created_at).toLocaleDateString()}</td>
+                  <td>
+                    <button className="btn-delete" onClick={() => handleDeleteClinic(c.id)}>
+                      <Trash2 size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {isModalOpen && (
+        <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(11,17,32,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
+          <div className="login-card" style={{ width: 450, transform: 'none', padding: 24, borderRadius: 16 }}>
+            <h2 style={{ marginTop: 0, marginBottom: 16, fontFamily: 'Outfit', color: '#F1F5F9' }}>Add New Clinic</h2>
+
+            <div className="form-group">
+              <label>Clinic Name</label>
+              <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="e.g. Central Medical Center" />
+            </div>
+
+            <div className="form-group">
+              <label>Location</label>
+              <input type="text" value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} placeholder="e.g. Tashkent, Mirzo Ulugbek District" />
+            </div>
+
+            <div className="form-group">
+              <label>Description</label>
+              <textarea
+                style={{ minHeight: 80, resize: 'vertical' }}
+                value={form.description}
+                onChange={e => setForm({ ...form, description: e.target.value })}
+                placeholder="Brief description of the clinic..."
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
+              <button className="btn-primary" style={{ flex: 1, background: '#1E293B', color: '#F1F5F9', border: '1px solid #334155', boxShadow: 'none' }} onClick={() => setIsModalOpen(false)}>Cancel</button>
+              <button className="btn-primary" style={{ flex: 1 }} onClick={handleAddClinic} disabled={saving}>{saving ? 'Adding...' : 'Add Clinic'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 // ── Main App ──────────────────────────────────────────────
 function App() {
   const [authed, setAuthed] = useState<boolean | null>(null);
@@ -831,6 +1057,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<string>('');
   const [profileId, setProfileId] = useState<string>('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Check existing session
   useEffect(() => {
@@ -914,10 +1141,27 @@ function App() {
     }} />;
   }
 
+  const closeSidebar = () => setSidebarOpen(false);
+  const navTo = (v: View) => { setView(v); closeSidebar(); };
+
   return (
     <div className="dashboard">
+      {/* Mobile Header */}
+      <div className="mobile-header">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div className="brand-icon"><Shield size={16} color="white" /></div>
+          <span style={{ fontWeight: 700, fontSize: 16 }}>ClinicUz</span>
+        </div>
+        <button className="hamburger-btn" onClick={() => setSidebarOpen(!sidebarOpen)}>
+          {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
+
+      {/* Sidebar Overlay (mobile) */}
+      <div className={`sidebar-overlay ${sidebarOpen ? 'open' : ''}`} onClick={closeSidebar} />
+
       {/* Sidebar */}
-      <aside className="sidebar">
+      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-brand">
           <div className="brand-icon"><Shield size={20} color="white" /></div>
           <div>
@@ -927,27 +1171,30 @@ function App() {
         </div>
 
         <nav className="sidebar-nav">
-          <button className={`nav-item ${view === 'dashboard' ? 'active' : ''}`} onClick={() => setView('dashboard')}>
+          <button className={`nav-item ${view === 'dashboard' ? 'active' : ''}`} onClick={() => navTo('dashboard')}>
             <LayoutDashboard size={18} /> Dashboard
           </button>
 
           {role === 'ADMIN' && (
             <>
-              <button className={`nav-item ${view === 'users' ? 'active' : ''}`} onClick={() => setView('users')}>
+              <button className={`nav-item ${view === 'users' ? 'active' : ''}`} onClick={() => navTo('users')}>
                 <Users size={18} /> Patients
               </button>
-              <button className={`nav-item ${view === 'doctors' ? 'active' : ''}`} onClick={() => setView('doctors')}>
+              <button className={`nav-item ${view === 'doctors' ? 'active' : ''}`} onClick={() => navTo('doctors')}>
                 <HeartPulse size={18} /> Providers
+              </button>
+              <button className={`nav-item ${view === 'clinics' ? 'active' : ''}`} onClick={() => navTo('clinics')}>
+                <Building2 size={18} /> Clinics
               </button>
             </>
           )}
 
-          <button className={`nav-item ${view === 'appointments' ? 'active' : ''}`} onClick={() => setView('appointments')}>
+          <button className={`nav-item ${view === 'appointments' ? 'active' : ''}`} onClick={() => navTo('appointments')}>
             <Calendar size={18} /> {role === 'ADMIN' ? 'All Appointments' : 'My Schedule'}
           </button>
 
           {role === 'DOCTOR' && (
-            <button className={`nav-item ${view === 'records' ? 'active' : ''}`} onClick={() => setView('records')}>
+            <button className={`nav-item ${view === 'records' ? 'active' : ''}`} onClick={() => navTo('records')}>
               <FileText size={18} /> My Records
             </button>
           )}
@@ -969,7 +1216,8 @@ function App() {
             {view === 'dashboard' && <DashboardView users={users} appointments={role === 'DOCTOR' ? appointments.filter((a: any) => a.doctor_id === profileId) : appointments} />}
             {view === 'users' && role === 'ADMIN' && <UsersView users={users.filter(u => u.role !== 'DOCTOR')} onDelete={handleDeleteUser} />}
             {view === 'doctors' && role === 'ADMIN' && <DoctorsView users={users} onDelete={handleDeleteUser} onRefresh={fetchData} />}
-            {view === 'appointments' && <AppointmentsView appointments={role === 'DOCTOR' ? appointments.filter((a: any) => a.doctor_id === profileId) : appointments} role={role} onRefresh={fetchData} />}
+            {view === 'clinics' && role === 'ADMIN' && <ClinicsView />}
+            {view === 'appointments' && <AppointmentsView appointments={role === 'DOCTOR' ? appointments.filter((a: any) => a.doctor_id === profileId) : appointments} role={role} onRefresh={fetchData} profileId={profileId} />}
             {view === 'records' && role === 'DOCTOR' && <RecordsView doctorProfileId={profileId} />}
           </>
         )}

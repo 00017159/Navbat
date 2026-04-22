@@ -563,6 +563,7 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [clinics, setClinics] = useState<{ id: string; name: string }[]>([]);
 
   // New Doctor State
   const [doctorForm, setDoctorForm] = useState({
@@ -585,6 +586,12 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
     u.first_name?.toLowerCase().includes(search.toLowerCase()) ||
     u.last_name?.toLowerCase().includes(search.toLowerCase())
   );
+
+  const openAddModal = async () => {
+    setIsModalOpen(true);
+    const { data } = await supabase.from('clinics').select('id, name').order('name');
+    setClinics(data || []);
+  };
 
   const handleAddDoctor = async () => {
     if (!doctorForm.email || !doctorForm.first_name || !doctorForm.last_name) {
@@ -670,7 +677,7 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
           <h1>Doctor Directory</h1>
           <p>Manage clinic providers and specialists</p>
         </div>
-        <button className="btn-primary" onClick={() => setIsModalOpen(true)}>+ Add Doctor</button>
+        <button className="btn-primary" onClick={openAddModal}>+ Add Doctor</button>
       </div>
 
       <div className="table-section">
@@ -743,7 +750,16 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
               <div className="form-group" style={{ flex: 1 }}><label>Specialty</label><input type="text" value={doctorForm.specialty} onChange={e => setDoctorForm({ ...doctorForm, specialty: e.target.value })} placeholder="e.g. Cardiologist" /></div>
-              <div className="form-group" style={{ flex: 1 }}><label>Clinic Name</label><input type="text" value={doctorForm.clinic_name} onChange={e => setDoctorForm({ ...doctorForm, clinic_name: e.target.value })} placeholder="Main Medical Center" /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>Clinic Name</label>
+                <select
+                  value={doctorForm.clinic_name}
+                  onChange={e => setDoctorForm({ ...doctorForm, clinic_name: e.target.value })}
+                  style={{ width: '100%', padding: '14px 16px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: 15, fontFamily: 'Inter, sans-serif', outline: 'none' }}
+                >
+                  <option value="">Select a clinic...</option>
+                  {clinics.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                </select>
+              </div>
             </div>
 
             <div className="form-group">

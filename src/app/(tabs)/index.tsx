@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Alert, ActivityIndicator, RefreshControl } from 'react-native';
 import { Bell, Search, Calendar, CheckCircle2, Users, Star, Bot } from 'lucide-react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
-import { getDoctors, getAppointments, getCurrentUser } from '../../services/api';
+import { getDoctors, getAppointments, getCurrentUser, getClinics } from '../../services/api';
 import { useTheme } from '../../services/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -39,15 +39,22 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [clinics, setClinics] = useState<{ id: string; name: string }[]>([]);
+  const [activeClinic, setActiveClinic] = useState('All');
   const { colors, dark } = useTheme();
   const user = getCurrentUser();
 
   const fetchData = useCallback(async () => {
     try {
-      const [doctorsList, appointmentsList] = await Promise.allSettled([
+      const [doctorsList, appointmentsList, clinicsList] = await Promise.allSettled([
         getDoctors(),
         getAppointments(),
+        getClinics(),
       ]);
+
+      if (clinicsList.status === 'fulfilled' && Array.isArray(clinicsList.value)) {
+        setClinics(clinicsList.value);
+      }
 
       if (doctorsList.status === 'fulfilled' && Array.isArray(doctorsList.value)) {
         setDoctors(doctorsList.value);
@@ -106,10 +113,12 @@ export default function HomeScreen() {
   // Filter doctors by category and search
   const filteredDoctors = doctors.filter(doc => {
     const specialty = doc.doctorProfile?.specialty || '';
+    const clinicName = doc.doctorProfile?.clinicName || '';
     const matchesCategory = activeTab === 'All' || specialty === activeTab;
+    const matchesClinic = activeClinic === 'All' || clinicName === activeClinic;
     const fullName = `${doc.firstName || ''} ${doc.lastName || ''}`.toLowerCase();
     const matchesSearch = !searchQuery || fullName.includes(searchQuery.toLowerCase()) || specialty.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+    return matchesCategory && matchesClinic && matchesSearch;
   });
 
   const completedCount = appointments.filter(a => a.status === 'COMPLETED').length;
@@ -238,6 +247,27 @@ export default function HomeScreen() {
             </TouchableOpacity>
           ))}
         </ScrollView>
+
+        {/* Clinic Filter Tabs */}
+        {clinics.length > 0 && (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll}>
+            <TouchableOpacity 
+              onPress={() => setActiveClinic('All')}
+              style={[styles.categoryPill, { backgroundColor: colors.card, borderColor: colors.border }, activeClinic === 'All' && { backgroundColor: '#10B981', borderColor: '#10B981' }]}
+            >
+              <Text style={[styles.categoryText, { color: colors.textSecondary }, activeClinic === 'All' && styles.categoryTextActive]}>All Clinics</Text>
+            </TouchableOpacity>
+            {clinics.map(c => (
+              <TouchableOpacity 
+                key={c.id} 
+                onPress={() => setActiveClinic(c.name)}
+                style={[styles.categoryPill, { backgroundColor: colors.card, borderColor: colors.border }, activeClinic === c.name && { backgroundColor: '#10B981', borderColor: '#10B981' }]}
+              >
+                <Text style={[styles.categoryText, { color: colors.textSecondary }, activeClinic === c.name && styles.categoryTextActive]}>{c.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
 
         {/* Doctors List */}
         <View style={styles.doctorsList}>

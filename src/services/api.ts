@@ -111,6 +111,7 @@ export async function getDoctors(specialty?: string) {
         availability: doc.doctor_profiles.availability,
         bg: doc.doctor_profiles.bg,
         color: doc.doctor_profiles.color,
+        clinicName: doc.doctor_profiles.clinic_name,
       } : null,
       reviewsReceived: Array(doc.doctor_profiles?.review_count || 0).fill({
         rating: doc.doctor_profiles?.rating || 5,
@@ -282,4 +283,14 @@ export async function createReview(data: { doctorId: string; rating: number; com
 
   if (error) throw new Error(error.message);
   return { message: 'Review submitted' };
+}
+
+// ─── Clinics ───────────────────────────────────────────────
+export async function getClinics() {
+  const { data, error } = await supabase
+    .from('clinics')
+    .select('id, name')
+    .order('name');
+  if (error) throw new Error(error.message);
+  return data || [];
 }

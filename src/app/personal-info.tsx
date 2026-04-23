@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Tex
 import { ArrowLeft, Save } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../services/theme';
-import { getCurrentUser, getProfile } from '../services/api';
+import { getCurrentUser } from '../services/api';
 import { supabase } from '../services/supabase';
 
 export default function PersonalInfoScreen() {
@@ -14,33 +14,55 @@ export default function PersonalInfoScreen() {
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
   const [email] = useState(user?.email || '');
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState(user?.phone || '');
   const [saving, setSaving] = useState(false);
+
+  // Reload from DB in case in-memory state is stale
+  useEffect(() => {
+    supabase
+      .from('profiles')
+      .select('first_name, last_name, phone')
+      .eq('auth_id', user?.authId)
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          setFirstName(data.first_name || '');
+          setLastName(data.last_name || '');
+          setPhone(data.phone || '');
+        }
+      });
+  }, []);
 
   const handleSave = async () => {
     setSaving(true);
     try {
+      const authId = user?.authId;
+      if (!authId) {
+        Alert.alert('Error', 'Session expired. Please log out and log in again.');
+        return;
+      }
+
       const { error } = await supabase
         .from('profiles')
-        .update({ first_name: firstName, last_name: lastName, updated_at: new Date().toISOString() })
-        .eq('auth_id', user?.authId || user?.id);
+        .update({
+          first_name: firstName,
+          last_name: lastName,
+          updated_at: new Date().toISOString()
+        })
+        .eq('auth_id', authId);
 
       if (error) throw error;
       
-      // Update local memory so changes reflect immediately in Profile tab
+      // Update in-memory user so profile tab reflects changes immediately
       import('../services/api').then(({ setCurrentUser }) => {
         if (user) {
-          setCurrentUser({
-            ...user,
-            firstName,
-            lastName,
-          });
+          setCurrentUser({ ...user, firstName, lastName });
         }
       });
 
-      Alert.alert('Saved', 'Your personal information has been updated.');
+      Alert.alert('Saved ✓', 'Your profile has been updated successfully.');
     } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to save');
+      Alert.alert('Error', e.message || 'Failed to save. Please try again.');
     } finally {
       setSaving(false);
     }

@@ -1,13 +1,16 @@
 import { createClient } from '@supabase/supabase-js';
 import {
   Activity,
+  AlertTriangle,
   Building2,
   Calendar,
+  CheckCircle2,
   Clock,
   Download,
   Eye, EyeOff,
   FileText,
   HeartPulse,
+  Info,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -18,10 +21,98 @@ import {
   Users,
   X
 } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import * as XLSX from 'xlsx';
 import './App.css';
 import { supabase, SUPABASE_ANON_KEY, SUPABASE_URL } from './supabase';
+
+// ── Toast Notification ─────────────────────────────────────
+type ToastType = 'success' | 'error' | 'info';
+interface ToastState { message: string; type: ToastType; id: number }
+
+function Toast({ toasts, onRemove }: { toasts: ToastState[]; onRemove: (id: number) => void }) {
+  return (
+    <div style={{ position: 'fixed', top: 20, right: 20, zIndex: 9999, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {toasts.map(t => (
+        <div key={t.id} style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          padding: '14px 18px', borderRadius: 14, minWidth: 300, maxWidth: 420,
+          background: t.type === 'success' ? '#0F2B1A' : t.type === 'error' ? '#2B0F0F' : '#0F1A2B',
+          border: `1px solid ${t.type === 'success' ? '#22c55e33' : t.type === 'error' ? '#ef444433' : '#3b82f633'}`,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+          animation: 'slideIn 0.2s ease',
+        }}>
+          {t.type === 'success' && <CheckCircle2 size={18} color="#22c55e" style={{ flexShrink: 0 }} />}
+          {t.type === 'error' && <AlertTriangle size={18} color="#ef4444" style={{ flexShrink: 0 }} />}
+          {t.type === 'info' && <Info size={18} color="#3b82f6" style={{ flexShrink: 0 }} />}
+          <span style={{ flex: 1, color: '#F1F5F9', fontSize: 14, lineHeight: 1.4 }}>{t.message}</span>
+          <button onClick={() => onRemove(t.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#64748B' }}>
+            <X size={14} />
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Confirm Dialog ─────────────────────────────────────────
+interface ConfirmOptions { title: string; message: string; confirmLabel?: string; danger?: boolean }
+interface ConfirmDialogProps { options: ConfirmOptions | null; onConfirm: () => void; onCancel: () => void }
+
+function ConfirmDialog({ options, onConfirm, onCancel }: ConfirmDialogProps) {
+  if (!options) return null;
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(11,17,32,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9998, backdropFilter: 'blur(4px)' }}>
+      <div style={{ background: '#131C2E', border: '1px solid #1E293B', borderRadius: 20, padding: '28px 32px', width: 420, boxShadow: '0 24px 64px rgba(0,0,0,0.6)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+          {options.danger
+            ? <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(239,68,68,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <AlertTriangle size={20} color="#ef4444" />
+              </div>
+            : <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(59,130,246,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Info size={20} color="#3b82f6" />
+              </div>
+          }
+          <h3 style={{ margin: 0, color: '#F1F5F9', fontSize: 18, fontFamily: 'Outfit, sans-serif' }}>{options.title}</h3>
+        </div>
+        <p style={{ margin: '0 0 24px', color: '#94A3B8', fontSize: 14, lineHeight: 1.6, paddingLeft: 52 }}>{options.message}</p>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+          <button onClick={onCancel} style={{ padding: '10px 20px', borderRadius: 10, border: '1px solid #1E293B', background: '#1E293B', color: '#94A3B8', cursor: 'pointer', fontSize: 14, fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
+            Cancel
+          </button>
+          <button onClick={onConfirm} style={{ padding: '10px 20px', borderRadius: 10, border: 'none', background: options.danger ? '#ef4444' : '#3b82f6', color: '#fff', cursor: 'pointer', fontSize: 14, fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
+            {options.confirmLabel || 'Confirm'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── useDialog hook ─────────────────────────────────────────
+function useDialog() {
+  const [toasts, setToasts] = useState<ToastState[]>([]);
+  const [confirmOptions, setConfirmOptions] = useState<ConfirmOptions | null>(null);
+  const resolveRef = useRef<((val: boolean) => void) | null>(null);
+  let toastId = useRef(0);
+
+  const toast = (message: string, type: ToastType = 'info') => {
+    const id = ++toastId.current;
+    setToasts(prev => [...prev, { message, type, id }]);
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
+  };
+
+  const confirm = (options: ConfirmOptions): Promise<boolean> => {
+    setConfirmOptions(options);
+    return new Promise(resolve => { resolveRef.current = resolve; });
+  };
+
+  const handleConfirm = () => { setConfirmOptions(null); resolveRef.current?.(true); };
+  const handleCancel = () => { setConfirmOptions(null); resolveRef.current?.(false); };
+  const removeToast = (id: number) => setToasts(prev => prev.filter(t => t.id !== id));
+
+  return { toast, confirm, toasts, removeToast, confirmOptions, handleConfirm, handleCancel };
+}
 
 type View = 'dashboard' | 'users' | 'appointments' | 'doctors' | 'records' | 'clinics';
 
@@ -582,7 +673,13 @@ function AppointmentsView({ appointments, role, onRefresh }: { appointments: App
 }
 
 // ── Doctors Management ──────────────────────────────────────
-function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelete: (id: string) => void; onRefresh: () => void }) {
+function DoctorsView({ users, onDelete, onRefresh, toast, confirm }: {
+  users: Profile[];
+  onDelete: (id: string) => void;
+  onRefresh: () => void;
+  toast: (msg: string, type?: ToastType) => void;
+  confirm: (opts: ConfirmOptions) => Promise<boolean>;
+}) {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -628,7 +725,7 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
       setIsEditModalOpen(false);
       onRefresh();
     } catch (e: any) {
-      alert('Failed to update: ' + e.message);
+      toast('Failed to update: ' + e.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -664,11 +761,11 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
 
   const handleAddDoctor = async () => {
     if (!doctorForm.email || !doctorForm.first_name || !doctorForm.last_name) {
-      alert('Email, First Name, and Last Name are required.');
+      toast('Email, First Name, and Last Name are required.', 'error');
       return;
     }
     if (!doctorForm.password || doctorForm.password.length < 6) {
-      alert('Password must be at least 6 characters.');
+      toast('Password must be at least 6 characters.', 'error');
       return;
     }
     setLoading(true);
@@ -721,7 +818,7 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
 
       setIsModalOpen(false);
       onRefresh();
-      alert(`Doctor ${doctorForm.first_name} ${doctorForm.last_name} created!\n\nLogin credentials:\nEmail: ${doctorForm.email}\nPassword: ${doctorForm.password}`);
+      toast(`Dr. ${doctorForm.first_name} ${doctorForm.last_name} created! Email: ${doctorForm.email} | Password: ${doctorForm.password}`, 'success');
 
       // reset form
       setDoctorForm({
@@ -730,9 +827,9 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
       });
     } catch (e: any) {
       if (e.code === '23505') {
-        alert('Failed to add doctor: An account with this email already exists in the system.');
+        toast('An account with this email already exists in the system.', 'error');
       } else {
-        alert('Failed to add doctor: ' + e.message);
+        toast('Failed to add doctor: ' + e.message, 'error');
       }
     } finally {
       setLoading(false);
@@ -1007,7 +1104,10 @@ interface Clinic {
   created_at: string;
 }
 
-function ClinicsView() {
+function ClinicsView({ toast, confirm }: {
+  toast: (msg: string, type?: ToastType) => void;
+  confirm: (opts: ConfirmOptions) => Promise<boolean>;
+}) {
   const [clinics, setClinics] = useState<Clinic[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -1026,7 +1126,7 @@ function ClinicsView() {
 
   const handleEditClinic = async () => {
     if (!editingClinic || !editForm.name || !editForm.location) {
-      alert('Name and location are required.');
+      toast('Name and location are required.', 'error');
       return;
     }
     setSaving(true);
@@ -1038,9 +1138,10 @@ function ClinicsView() {
       }).eq('id', editingClinic.id);
       if (error) throw error;
       setIsEditModalOpen(false);
+      toast('Clinic updated successfully.', 'success');
       fetchClinics();
     } catch (e: any) {
-      alert('Failed to update: ' + e.message);
+      toast('Failed to update: ' + e.message, 'error');
     } finally {
       setSaving(false);
     }
@@ -1066,35 +1167,36 @@ function ClinicsView() {
 
   const handleAddClinic = async () => {
     if (!form.name || !form.location) {
-      alert('Clinic name and location are required.');
+      toast('Clinic name and location are required.', 'error');
       return;
     }
     setSaving(true);
     try {
       const { error } = await supabase.from('clinics').insert({
-        name: form.name,
-        location: form.location,
-        description: form.description
+        name: form.name, location: form.location, description: form.description
       });
       if (error) throw error;
       setIsModalOpen(false);
       setForm({ name: '', location: '', description: '' });
+      toast('Clinic added successfully!', 'success');
       fetchClinics();
     } catch (e: any) {
-      alert('Failed to add clinic: ' + e.message);
+      toast('Failed to add clinic: ' + e.message, 'error');
     } finally {
       setSaving(false);
     }
   };
 
   const handleDeleteClinic = async (id: string) => {
-    if (!confirm('Delete this clinic? This cannot be undone.')) return;
+    const ok = await confirm({ title: 'Delete Clinic', message: 'This will permanently delete the clinic. This cannot be undone.', confirmLabel: 'Delete', danger: true });
+    if (!ok) return;
     try {
       const { error } = await supabase.from('clinics').delete().eq('id', id);
       if (error) throw error;
+      toast('Clinic deleted.', 'success');
       fetchClinics();
     } catch (e: any) {
-      alert('Failed to delete: ' + e.message);
+      toast('Failed to delete: ' + e.message, 'error');
     }
   };
 
@@ -1249,6 +1351,7 @@ function App() {
   const [role, setRole] = useState<string>('');
   const [profileId, setProfileId] = useState<string>('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { toast, confirm, toasts, removeToast, confirmOptions, handleConfirm, handleCancel } = useDialog();
 
   // Check existing session
   useEffect(() => {
@@ -1303,13 +1406,20 @@ function App() {
 
   const handleDeleteUser = async (id: string) => {
     const user = users.find(u => u.id === id);
-    if (!confirm(`Permanently delete user "${user?.email}"? This cannot be undone.`)) return;
+    const ok = await confirm({
+      title: 'Delete User',
+      message: `Permanently delete "${user?.email}"? This cannot be undone.`,
+      confirmLabel: 'Delete',
+      danger: true,
+    });
+    if (!ok) return;
     try {
       const { error } = await supabase.from('profiles').delete().eq('id', id);
       if (error) throw error;
+      toast('User deleted successfully.', 'success');
       await fetchData();
     } catch (e: any) {
-      alert('Failed to delete: ' + e.message);
+      toast('Failed to delete: ' + e.message, 'error');
     }
   };
 
@@ -1406,13 +1516,15 @@ function App() {
           <>
             {view === 'dashboard' && <DashboardView users={users} appointments={role === 'DOCTOR' ? appointments.filter((a: any) => a.doctor_id === profileId) : appointments} />}
             {view === 'users' && role === 'ADMIN' && <UsersView users={users.filter(u => u.role !== 'DOCTOR')} onDelete={handleDeleteUser} />}
-            {view === 'doctors' && role === 'ADMIN' && <DoctorsView users={users} onDelete={handleDeleteUser} onRefresh={fetchData} />}
-            {view === 'clinics' && role === 'ADMIN' && <ClinicsView />}
+            {view === 'doctors' && role === 'ADMIN' && <DoctorsView users={users} onDelete={handleDeleteUser} onRefresh={fetchData} toast={toast} confirm={confirm} />}
+            {view === 'clinics' && role === 'ADMIN' && <ClinicsView toast={toast} confirm={confirm} />}
             {view === 'appointments' && <AppointmentsView appointments={role === 'DOCTOR' ? appointments.filter((a: any) => a.doctor_id === profileId) : appointments} role={role} onRefresh={fetchData} profileId={profileId} />}
             {view === 'records' && role === 'DOCTOR' && <RecordsView doctorProfileId={profileId} />}
           </>
         )}
       </main>
+      <Toast toasts={toasts} onRemove={removeToast} />
+      <ConfirmDialog options={confirmOptions} onConfirm={handleConfirm} onCancel={handleCancel} />
     </div>
   );
 }

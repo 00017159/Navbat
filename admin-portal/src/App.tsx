@@ -942,7 +942,7 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
       {/* Add Doctor Modal */}
       {isModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(11,17,32,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-          <div className="login-card" style={{ width: 400, transform: 'none', padding: 24, borderRadius: 16 }}>
+          <div className="login-card" style={{ width: 400, transform: 'none', padding: 24, borderRadius: 16, maxHeight: '90vh', overflowY: 'auto' }}>
             <h2 style={{ marginTop: 0, marginBottom: 16, fontFamily: 'Outfit', color: '#F1F5F9' }}>Add New Doctor</h2>
 
             <div className="form-group"><label>Email</label><input type="email" value={doctorForm.email} onChange={e => setDoctorForm({ ...doctorForm, email: e.target.value })} placeholder="dr.smith@clinic.uz" /></div>
@@ -1278,7 +1278,7 @@ function ClinicsView({ toast, confirm }: {
       {/* Edit Clinic Modal */}
       {isEditModalOpen && editingClinic && (
         <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(11,17,32,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-          <div className="login-card" style={{ width: 450, transform: 'none', padding: 24, borderRadius: 16 }}>
+          <div className="login-card" style={{ width: 450, transform: 'none', padding: 24, borderRadius: 16, maxHeight: '90vh', overflowY: 'auto' }}>
             <h2 style={{ marginTop: 0, marginBottom: 4, color: '#F1F5F9' }}>Edit Clinic</h2>
             <p style={{ color: '#64748B', marginBottom: 16, fontSize: 13 }}>ID: {editingClinic.id.slice(0, 8)}...</p>
 
@@ -1306,7 +1306,7 @@ function ClinicsView({ toast, confirm }: {
       {/* Add Clinic Modal */}
       {isModalOpen && (
         <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(11,17,32,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-          <div className="login-card" style={{ width: 450, transform: 'none', padding: 24, borderRadius: 16 }}>
+          <div className="login-card" style={{ width: 450, transform: 'none', padding: 24, borderRadius: 16, maxHeight: '90vh', overflowY: 'auto' }}>
             <h2 style={{ marginTop: 0, marginBottom: 16, fontFamily: 'Outfit', color: '#F1F5F9' }}>Add New Clinic</h2>
 
             <div className="form-group">

@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  Pencil,
   Shield,
   Trash2,
   UserCheck,
@@ -103,7 +104,20 @@ function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) =
   const resolveLogin = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Auth failed');
-    const { data: profile } = await supabase.from('profiles').select('role, id').eq('auth_id', user.id).single();
+    // Try auth_id first, then fall back to email (handles doctors created before linking)
+    let profile: { role: string; id: string } | null = null;
+    const byAuthId = await supabase.from('profiles').select('role, id').eq('auth_id', user.id).single();
+    if (byAuthId.data) {
+      profile = byAuthId.data;
+    } else {
+      // Fallback: look up by email and link auth_id
+      const byEmail = await supabase.from('profiles').select('role, id').eq('email', user.email).single();
+      if (byEmail.data) {
+        profile = byEmail.data;
+        // Link the auth_id so future logins work via auth_id
+        await supabase.from('profiles').update({ auth_id: user.id }).eq('id', byEmail.data.id);
+      }
+    }
     if (profile?.role !== 'ADMIN' && profile?.role !== 'DOCTOR') {
       await supabase.auth.signOut();
       throw new Error('Access denied. Staff privileges required.');
@@ -562,8 +576,54 @@ function AppointmentsView({ appointments, role, onRefresh }: { appointments: App
 function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelete: (id: string) => void; onRefresh: () => void }) {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingDoctor, setEditingDoctor] = useState<Profile | null>(null);
+  const [editForm, setEditForm] = useState({ first_name: '', last_name: '', specialty: '', clinic_name: '', description: '', experience_yrs: '' });
   const [loading, setLoading] = useState(false);
   const [clinics, setClinics] = useState<{ id: string; name: string }[]>([]);
+
+  const openEditModal = async (doctor: Profile) => {
+    const { data: dp } = await supabase.from('doctor_profiles').select('*').eq('user_id', doctor.id).single();
+    const { data: cl } = await supabase.from('clinics').select('id, name').order('name');
+    setClinics(cl || []);
+    setEditingDoctor(doctor);
+    setEditForm({
+      first_name: doctor.first_name || '',
+      last_name: doctor.last_name || '',
+      specialty: dp?.specialty || '',
+      clinic_name: dp?.clinic_name || '',
+      description: dp?.description || '',
+      experience_yrs: String(dp?.experience_yrs || ''),
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditDoctor = async () => {
+    if (!editingDoctor) return;
+    setLoading(true);
+    try {
+      const { error: pe } = await supabase.from('profiles').update({
+        first_name: editForm.first_name,
+        last_name: editForm.last_name,
+      }).eq('id', editingDoctor.id);
+      if (pe) throw pe;
+
+      const { error: de } = await supabase.from('doctor_profiles').update({
+        specialty: editForm.specialty,
+        clinic_name: editForm.clinic_name,
+        description: editForm.description,
+        experience_yrs: parseInt(editForm.experience_yrs) || 0,
+      }).eq('user_id', editingDoctor.id);
+      if (de) throw de;
+
+      setIsEditModalOpen(false);
+      onRefresh();
+    } catch (e: any) {
+      alert('Failed to update: ' + e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // New Doctor State
   const [doctorForm, setDoctorForm] = useState({
@@ -698,7 +758,7 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
             <tr>
               <th>Provider</th>
               <th>Specialty</th>
-              <th>Experience</th>
+              <th>Clinic</th>
               <th>Joined</th>
               <th>Actions</th>
             </tr>
@@ -720,13 +780,17 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
                   </div>
                 </td>
                 <td><span className="status-badge" style={{ background: '#F8FAFC', color: '#475569' }}>Registered</span></td>
-                <td>—</td>
+                <td style={{ color: '#94A3B8', fontSize: 13 }}>—</td>
                 <td style={{ color: '#64748B', fontSize: 13 }}>{new Date(u.created_at).toLocaleDateString()}</td>
                 <td>
-                  <button className="btn-delete" onClick={() => onDelete(u.id)}>
-                    <Trash2 size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    Delete
-                  </button>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button className="btn-delete" style={{ borderColor: 'rgba(59,130,246,0.3)', background: 'rgba(59,130,246,0.08)', color: 'var(--accent-blue)' }} onClick={() => openEditModal(u)}>
+                      <Pencil size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />Edit
+                    </button>
+                    <button className="btn-delete" onClick={() => onDelete(u.id)}>
+                      <Trash2 size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -734,6 +798,40 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
         </table>
       </div>
 
+      {/* Edit Doctor Modal */}
+      {isEditModalOpen && editingDoctor && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(11,17,32,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
+          <div className="login-card" style={{ width: 440, transform: 'none', padding: 24, borderRadius: 16, maxHeight: '90vh', overflowY: 'auto' }}>
+            <h2 style={{ marginTop: 0, marginBottom: 4, color: '#F1F5F9' }}>Edit Doctor</h2>
+            <p style={{ color: '#64748B', marginBottom: 16, fontSize: 13 }}>{editingDoctor.email}</p>
+
+            <div style={{ display: 'flex', gap: 12 }}>
+              <div className="form-group" style={{ flex: 1 }}><label>First Name</label><input type="text" value={editForm.first_name} onChange={e => setEditForm({ ...editForm, first_name: e.target.value })} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>Last Name</label><input type="text" value={editForm.last_name} onChange={e => setEditForm({ ...editForm, last_name: e.target.value })} /></div>
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <div className="form-group" style={{ flex: 1 }}><label>Specialty</label><input type="text" value={editForm.specialty} onChange={e => setEditForm({ ...editForm, specialty: e.target.value })} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>Experience (yrs)</label><input type="number" value={editForm.experience_yrs} onChange={e => setEditForm({ ...editForm, experience_yrs: e.target.value })} /></div>
+            </div>
+            <div className="form-group"><label>Clinic</label>
+              <select value={editForm.clinic_name} onChange={e => setEditForm({ ...editForm, clinic_name: e.target.value })} style={{ width: '100%', padding: '14px 16px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: 15, fontFamily: 'Inter, sans-serif', outline: 'none' }}>
+                <option value="">Select a clinic...</option>
+                {clinics.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+              </select>
+            </div>
+            <div className="form-group"><label>Bio / Description</label>
+              <textarea style={{ minHeight: 80, resize: 'vertical' }} value={editForm.description} onChange={e => setEditForm({ ...editForm, description: e.target.value })} />
+            </div>
+
+            <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
+              <button className="btn-primary" style={{ flex: 1, background: '#1E293B', color: '#F1F5F9', border: '1px solid #334155', boxShadow: 'none' }} onClick={() => setIsEditModalOpen(false)}>Cancel</button>
+              <button className="btn-primary" style={{ flex: 1 }} onClick={handleEditDoctor} disabled={loading}>{loading ? 'Saving...' : 'Save Changes'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Doctor Modal */}
       {isModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(11,17,32,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
           <div className="login-card" style={{ width: 400, transform: 'none', padding: 24, borderRadius: 16 }}>
@@ -901,8 +999,39 @@ function ClinicsView() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingClinic, setEditingClinic] = useState<Clinic | null>(null);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ name: '', location: '', description: '' });
+  const [editForm, setEditForm] = useState({ name: '', location: '', description: '' });
+
+  const openEditClinic = (clinic: Clinic) => {
+    setEditingClinic(clinic);
+    setEditForm({ name: clinic.name, location: clinic.location, description: clinic.description || '' });
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditClinic = async () => {
+    if (!editingClinic || !editForm.name || !editForm.location) {
+      alert('Name and location are required.');
+      return;
+    }
+    setSaving(true);
+    try {
+      const { error } = await supabase.from('clinics').update({
+        name: editForm.name,
+        location: editForm.location,
+        description: editForm.description,
+      }).eq('id', editingClinic.id);
+      if (error) throw error;
+      setIsEditModalOpen(false);
+      fetchClinics();
+    } catch (e: any) {
+      alert('Failed to update: ' + e.message);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   useEffect(() => { fetchClinics(); }, []);
 
@@ -1016,6 +1145,9 @@ function ClinicsView() {
                   <td style={{ color: '#64748B', fontSize: 13, maxWidth: 250, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.description || '—'}</td>
                   <td style={{ color: '#64748B', fontSize: 13 }}>{new Date(c.created_at).toLocaleDateString()}</td>
                   <td>
+                    <button className="btn-delete" style={{ borderColor: 'rgba(59,130,246,0.3)', background: 'rgba(59,130,246,0.08)', color: 'var(--accent-blue)' }} onClick={() => openEditClinic(c)}>
+                      <Pencil size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />Edit
+                    </button>
                     <button className="btn-delete" onClick={() => handleDeleteClinic(c.id)}>
                       <Trash2 size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />
                       Delete
@@ -1028,6 +1160,35 @@ function ClinicsView() {
         </div>
       </div>
 
+      {/* Edit Clinic Modal */}
+      {isEditModalOpen && editingClinic && (
+        <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(11,17,32,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
+          <div className="login-card" style={{ width: 450, transform: 'none', padding: 24, borderRadius: 16 }}>
+            <h2 style={{ marginTop: 0, marginBottom: 4, color: '#F1F5F9' }}>Edit Clinic</h2>
+            <p style={{ color: '#64748B', marginBottom: 16, fontSize: 13 }}>ID: {editingClinic.id.slice(0, 8)}...</p>
+
+            <div className="form-group">
+              <label>Clinic Name</label>
+              <input type="text" value={editForm.name} onChange={e => setEditForm({ ...editForm, name: e.target.value })} />
+            </div>
+            <div className="form-group">
+              <label>Location</label>
+              <input type="text" value={editForm.location} onChange={e => setEditForm({ ...editForm, location: e.target.value })} />
+            </div>
+            <div className="form-group">
+              <label>Description</label>
+              <textarea style={{ minHeight: 80, resize: 'vertical' }} value={editForm.description} onChange={e => setEditForm({ ...editForm, description: e.target.value })} />
+            </div>
+
+            <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
+              <button className="btn-primary" style={{ flex: 1, background: '#1E293B', color: '#F1F5F9', border: '1px solid #334155', boxShadow: 'none' }} onClick={() => setIsEditModalOpen(false)}>Cancel</button>
+              <button className="btn-primary" style={{ flex: 1 }} onClick={handleEditClinic} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Clinic Modal */}
       {isModalOpen && (
         <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(11,17,32,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
           <div className="login-card" style={{ width: 450, transform: 'none', padding: 24, borderRadius: 16 }}>

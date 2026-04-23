@@ -32,6 +32,15 @@ interface Profile {
   first_name: string;
   last_name: string;
   created_at: string;
+  doctor_profiles?: {
+    specialty: string;
+    experience_yrs: number;
+    clinic_name: string;
+    description: string;
+    availability: string;
+    bg: string;
+    color: string;
+  } | null;
 }
 
 interface Appointment {
@@ -779,8 +788,11 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
                     </div>
                   </div>
                 </td>
-                <td><span className="status-badge" style={{ background: '#F8FAFC', color: '#475569' }}>Registered</span></td>
-                <td style={{ color: '#94A3B8', fontSize: 13 }}>—</td>
+                <td>{u.doctor_profiles?.specialty
+                  ? <span className="role-badge doctor">{u.doctor_profiles.specialty}</span>
+                  : <span style={{ color: '#64748B', fontSize: 13 }}>—</span>}
+                </td>
+                <td style={{ color: '#94A3B8', fontSize: 13 }}>{u.doctor_profiles?.clinic_name || '—'}</td>
                 <td style={{ color: '#64748B', fontSize: 13 }}>{new Date(u.created_at).toLocaleDateString()}</td>
                 <td>
                   <div style={{ display: 'flex', gap: 8 }}>
@@ -848,7 +860,9 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
               <div className="form-group" style={{ flex: 1 }}><label>Specialty</label><input type="text" value={doctorForm.specialty} onChange={e => setDoctorForm({ ...doctorForm, specialty: e.target.value })} placeholder="e.g. Cardiologist" /></div>
-              <div className="form-group" style={{ flex: 1 }}><label>Clinic Name</label>
+              <div className="form-group" style={{ flex: 1 }}><label>Experience (years)</label><input type="number" min="0" value={doctorForm.experience_yrs} onChange={e => setDoctorForm({ ...doctorForm, experience_yrs: e.target.value })} placeholder="e.g. 5" /></div>
+            </div>
+            <div className="form-group"><label>Clinic Name</label>
                 <select
                   value={doctorForm.clinic_name}
                   onChange={e => setDoctorForm({ ...doctorForm, clinic_name: e.target.value })}
@@ -857,7 +871,6 @@ function DoctorsView({ users, onDelete, onRefresh }: { users: Profile[]; onDelet
                   <option value="">Select a clinic...</option>
                   {clinics.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
                 </select>
-              </div>
             </div>
 
             <div className="form-group">
@@ -1145,13 +1158,14 @@ function ClinicsView() {
                   <td style={{ color: '#64748B', fontSize: 13, maxWidth: 250, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.description || '—'}</td>
                   <td style={{ color: '#64748B', fontSize: 13 }}>{new Date(c.created_at).toLocaleDateString()}</td>
                   <td>
-                    <button className="btn-delete" style={{ borderColor: 'rgba(59,130,246,0.3)', background: 'rgba(59,130,246,0.08)', color: 'var(--accent-blue)' }} onClick={() => openEditClinic(c)}>
-                      <Pencil size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />Edit
-                    </button>
-                    <button className="btn-delete" onClick={() => handleDeleteClinic(c.id)}>
-                      <Trash2 size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                      Delete
-                    </button>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button className="btn-delete" style={{ borderColor: 'rgba(59,130,246,0.3)', background: 'rgba(59,130,246,0.08)', color: 'var(--accent-blue)' }} onClick={() => openEditClinic(c)}>
+                        <Pencil size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />Edit
+                      </button>
+                      <button className="btn-delete" onClick={() => handleDeleteClinic(c.id)}>
+                        <Trash2 size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -1264,7 +1278,7 @@ function App() {
     setLoading(true);
     try {
       const [usersRes, apptsRes] = await Promise.all([
-        supabase.from('profiles').select('*').order('created_at', { ascending: false }),
+        supabase.from('profiles').select('*, doctor_profiles(specialty, experience_yrs, clinic_name, description, availability, bg, color)').order('created_at', { ascending: false }),
         supabase.from('appointments')
           .select('*, patient:profiles!patient_id(first_name, last_name, email), doctor:profiles!doctor_id(first_name, last_name)')
           .order('date_time', { ascending: false }),

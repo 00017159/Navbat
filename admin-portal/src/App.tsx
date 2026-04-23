@@ -673,12 +673,11 @@ function AppointmentsView({ appointments, role, onRefresh }: { appointments: App
 }
 
 // ── Doctors Management ──────────────────────────────────────
-function DoctorsView({ users, onDelete, onRefresh, toast, confirm }: {
+function DoctorsView({ users, onDelete, onRefresh, toast }: {
   users: Profile[];
   onDelete: (id: string) => void;
   onRefresh: () => void;
   toast: (msg: string, type?: ToastType) => void;
-  confirm: (opts: ConfirmOptions) => Promise<boolean>;
 }) {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -1516,7 +1515,7 @@ function App() {
           <>
             {view === 'dashboard' && <DashboardView users={users} appointments={role === 'DOCTOR' ? appointments.filter((a: any) => a.doctor_id === profileId) : appointments} />}
             {view === 'users' && role === 'ADMIN' && <UsersView users={users.filter(u => u.role !== 'DOCTOR')} onDelete={handleDeleteUser} />}
-            {view === 'doctors' && role === 'ADMIN' && <DoctorsView users={users} onDelete={handleDeleteUser} onRefresh={fetchData} toast={toast} confirm={confirm} />}
+            {view === 'doctors' && role === 'ADMIN' && <DoctorsView users={users} onDelete={handleDeleteUser} onRefresh={fetchData} toast={toast} />}
             {view === 'clinics' && role === 'ADMIN' && <ClinicsView toast={toast} confirm={confirm} />}
             {view === 'appointments' && <AppointmentsView appointments={role === 'DOCTOR' ? appointments.filter((a: any) => a.doctor_id === profileId) : appointments} role={role} onRefresh={fetchData} profileId={profileId} />}
             {view === 'records' && role === 'DOCTOR' && <RecordsView doctorProfileId={profileId} />}

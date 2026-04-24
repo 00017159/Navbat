@@ -1356,11 +1356,28 @@ function App() {
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
-        const { data: profile } = await supabase
+        // 1. Try auth_id first
+        let { data: profile } = await supabase
           .from('profiles')
           .select('role, id')
           .eq('auth_id', session.user.id)
           .single();
+
+        // 2. Fallback to email if auth_id link is missing (handles older accounts)
+        if (!profile && session.user.email) {
+          const { data: byEmail } = await supabase
+            .from('profiles')
+            .select('role, id')
+            .eq('email', session.user.email)
+            .single();
+          
+          if (byEmail) {
+            profile = byEmail;
+            // Auto-link auth_id for future fast lookups
+            await supabase.from('profiles').update({ auth_id: session.user.id }).eq('id', byEmail.id);
+          }
+        }
+
         if (profile?.role === 'ADMIN' || profile?.role === 'DOCTOR') {
           setRole(profile.role);
           setProfileId(profile.id);

@@ -154,16 +154,43 @@ export async function getDoctorAppointmentsForDate(doctorId: string, dateString:
   });
 }
 
-// Helper: get current user's profile id
+// Helper: get current user's profile id (robust — handles missing auth_id link)
 async function getMyProfileId(): Promise<string | null> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
-  const { data: profile } = await supabase
+
+  // 1. Try auth_id lookup (fast path)
+  const { data: byAuthId } = await supabase
     .from('profiles')
     .select('id')
     .eq('auth_id', user.id)
     .single();
-  return profile?.id || null;
+  if (byAuthId?.id) return byAuthId.id;
+
+  // 2. Fallback: lookup by email and link auth_id
+  const { data: byEmail } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('email', user.email)
+    .single();
+  if (byEmail?.id) {
+    // Link auth_id so future lookups are instant
+    await supabase.from('profiles').update({ auth_id: user.id }).eq('id', byEmail.id);
+    return byEmail.id;
+  }
+
+  // 3. Last resort: create profile (trigger may not have fired yet)
+  const { data: newProfile } = await supabase
+    .from('profiles')
+    .insert({
+      auth_id: user.id,
+      email: user.email,
+      first_name: user.email?.split('@')[0] || '',
+      role: 'PATIENT',
+    })
+    .select('id')
+    .single();
+  return newProfile?.id || null;
 }
 
 // ─── Appointments ──────────────────────────────────────────

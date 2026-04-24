@@ -78,10 +78,13 @@ ALTER TABLE appointments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE medical_records ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 
--- Profiles: everyone can read, users update their own (matched via auth_id)
-CREATE POLICY "Public profiles readable" ON profiles FOR SELECT USING (true);
+-- Profiles: users see own, doctors/admins see all. Users update own (prevented from changing role via trigger). Users insert own but ONLY as PATIENT.
+CREATE POLICY "Profiles visibility" ON profiles FOR SELECT USING (
+  auth.uid() = auth_id OR 
+  EXISTS (SELECT 1 FROM profiles p WHERE p.auth_id = auth.uid() AND p.role IN ('DOCTOR', 'ADMIN'))
+);
 CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = auth_id);
-CREATE POLICY "Users can insert own profile" ON profiles FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users can insert own profile" ON profiles FOR INSERT WITH CHECK (auth.uid() = auth_id AND role = 'PATIENT');
 
 -- Doctor profiles: everyone can read
 CREATE POLICY "Doctor profiles readable" ON doctor_profiles FOR SELECT USING (true);
@@ -161,6 +164,29 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- ═══════════════════════════════════════
+-- TRIGGER: Prevent Privilege Escalation
+-- ═══════════════════════════════════════
+
+CREATE OR REPLACE FUNCTION public.prevent_role_escalation()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- If the user is trying to change their role
+  IF NEW.role IS DISTINCT FROM OLD.role THEN
+    -- Allow if the user making the change is an ADMIN
+    IF NOT EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN') THEN
+      -- Otherwise, force the role to stay the same
+      NEW.role = OLD.role;
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER enforce_role_security
+  BEFORE UPDATE ON profiles
+  FOR EACH ROW EXECUTE FUNCTION public.prevent_role_escalation();
 
 -- ═══════════════════════════════════════
 -- MANUALLY PROMOTE FIRST ADMIN

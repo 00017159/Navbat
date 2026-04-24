@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Tex
 import { ArrowLeft, Save } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../services/theme';
-import { getCurrentUser } from '../services/api';
+import { getCurrentUser, setCurrentUser } from '../services/api';
 import { supabase } from '../services/supabase';
 
 export default function PersonalInfoScreen() {
@@ -13,31 +13,35 @@ export default function PersonalInfoScreen() {
 
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
-  const [email] = useState(user?.email || '');
-  const [phone, setPhone] = useState(user?.phone || '');
+  const [email, setEmail] = useState(user?.email || '');
   const [saving, setSaving] = useState(false);
 
-  // Reload from DB in case in-memory state is stale
+  // Load fresh data from DB using the live auth session
   useEffect(() => {
-    supabase
-      .from('profiles')
-      .select('first_name, last_name, phone')
-      .eq('auth_id', user?.authId)
-      .single()
-      .then(({ data }) => {
-        if (data) {
-          setFirstName(data.first_name || '');
-          setLastName(data.last_name || '');
-          setPhone(data.phone || '');
-        }
-      });
+    (async () => {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) return;
+
+      const { data } = await supabase
+        .from('profiles')
+        .select('first_name, last_name, email')
+        .eq('auth_id', authUser.id)
+        .single();
+
+      if (data) {
+        setFirstName(data.first_name || '');
+        setLastName(data.last_name || '');
+        setEmail(data.email || authUser.email || '');
+      }
+    })();
   }, []);
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const authId = user?.authId;
-      if (!authId) {
+      // Get live auth user — never rely on in-memory authId
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) {
         Alert.alert('Error', 'Session expired. Please log out and log in again.');
         return;
       }
@@ -47,18 +51,16 @@ export default function PersonalInfoScreen() {
         .update({
           first_name: firstName,
           last_name: lastName,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
-        .eq('auth_id', authId);
+        .eq('auth_id', authUser.id);
 
       if (error) throw error;
-      
+
       // Update in-memory user so profile tab reflects changes immediately
-      import('../services/api').then(({ setCurrentUser }) => {
-        if (user) {
-          setCurrentUser({ ...user, firstName, lastName });
-        }
-      });
+      if (user) {
+        setCurrentUser({ ...user, firstName, lastName });
+      }
 
       Alert.alert('Saved ✓', 'Your profile has been updated successfully.');
     } catch (e: any) {
@@ -103,16 +105,6 @@ export default function PersonalInfoScreen() {
         <View style={[styles.input, styles.readOnly, { backgroundColor: dark ? '#334155' : '#F1F5F9', borderColor: colors.border }]}>
           <Text style={{ color: colors.textSecondary }}>{email}</Text>
         </View>
-
-        <Text style={[styles.label, { color: colors.textSecondary }]}>Phone Number</Text>
-        <TextInput
-          style={[styles.input, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]}
-          value={phone}
-          onChangeText={setPhone}
-          placeholder="+998 XX XXX XX XX"
-          placeholderTextColor={colors.textSecondary}
-          keyboardType="phone-pad"
-        />
 
         <TouchableOpacity
           style={[styles.saveButton, { backgroundColor: colors.primary, opacity: saving ? 0.7 : 1 }]}

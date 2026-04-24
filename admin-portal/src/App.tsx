@@ -480,7 +480,7 @@ function UsersView({ users, onDelete }: { users: Profile[]; onDelete: (id: strin
 }
 
 // ── Appointments Management ───────────────────────────────
-function AppointmentsView({ appointments, role, onRefresh }: { appointments: Appointment[]; role: string; onRefresh: () => void; profileId?: string }) {
+function AppointmentsView({ appointments, role, onRefresh, toast }: { appointments: Appointment[]; role: string; onRefresh: () => void; profileId?: string; toast: (msg: string, type?: ToastType) => void; }) {
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
@@ -500,7 +500,7 @@ function AppointmentsView({ appointments, role, onRefresh }: { appointments: App
 
   const handleAddRecord = async () => {
     if (!selectedAppt || !recordForm.diagnosis) {
-      alert('Diagnosis is required.');
+      toast('Diagnosis is required.', 'error');
       return;
     }
     setLoading(true);
@@ -521,7 +521,7 @@ function AppointmentsView({ appointments, role, onRefresh }: { appointments: App
       onRefresh();
       setRecordForm({ diagnosis: '', notes: '' });
     } catch (e: any) {
-      alert('Failed to save record: ' + e.message);
+      toast('Failed to save record: ' + e.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -548,7 +548,7 @@ function AppointmentsView({ appointments, role, onRefresh }: { appointments: App
     }));
 
     if (rows.length === 0) {
-      alert('No appointments found for ' + monthName + ' ' + currentYear);
+      toast('No appointments found for ' + monthName + ' ' + currentYear, 'info');
       return;
     }
 
@@ -1517,7 +1517,7 @@ function App() {
             {view === 'users' && role === 'ADMIN' && <UsersView users={users.filter(u => u.role !== 'DOCTOR')} onDelete={handleDeleteUser} />}
             {view === 'doctors' && role === 'ADMIN' && <DoctorsView users={users} onDelete={handleDeleteUser} onRefresh={fetchData} toast={toast} />}
             {view === 'clinics' && role === 'ADMIN' && <ClinicsView toast={toast} confirm={confirm} />}
-            {view === 'appointments' && <AppointmentsView appointments={role === 'DOCTOR' ? appointments.filter((a: any) => a.doctor_id === profileId) : appointments} role={role} onRefresh={fetchData} profileId={profileId} />}
+            {view === 'appointments' && <AppointmentsView appointments={role === 'DOCTOR' ? appointments.filter((a: any) => a.doctor_id === profileId) : appointments} role={role} onRefresh={fetchData} profileId={profileId} toast={toast} />}
             {view === 'records' && role === 'DOCTOR' && <RecordsView doctorProfileId={profileId} />}
           </>
         )}

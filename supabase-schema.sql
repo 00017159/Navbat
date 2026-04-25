@@ -99,11 +99,16 @@ $$ LANGUAGE sql SECURITY DEFINER STABLE;
 
 -- ═══════════════════════════════════════
 
--- Profiles: users see own, doctors/admins see all. Users update own (prevented from changing role via trigger). Users insert own but ONLY as PATIENT.
+-- Profiles: users see own (by auth_id or matching verified email), doctors/admins see all. Users update own (by auth_id or matching verified email).
 CREATE POLICY "Profiles visibility" ON profiles FOR SELECT USING (
-  auth.uid() = auth_id OR public.is_staff()
+  auth.uid() = auth_id OR 
+  email = (auth.jwt() ->> 'email') OR
+  public.is_staff()
 );
-CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = auth_id);
+CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (
+  auth.uid() = auth_id OR 
+  email = (auth.jwt() ->> 'email')
+);
 CREATE POLICY "Users can insert own profile" ON profiles FOR INSERT WITH CHECK (auth.uid() = auth_id AND role = 'PATIENT');
 
 -- Doctor profiles: everyone can read

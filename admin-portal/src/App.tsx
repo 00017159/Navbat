@@ -131,6 +131,8 @@ interface Profile {
     availability: string;
     bg: string;
     color: string;
+    contact_phone?: string;
+    contact_email?: string;
   } | null;
 }
 

@@ -15,7 +15,6 @@ import {
   LogOut,
   Menu,
   Pencil,
-  Shield,
   Trash2,
   UserCheck,
   Users,

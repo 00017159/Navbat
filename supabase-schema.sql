@@ -99,11 +99,12 @@ $$ LANGUAGE sql SECURITY DEFINER STABLE;
 
 -- ═══════════════════════════════════════
 
--- Profiles: users see own (by auth_id or matching verified email), doctors/admins see all. Users update own (by auth_id or matching verified email).
+-- Profiles: users see own (by auth_id or matching verified email), doctors/admins see all, and ANYONE can see DOCTORS. Users update own (by auth_id or matching verified email).
 CREATE POLICY "Profiles visibility" ON profiles FOR SELECT USING (
   auth.uid() = auth_id OR 
   email = (auth.jwt() ->> 'email') OR
-  public.is_staff()
+  public.is_staff() OR
+  role = 'DOCTOR'
 );
 CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (
   auth.uid() = auth_id OR 
@@ -203,6 +204,19 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE TRIGGER enforce_role_security
   BEFORE UPDATE ON profiles
   FOR EACH ROW EXECUTE FUNCTION public.prevent_role_escalation();
+
+-- ═══════════════════════════════════════
+-- RPC: Delete My Account
+-- ═══════════════════════════════════════
+
+CREATE OR REPLACE FUNCTION public.delete_my_account()
+RETURNS void AS $$
+BEGIN
+  -- Deleting the auth.users row automatically cascades 
+  -- and deletes the profile, appointments, and everything else
+  DELETE FROM auth.users WHERE id = auth.uid();
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- ═══════════════════════════════════════
 -- MANUALLY PROMOTE FIRST ADMIN

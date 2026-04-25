@@ -67,8 +67,9 @@ export async function getProfile() {
 export async function deleteAccount() {
   const { data: { user } } = await supabase.auth.getUser();
   if (user) {
-    // Zero-out identity to pseudo-delete due to RLS constraints
-    await supabase.from('profiles').update({ first_name: 'Deleted', last_name: 'Account' }).eq('auth_id', user.id);
+    // Call our new Postgres RPC function to completely wipe the account and all cascading data
+    const { error } = await supabase.rpc('delete_my_account');
+    if (error) console.error("Error deleting account:", error);
     await supabase.auth.signOut();
   }
 }

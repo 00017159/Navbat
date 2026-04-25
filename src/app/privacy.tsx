@@ -4,37 +4,34 @@ import { ArrowLeft, Shield, Smartphone, Key, Eye } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../services/theme';
 import { deleteAccount } from '../services/api';
+import { useAlert } from '../services/AlertContext';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 
 export default function PrivacyScreen() {
   const router = useRouter();
   const navigation = useNavigation();
   const { colors, dark } = useTheme();
+  const { showAlert } = useAlert();
 
   const handleAccountDeletion = () => {
-    Alert.alert(
-      'Delete Account',
-      'Are you sure you want to delete your account? This action is permanent and cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Delete', 
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteAccount();
-            } finally {
-              navigation.dispatch(
-                CommonActions.reset({
-                  index: 0,
-                  routes: [{ name: 'index' }],
-                })
-              );
-            }
-          }
+    showAlert({
+      title: 'Delete Account',
+      message: 'Are you sure you want to delete your account? This action is permanent and cannot be undone.',
+      type: 'confirm',
+      confirmLabel: 'Delete',
+      onConfirm: async () => {
+        try {
+          await deleteAccount();
+        } finally {
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: 'index' }],
+            })
+          );
         }
-      ]
-    );
+      }
+    });
   };
 
   const sections = [

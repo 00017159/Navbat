@@ -93,7 +93,11 @@ export const CustomAlertComponent: React.FC<CustomAlertProps> = ({
                 style={[styles.button, styles.cancelButton, { backgroundColor: dark ? '#1E293B' : '#F1F5F9' }]} 
                 onPress={onCancel}
               >
-                <Text style={[styles.buttonText, { color: colors.textSecondary }]}>
+                <Text 
+                  style={[styles.buttonText, { color: colors.textSecondary }]}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                >
                   {options.cancelLabel || 'Cancel'}
                 </Text>
               </TouchableOpacity>
@@ -107,7 +111,11 @@ export const CustomAlertComponent: React.FC<CustomAlertProps> = ({
               ]} 
               onPress={onConfirm}
             >
-              <Text style={styles.confirmButtonText}>
+              <Text 
+                style={styles.confirmButtonText}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+              >
                 {options.confirmLabel || (type === 'confirm' ? 'Confirm' : 'OK')}
               </Text>
             </TouchableOpacity>
@@ -181,12 +189,14 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
+    paddingHorizontal: 4,
   },
   confirmButtonText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: 'bold',
     color: '#FFFFFF',
+    paddingHorizontal: 4,
   },
 });

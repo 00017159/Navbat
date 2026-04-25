@@ -5,11 +5,13 @@ import { useRouter } from 'expo-router';
 import { useTheme } from '../services/theme';
 import { getCurrentUser, setCurrentUser } from '../services/api';
 import { supabase } from '../services/supabase';
+import { useAlert } from '../services/AlertContext';
 
 export default function PersonalInfoScreen() {
   const router = useRouter();
   const { colors, dark } = useTheme();
   const user = getCurrentUser();
+  const { showAlert } = useAlert();
 
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
@@ -42,7 +44,11 @@ export default function PersonalInfoScreen() {
       // Get live auth user — never rely on in-memory authId
       const { data: { user: authUser } } = await supabase.auth.getUser();
       if (!authUser) {
-        Alert.alert('Error', 'Session expired. Please log out and log in again.');
+        showAlert({ 
+          title: 'Error', 
+          message: 'Session expired. Please log out and log in again.', 
+          type: 'error' 
+        });
         return;
       }
 
@@ -62,9 +68,17 @@ export default function PersonalInfoScreen() {
         setCurrentUser({ ...user, firstName, lastName });
       }
 
-      Alert.alert('Saved ✓', 'Your profile has been updated successfully.');
+      showAlert({ 
+        title: 'Saved ✓', 
+        message: 'Your profile has been updated successfully.', 
+        type: 'success' 
+      });
     } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to save. Please try again.');
+      showAlert({ 
+        title: 'Error', 
+        message: e.message || 'Failed to save. Please try again.', 
+        type: 'error' 
+      });
     } finally {
       setSaving(false);
     }

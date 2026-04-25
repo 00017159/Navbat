@@ -227,3 +227,14 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- ═══════════════════════════════════════
 -- Run this individually after signing up your primary account:
 -- UPDATE public.profiles SET role = 'ADMIN' WHERE email = 'sadullayevshohjahon990@gmail.com';
+
+-- ═══════════════════════════════════════
+-- DB MIGRATION: Add phone and email fields
+-- ═══════════════════════════════════════
+-- Run these ALTER TABLE commands in Supabase SQL Editor:
+/*
+ALTER TABLE clinics ADD COLUMN IF NOT EXISTS phone TEXT;
+ALTER TABLE clinics ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE doctor_profiles ADD COLUMN IF NOT EXISTS contact_phone TEXT;
+ALTER TABLE doctor_profiles ADD COLUMN IF NOT EXISTS contact_email TEXT;
+*/

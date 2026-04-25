@@ -683,7 +683,7 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingDoctor, setEditingDoctor] = useState<Profile | null>(null);
-  const [editForm, setEditForm] = useState({ first_name: '', last_name: '', specialty: '', clinic_name: '', description: '', experience_yrs: '' });
+  const [editForm, setEditForm] = useState({ first_name: '', last_name: '', specialty: '', clinic_name: '', description: '', experience_yrs: 0, contact_phone: '', contact_email: '' });
   const [loading, setLoading] = useState(false);
   const [clinics, setClinics] = useState<{ id: string; name: string }[]>([]);
 
@@ -698,7 +698,9 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
       specialty: dp?.specialty || '',
       clinic_name: dp?.clinic_name || '',
       description: dp?.description || '',
-      experience_yrs: String(dp?.experience_yrs || ''),
+      experience_yrs: dp?.experience_yrs || 0,
+      contact_phone: dp?.contact_phone || '',
+      contact_email: dp?.contact_email || ''
     });
     setIsEditModalOpen(true);
   };
@@ -717,7 +719,9 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
         specialty: editForm.specialty,
         clinic_name: editForm.clinic_name,
         description: editForm.description,
-        experience_yrs: parseInt(editForm.experience_yrs) || 0,
+        experience_yrs: editForm.experience_yrs,
+        contact_phone: editForm.contact_phone,
+        contact_email: editForm.contact_email
       }).eq('user_id', editingDoctor.id);
       if (de) throw de;
 
@@ -737,12 +741,14 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
     last_name: '',
     password: '',
     specialty: 'General Practice',
-    experience_yrs: '5',
+    experience_yrs: 0,
     availability: 'Available Today',
-    bg: '#F3E8FF',
-    color: '#6B21A8',
+    bg: '#e0f2fe',
+    color: '#0369a1',
     description: '',
-    clinic_name: ''
+    clinic_name: '',
+    contact_phone: '',
+    contact_email: ''
   });
 
   const doctors = users.filter(u => u.role === 'DOCTOR');
@@ -803,12 +809,14 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
         .insert({
           user_id: profileData.id,
           specialty: doctorForm.specialty,
-          experience_yrs: parseInt(doctorForm.experience_yrs),
+          experience_yrs: doctorForm.experience_yrs,
           availability: doctorForm.availability,
           bg: doctorForm.bg,
           color: doctorForm.color,
           description: doctorForm.description,
           clinic_name: doctorForm.clinic_name,
+          contact_phone: doctorForm.contact_phone,
+          contact_email: doctorForm.contact_email,
           rating: 5.0,
           review_count: 0
         });
@@ -817,12 +825,12 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
 
       setIsModalOpen(false);
       onRefresh();
-      toast(`Dr. ${doctorForm.first_name} ${doctorForm.last_name} created! Email: ${doctorForm.email} | Password: ${doctorForm.password}`, 'success');
+      toast(`Dr. ${doctorForm.first_name} ${doctorForm.last_name} created!`, 'success');
 
       // reset form
       setDoctorForm({
         email: '', first_name: '', last_name: '', password: '', specialty: 'General Practice',
-        experience_yrs: '5', availability: 'Available Today', bg: '#F3E8FF', color: '#6B21A8', description: '', clinic_name: ''
+        experience_yrs: 0, availability: 'Available Today', bg: '#e0f2fe', color: '#0369a1', description: '', clinic_name: '', contact_phone: '', contact_email: ''
       });
     } catch (e: any) {
       if (e.code === '23505') {
@@ -864,6 +872,7 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
               <th>Provider</th>
               <th>Specialty</th>
               <th>Clinic</th>
+              <th>Contact Info</th>
               <th>Joined</th>
               <th>Actions</th>
             </tr>
@@ -889,6 +898,10 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
                   : <span style={{ color: '#64748B', fontSize: 13 }}>—</span>}
                 </td>
                 <td style={{ color: '#94A3B8', fontSize: 13 }}>{u.doctor_profiles?.clinic_name || '—'}</td>
+                <td style={{ color: '#64748B', fontSize: 13 }}>
+                  <div>{u.doctor_profiles?.contact_phone || '—'}</div>
+                  <div>{u.doctor_profiles?.contact_email || ''}</div>
+                </td>
                 <td style={{ color: '#64748B', fontSize: 13 }}>{new Date(u.created_at).toLocaleDateString()}</td>
                 <td>
                   <div style={{ display: 'flex', gap: 8 }}>
@@ -919,7 +932,11 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
               <div className="form-group" style={{ flex: 1 }}><label>Specialty</label><input type="text" value={editForm.specialty} onChange={e => setEditForm({ ...editForm, specialty: e.target.value })} /></div>
-              <div className="form-group" style={{ flex: 1 }}><label>Experience (yrs)</label><input type="number" value={editForm.experience_yrs} onChange={e => setEditForm({ ...editForm, experience_yrs: e.target.value })} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>Experience (yrs)</label><input type="number" value={editForm.experience_yrs} onChange={e => setEditForm({ ...editForm, experience_yrs: parseInt(e.target.value) || 0 })} /></div>
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <div className="form-group" style={{ flex: 1 }}><label>Public Phone</label><input type="text" placeholder="+998 90 123 45 67" value={editForm.contact_phone} onChange={e => setEditForm({ ...editForm, contact_phone: e.target.value })} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>Public Email</label><input type="email" placeholder="contact@doctor.uz" value={editForm.contact_email} onChange={e => setEditForm({ ...editForm, contact_email: e.target.value })} /></div>
             </div>
             <div className="form-group"><label>Clinic</label>
               <select value={editForm.clinic_name} onChange={e => setEditForm({ ...editForm, clinic_name: e.target.value })} style={{ width: '100%', padding: '14px 16px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: 15, fontFamily: 'Inter, sans-serif', outline: 'none' }}>
@@ -956,7 +973,11 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
               <div className="form-group" style={{ flex: 1 }}><label>Specialty</label><input type="text" value={doctorForm.specialty} onChange={e => setDoctorForm({ ...doctorForm, specialty: e.target.value })} placeholder="e.g. Cardiologist" /></div>
-              <div className="form-group" style={{ flex: 1 }}><label>Experience (years)</label><input type="number" min="0" value={doctorForm.experience_yrs} onChange={e => setDoctorForm({ ...doctorForm, experience_yrs: e.target.value })} placeholder="e.g. 5" /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>Experience (years)</label><input type="number" min="0" value={doctorForm.experience_yrs} onChange={e => setDoctorForm({ ...doctorForm, experience_yrs: parseInt(e.target.value) || 0 })} placeholder="e.g. 5" /></div>
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <div className="form-group" style={{ flex: 1 }}><label>Public Phone</label><input type="text" placeholder="+998 90 123 45 67" value={doctorForm.contact_phone} onChange={e => setDoctorForm({ ...doctorForm, contact_phone: e.target.value })} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>Public Email</label><input type="email" placeholder="contact@doctor.uz" value={doctorForm.contact_email} onChange={e => setDoctorForm({ ...doctorForm, contact_email: e.target.value })} /></div>
             </div>
             <div className="form-group"><label>Clinic Name</label>
                 <select
@@ -1100,6 +1121,8 @@ interface Clinic {
   name: string;
   location: string;
   description: string;
+  phone?: string;
+  email?: string;
   created_at: string;
 }
 
@@ -1114,12 +1137,12 @@ function ClinicsView({ toast, confirm }: {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingClinic, setEditingClinic] = useState<Clinic | null>(null);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ name: '', location: '', description: '' });
-  const [editForm, setEditForm] = useState({ name: '', location: '', description: '' });
+  const [form, setForm] = useState({ name: '', location: '', description: '', phone: '', email: '' });
+  const [editForm, setEditForm] = useState({ name: '', location: '', description: '', phone: '', email: '' });
 
   const openEditClinic = (clinic: Clinic) => {
     setEditingClinic(clinic);
-    setEditForm({ name: clinic.name, location: clinic.location, description: clinic.description || '' });
+    setEditForm({ name: clinic.name, location: clinic.location, description: clinic.description || '', phone: clinic.phone || '', email: clinic.email || '' });
     setIsEditModalOpen(true);
   };
 
@@ -1134,6 +1157,8 @@ function ClinicsView({ toast, confirm }: {
         name: editForm.name,
         location: editForm.location,
         description: editForm.description,
+        phone: editForm.phone,
+        email: editForm.email
       }).eq('id', editingClinic.id);
       if (error) throw error;
       setIsEditModalOpen(false);
@@ -1172,11 +1197,11 @@ function ClinicsView({ toast, confirm }: {
     setSaving(true);
     try {
       const { error } = await supabase.from('clinics').insert({
-        name: form.name, location: form.location, description: form.description
+        name: form.name, location: form.location, description: form.description, phone: form.phone, email: form.email
       });
       if (error) throw error;
       setIsModalOpen(false);
-      setForm({ name: '', location: '', description: '' });
+      setForm({ name: '', location: '', description: '', phone: '', email: '' });
       toast('Clinic added successfully!', 'success');
       fetchClinics();
     } catch (e: any) {
@@ -1237,6 +1262,7 @@ function ClinicsView({ toast, confirm }: {
               <tr>
                 <th>Clinic Name</th>
                 <th>Location</th>
+                <th>Contact</th>
                 <th>Description</th>
                 <th>Added</th>
                 <th>Actions</th>
@@ -1256,6 +1282,10 @@ function ClinicsView({ toast, confirm }: {
                     </div>
                   </td>
                   <td style={{ color: '#94A3B8' }}>{c.location}</td>
+                  <td style={{ color: '#64748B', fontSize: 13 }}>
+                    <div>{c.phone || '—'}</div>
+                    <div>{c.email || ''}</div>
+                  </td>
                   <td style={{ color: '#64748B', fontSize: 13, maxWidth: 250, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.description || '—'}</td>
                   <td style={{ color: '#64748B', fontSize: 13 }}>{new Date(c.created_at).toLocaleDateString()}</td>
                   <td>
@@ -1290,6 +1320,16 @@ function ClinicsView({ toast, confirm }: {
               <label>Location</label>
               <input type="text" value={editForm.location} onChange={e => setEditForm({ ...editForm, location: e.target.value })} />
             </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <div className="form-group" style={{ flex: 1 }}>
+                <label>Phone Number</label>
+                <input type="text" placeholder="+998 90 123 45 67" value={editForm.phone} onChange={e => setEditForm({ ...editForm, phone: e.target.value })} />
+              </div>
+              <div className="form-group" style={{ flex: 1 }}>
+                <label>Contact Email</label>
+                <input type="email" placeholder="contact@clinic.uz" value={editForm.email} onChange={e => setEditForm({ ...editForm, email: e.target.value })} />
+              </div>
+            </div>
             <div className="form-group">
               <label>Description</label>
               <textarea style={{ minHeight: 80, resize: 'vertical' }} value={editForm.description} onChange={e => setEditForm({ ...editForm, description: e.target.value })} />
@@ -1317,6 +1357,17 @@ function ClinicsView({ toast, confirm }: {
             <div className="form-group">
               <label>Location</label>
               <input type="text" value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} placeholder="e.g. Tashkent, Mirzo Ulugbek District" />
+            </div>
+
+            <div style={{ display: 'flex', gap: 12 }}>
+              <div className="form-group" style={{ flex: 1 }}>
+                <label>Phone Number</label>
+                <input type="text" placeholder="+998 90 123 45 67" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
+              </div>
+              <div className="form-group" style={{ flex: 1 }}>
+                <label>Contact Email</label>
+                <input type="email" placeholder="contact@clinic.uz" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
+              </div>
             </div>
 
             <div className="form-group">
@@ -1397,7 +1448,7 @@ function App() {
     setLoading(true);
     try {
       const [usersRes, apptsRes] = await Promise.all([
-        supabase.from('profiles').select('*, doctor_profiles(specialty, experience_yrs, clinic_name, description, availability, bg, color)').order('created_at', { ascending: false }),
+        supabase.from('profiles').select('*, doctor_profiles(specialty, experience_yrs, clinic_name, description, availability, bg, color, contact_phone, contact_email)').order('created_at', { ascending: false }),
         supabase.from('appointments')
           .select('*, patient:profiles!patient_id(first_name, last_name, email), doctor:profiles!doctor_id(first_name, last_name)')
           .order('date_time', { ascending: false }),

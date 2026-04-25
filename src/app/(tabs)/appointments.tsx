@@ -32,6 +32,13 @@ function isUpcoming(dateStr: string) {
   return new Date(dateStr) > new Date();
 }
 
+function isCancelable(dateStr: string) {
+  const appointmentTime = new Date(dateStr).getTime();
+  const now = new Date().getTime();
+  const oneHour = 60 * 60 * 1000;
+  return appointmentTime - now > oneHour;
+}
+
 const AVATAR_COLORS = ['#fef3c7', '#ffedd5', '#e0f2fe', '#fce7f3', '#dcfce7'];
 const TEXT_COLORS = ['#92400e', '#c2410c', '#0369a1', '#be185d', '#166534'];
 
@@ -241,12 +248,18 @@ export default function AppointmentsScreen() {
 
 
 
-                {/* Cancel only for truly upcoming (not passed, not completed, not cancelled) */}
+                {/* Cancel only for truly upcoming and more than 1 hour away */}
                 {isActive && isUpcoming(app.dateTime) && (
                   <View style={styles.actionsRow}>
-                    <TouchableOpacity style={[styles.cancelBtn, { backgroundColor: dark ? '#7F1D1D' : '#FEF2F2', flex: 1 }]} onPress={() => handleCancelAppointment(app)}>
-                      <Text style={[styles.cancelBtnText, { color: dark ? '#FCA5A5' : '#EF4444' }]}>Cancel Appointment</Text>
-                    </TouchableOpacity>
+                    {isCancelable(app.dateTime) ? (
+                      <TouchableOpacity style={[styles.cancelBtn, { backgroundColor: dark ? '#7F1D1D' : '#FEF2F2', flex: 1 }]} onPress={() => handleCancelAppointment(app)}>
+                        <Text style={[styles.cancelBtnText, { color: dark ? '#FCA5A5' : '#EF4444' }]}>Cancel Appointment</Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <View style={[styles.cancelBtn, { backgroundColor: dark ? '#334155' : '#F1F5F9', flex: 1, opacity: 0.7 }]}>
+                        <Text style={[styles.cancelBtnText, { color: dark ? '#94A3B8' : '#64748B' }]}>Too late to cancel</Text>
+                      </View>
+                    )}
                   </View>
                 )}
 

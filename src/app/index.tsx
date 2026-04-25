@@ -19,7 +19,8 @@ export default function LoginScreen() {
   const inputRefs = useRef<(TextInput | null)[]>([]);
 
   const handleRequestOtp = async () => {
-    if (!email || !email.includes('@')) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
       Alert.alert('Error', 'Please enter a valid email address');
       return;
     }

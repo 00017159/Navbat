@@ -709,6 +709,19 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
 
   const handleEditDoctor = async () => {
     if (!editingDoctor) return;
+
+    const phoneRegex = /^\+998\d{9}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (editForm.contact_phone && !phoneRegex.test(editForm.contact_phone)) {
+      toast('Phone must be in +998XXXXXXXXX format', 'error');
+      return;
+    }
+    if (editForm.contact_email && !emailRegex.test(editForm.contact_email)) {
+      toast('Please enter a valid contact email', 'error');
+      return;
+    }
+
     setLoading(true);
     try {
       const { error: pe } = await supabase.from('profiles').update({
@@ -775,6 +788,23 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
       toast('Password must be at least 6 characters.', 'error');
       return;
     }
+
+    const phoneRegex = /^\+998\d{9}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (doctorForm.contact_phone && !phoneRegex.test(doctorForm.contact_phone)) {
+      toast('Public Phone must be in +998XXXXXXXXX format', 'error');
+      return;
+    }
+    if (doctorForm.contact_email && !emailRegex.test(doctorForm.contact_email)) {
+      toast('Please enter a valid public email', 'error');
+      return;
+    }
+    if (!emailRegex.test(doctorForm.email)) {
+      toast('Please enter a valid login email', 'error');
+      return;
+    }
+
     setLoading(true);
     try {
       // 1. Insert profile first (without auth_id)
@@ -1153,6 +1183,19 @@ function ClinicsView({ toast, confirm }: {
       toast('Name and location are required.', 'error');
       return;
     }
+
+    const phoneRegex = /^\+998\d{9}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (editForm.phone && !phoneRegex.test(editForm.phone)) {
+      toast('Phone must be in +998XXXXXXXXX format', 'error');
+      return;
+    }
+    if (editForm.email && !emailRegex.test(editForm.email)) {
+      toast('Please enter a valid contact email', 'error');
+      return;
+    }
+
     setSaving(true);
     try {
       const { error } = await supabase.from('clinics').update({
@@ -1196,6 +1239,19 @@ function ClinicsView({ toast, confirm }: {
       toast('Clinic name and location are required.', 'error');
       return;
     }
+
+    const phoneRegex = /^\+998\d{9}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (form.phone && !phoneRegex.test(form.phone)) {
+      toast('Phone must be in +998XXXXXXXXX format', 'error');
+      return;
+    }
+    if (form.email && !emailRegex.test(form.email)) {
+      toast('Please enter a valid contact email', 'error');
+      return;
+    }
+
     setSaving(true);
     try {
       const { error } = await supabase.from('clinics').insert({

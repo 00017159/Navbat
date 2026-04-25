@@ -78,10 +78,30 @@ ALTER TABLE appointments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE medical_records ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
 
+-- ═══════════════════════════════════════
+-- RLS HELPER FUNCTIONS (Prevent Infinite Recursion)
+-- ═══════════════════════════════════════
+
+CREATE OR REPLACE FUNCTION public.get_my_role()
+RETURNS user_role AS $$
+  SELECT role FROM public.profiles WHERE auth_id = auth.uid() LIMIT 1;
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
+
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean AS $$
+  SELECT EXISTS (SELECT 1 FROM public.profiles WHERE auth_id = auth.uid() AND role = 'ADMIN');
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
+
+CREATE OR REPLACE FUNCTION public.is_staff()
+RETURNS boolean AS $$
+  SELECT EXISTS (SELECT 1 FROM public.profiles WHERE auth_id = auth.uid() AND role IN ('DOCTOR', 'ADMIN'));
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
+
+-- ═══════════════════════════════════════
+
 -- Profiles: users see own, doctors/admins see all. Users update own (prevented from changing role via trigger). Users insert own but ONLY as PATIENT.
 CREATE POLICY "Profiles visibility" ON profiles FOR SELECT USING (
-  auth.uid() = auth_id OR 
-  EXISTS (SELECT 1 FROM profiles p WHERE p.auth_id = auth.uid() AND p.role IN ('DOCTOR', 'ADMIN'))
+  auth.uid() = auth_id OR public.is_staff()
 );
 CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = auth_id);
 CREATE POLICY "Users can insert own profile" ON profiles FOR INSERT WITH CHECK (auth.uid() = auth_id AND role = 'PATIENT');
@@ -120,31 +140,22 @@ CREATE POLICY "Users create own reviews" ON reviews FOR INSERT
   WITH CHECK (patient_id IN (SELECT id FROM profiles WHERE auth_id = auth.uid()));
 
 -- Global Admin Bypasses
-CREATE POLICY "Admins can view all profiles" ON profiles FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
-CREATE POLICY "Admins can update all profiles" ON profiles FOR UPDATE USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
-CREATE POLICY "Admins can insert all profiles" ON profiles FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
-CREATE POLICY "Admins can delete all profiles" ON profiles FOR DELETE USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
+CREATE POLICY "Admins can view all profiles" ON profiles FOR SELECT USING (public.is_admin());
+CREATE POLICY "Admins can update all profiles" ON profiles FOR UPDATE USING (public.is_admin());
+CREATE POLICY "Admins can insert all profiles" ON profiles FOR INSERT WITH CHECK (public.is_admin());
+CREATE POLICY "Admins can delete all profiles" ON profiles FOR DELETE USING (public.is_admin());
 
-CREATE POLICY "Admins can update all doctor_profiles" ON doctor_profiles FOR UPDATE USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
-CREATE POLICY "Admins can delete all doctor_profiles" ON doctor_profiles FOR DELETE USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
+CREATE POLICY "Admins can update all doctor_profiles" ON doctor_profiles FOR UPDATE USING (public.is_admin());
+CREATE POLICY "Admins can delete all doctor_profiles" ON doctor_profiles FOR DELETE USING (public.is_admin());
 
-CREATE POLICY "Admins can view all appointments" ON appointments FOR SELECT
-  USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
-  
-CREATE POLICY "Admins can update all appointments" ON appointments FOR UPDATE
-  USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
-  
-CREATE POLICY "Admins can delete all appointments" ON appointments FOR DELETE
-  USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
+CREATE POLICY "Admins can view all appointments" ON appointments FOR SELECT USING (public.is_admin());
+CREATE POLICY "Admins can update all appointments" ON appointments FOR UPDATE USING (public.is_admin());
+CREATE POLICY "Admins can delete all appointments" ON appointments FOR DELETE USING (public.is_admin());
 
-CREATE POLICY "Admins view all records" ON medical_records FOR SELECT
-  USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
-CREATE POLICY "Admins insert all records" ON medical_records FOR INSERT
-  WITH CHECK (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
-CREATE POLICY "Admins update all records" ON medical_records FOR UPDATE
-  USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
-CREATE POLICY "Admins delete all records" ON medical_records FOR DELETE
-  USING (EXISTS (SELECT 1 FROM profiles WHERE auth_id = auth.uid() AND role = 'ADMIN'));
+CREATE POLICY "Admins view all records" ON medical_records FOR SELECT USING (public.is_admin());
+CREATE POLICY "Admins insert all records" ON medical_records FOR INSERT WITH CHECK (public.is_admin());
+CREATE POLICY "Admins update all records" ON medical_records FOR UPDATE USING (public.is_admin());
+CREATE POLICY "Admins delete all records" ON medical_records FOR DELETE USING (public.is_admin());
 
 -- ═══════════════════════════════════════
 -- TRIGGER: Auto-create profile on signup

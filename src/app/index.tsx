@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Scro
 import { Mail, ChevronUp, ArrowLeft, ShieldCheck } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { requestOtp, verifyOtp } from '../services/api';
+import { useAlert } from '../services/AlertContext';
 
 const { width } = Dimensions.get('window');
 const OTP_LENGTH = 6;
@@ -17,20 +18,33 @@ export default function LoginScreen() {
   const [otpDigits, setOtpDigits] = useState(Array(OTP_LENGTH).fill(''));
   const [loading, setLoading] = useState(false);
   const inputRefs = useRef<(TextInput | null)[]>([]);
+  const { showAlert } = useAlert();
 
   const handleRequestOtp = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
-      Alert.alert('Error', 'Please enter a valid email address');
+      showAlert({ 
+        title: 'Invalid Email', 
+        message: 'Please enter a valid email address', 
+        type: 'error' 
+      });
       return;
     }
     setLoading(true);
     try {
       await requestOtp(email);
       setStep('otp');
-      Alert.alert('Code Sent', `A 6-digit verification code has been sent to ${email}`);
+      showAlert({
+        title: 'Code Sent',
+        message: `A 6-digit verification code has been sent to ${email}`,
+        type: 'success'
+      });
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to connect to the server');
+      showAlert({
+        title: 'Error',
+        message: error.message || 'Failed to connect to the server',
+        type: 'error'
+      });
     } finally {
       setLoading(false);
     }
@@ -66,7 +80,11 @@ export default function LoginScreen() {
   const handleVerifyOtp = async (code?: string) => {
     const otpCode = code || otpDigits.join('');
     if (otpCode.length !== OTP_LENGTH) {
-      Alert.alert('Error', `Please enter the ${OTP_LENGTH}-digit code`);
+      showAlert({
+        title: 'Invalid Code',
+        message: `Please enter the ${OTP_LENGTH}-digit code`,
+        type: 'error'
+      });
       return;
     }
     setLoading(true);
@@ -74,7 +92,11 @@ export default function LoginScreen() {
       await verifyOtp(email, otpCode);
       router.replace('/(tabs)');
     } catch (error: any) {
-      Alert.alert('Invalid Code', error.message || 'The verification code is incorrect or expired. Please try again.');
+      showAlert({
+        title: 'Invalid Code',
+        message: error.message || 'The verification code is incorrect or expired. Please try again.',
+        type: 'error'
+      });
       setOtpDigits(Array(OTP_LENGTH).fill(''));
       inputRefs.current[0]?.focus();
     } finally {
@@ -86,9 +108,17 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await requestOtp(email);
-      Alert.alert('Code Resent', `A new code has been sent to ${email}`);
+      showAlert({
+        title: 'Code Resent',
+        message: `A new code has been sent to ${email}`,
+        type: 'success'
+      });
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to resend code');
+      showAlert({
+        title: 'Error',
+        message: error.message || 'Failed to resend code',
+        type: 'error'
+      });
     } finally {
       setLoading(false);
     }

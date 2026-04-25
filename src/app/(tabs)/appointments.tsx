@@ -4,6 +4,7 @@ import { Calendar, Video, MapPin, FileText, Clock, XCircle, CheckCircle, Star, X
 import { getAppointments, createAppointment, createReview } from '../../services/api';
 import { useTheme } from '../../services/theme';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useAlert } from '../../services/AlertContext';
 
 const TABS = ['All', 'Upcoming', 'Completed', 'Cancelled'];
 
@@ -43,13 +44,14 @@ const AVATAR_COLORS = ['#fef3c7', '#ffedd5', '#e0f2fe', '#fce7f3', '#dcfce7'];
 const TEXT_COLORS = ['#92400e', '#c2410c', '#0369a1', '#be185d', '#166534'];
 
 export default function AppointmentsScreen() {
+  const { colors, dark } = useTheme();
   const router = useRouter();
   const params = useLocalSearchParams();
+  const { showAlert } = useAlert();
   const [activeTab, setActiveTab] = useState(params.tab ? (params.tab as string) : 'All');
   const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const { colors, dark } = useTheme();
 
   useEffect(() => {
     if (params.tab) {
@@ -91,23 +93,22 @@ export default function AppointmentsScreen() {
   });
 
   const handleCancelAppointment = (appointment: any) => {
-    Alert.alert(
-      'Cancel Appointment',
-      `Are you sure you want to cancel the appointment with ${appointment.doctor?.firstName} ${appointment.doctor?.lastName}?`,
-      [
-        { text: 'Keep', style: 'cancel' },
-        {
-          text: 'Cancel Appointment',
-          style: 'destructive',
-          onPress: () => {
-            setAppointments(prev =>
-              prev.map(a => a.id === appointment.id ? { ...a, status: 'CANCELLED' } : a)
-            );
-            Alert.alert('Cancelled', 'Your appointment has been cancelled.');
-          },
-        },
-      ]
-    );
+    showAlert({
+      title: 'Cancel Appointment',
+      message: `Are you sure you want to cancel the appointment with ${appointment.doctor?.firstName} ${appointment.doctor?.lastName}?`,
+      type: 'confirm',
+      confirmLabel: 'Cancel Appointment',
+      onConfirm: () => {
+        setAppointments(prev =>
+          prev.map(a => a.id === appointment.id ? { ...a, status: 'CANCELLED' } : a)
+        );
+        showAlert({
+          title: 'Cancelled',
+          message: 'Your appointment has been cancelled.',
+          type: 'success'
+        });
+      },
+    });
   };
 
   // Review modal state
@@ -134,10 +135,18 @@ export default function AppointmentsScreen() {
         rating: reviewRating,
         comment: reviewComment || undefined,
       });
-      Alert.alert('Thank You!', `Your review for Dr. ${doctor.firstName} ${doctor.lastName} has been submitted.`);
+      showAlert({
+        title: 'Thank You!',
+        message: `Your review for Dr. ${doctor.firstName} ${doctor.lastName} has been submitted.`,
+        type: 'success'
+      });
       setReviewModalVisible(false);
     } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to submit review.');
+      showAlert({
+        title: 'Error',
+        message: e.message || 'Failed to submit review.',
+        type: 'error'
+      });
     } finally {
       setSubmittingReview(false);
     }

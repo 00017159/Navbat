@@ -4,6 +4,7 @@ import { User, Lock, HelpCircle, Info, ChevronRight, LogOut, Moon } from 'lucide
 import { useRouter, useNavigation, useFocusEffect } from 'expo-router';
 import { getCurrentUser, signOut } from '../../services/api';
 import { useTheme } from '../../services/theme';
+import { useAlert } from '../../services/AlertContext';
 import { CommonActions } from '@react-navigation/native';
 
 const SETTINGS_ITEMS = [
@@ -17,6 +18,7 @@ export default function ProfileScreen() {
   const router = useRouter();
   const navigation = useNavigation();
   const { dark, toggle, colors } = useTheme();
+  const { showAlert } = useAlert();
 
   const [user, setUser] = useState(getCurrentUser());
 
@@ -52,15 +54,15 @@ export default function ProfileScreen() {
         router.push('/privacy' as any);
         break;
       case 4:
-        Alert.alert(
-          'Contact Support',
-          'sadullayevshohjahon990@gmail.com\n+998907192922',
-          [
-            { text: 'Email', onPress: () => Linking.openURL('mailto:sadullayevshohjahon990@gmail.com').catch(() => Alert.alert('Error', 'Unable to open email client')) },
-            { text: 'Call', onPress: () => Linking.openURL('tel:+998907192922').catch(() => Alert.alert('Error', 'Unable to open dialer')) },
-            { text: 'Cancel', style: 'cancel' },
-          ]
-        );
+        showAlert({
+          title: 'Contact Support',
+          message: 'How would you like to reach us?\n\nsadullayevshohjahon990@gmail.com\n+998907192922',
+          type: 'confirm',
+          confirmLabel: 'Email',
+          cancelLabel: 'Call',
+          onConfirm: () => Linking.openURL('mailto:sadullayevshohjahon990@gmail.com').catch(() => showAlert({ title: 'Error', message: 'Unable to open email client', type: 'error' })),
+          onCancel: () => Linking.openURL('tel:+998907192922').catch(() => showAlert({ title: 'Error', message: 'Unable to open dialer', type: 'error' }))
+        });
         break;
       case 5:
         router.push('/about' as any);
@@ -69,27 +71,22 @@ export default function ProfileScreen() {
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      'Log Out',
-      'Are you sure you want to log out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Log Out',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await signOut();
-            } finally {
-              navigation.getParent()?.reset({
-                index: 0,
-                routes: [{ name: 'index' }],
-              });
-            }
-          },
-        },
-      ]
-    );
+    showAlert({
+      title: 'Log Out',
+      message: 'Are you sure you want to log out?',
+      type: 'confirm',
+      confirmLabel: 'Log Out',
+      onConfirm: async () => {
+        try {
+          await signOut();
+        } finally {
+          navigation.getParent()?.reset({
+            index: 0,
+            routes: [{ name: 'index' }],
+          });
+        }
+      },
+    });
   };
 
   return (

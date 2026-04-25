@@ -1,6 +1,7 @@
 import 'react-native-url-polyfill/auto';
 import { Stack } from 'expo-router';
 import { ThemeProvider } from '../services/theme';
+import { AlertProvider } from '../services/AlertContext';
 import { useEffect, useState } from 'react';
 import { restoreSession } from '../services/api';
 
@@ -17,7 +18,8 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider>
-      <Stack>
+      <AlertProvider>
+        <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="doctor/[id]" options={{ headerShown: false }} />
@@ -27,6 +29,7 @@ export default function RootLayout() {
         <Stack.Screen name="privacy" options={{ headerShown: false }} />
         <Stack.Screen name="about" options={{ headerShown: false }} />
       </Stack>
+      </AlertProvider>
     </ThemeProvider>
   );
 }

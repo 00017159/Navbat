@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator, TextInput } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native';
 import { ArrowLeft, Star, Clock, MapPin, Calendar, FileText, CheckCircle, MessageSquare, ChevronDown, ChevronUp } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '../../services/theme';
+import { useAlert } from '../../services/AlertContext';
 import { createAppointment, getDoctorAppointmentsForDate, getReviews } from '../../services/api';
 
 const AVATAR_COLORS = ['#fef3c7', '#ffedd5', '#e0f2fe', '#fce7f3', '#dcfce7', '#f3e8ff'];
@@ -70,6 +71,7 @@ export default function DoctorBookingScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const { colors, dark } = useTheme();
+  const { showAlert } = useAlert();
 
   // Parse doctor data from params
   const doctorName = (params.name as string) || 'Doctor';
@@ -132,7 +134,11 @@ export default function DoctorBookingScreen() {
 
   const handleBook = async () => {
     if (!selectedTime) {
-      Alert.alert('Select Time', 'Please select an appointment time slot');
+      showAlert({
+        title: 'Select Time',
+        message: 'Please select an appointment time slot',
+        type: 'info'
+      });
       return;
     }
 
@@ -150,7 +156,11 @@ export default function DoctorBookingScreen() {
       });
       setBooked(true);
     } catch (error: any) {
-      Alert.alert('Booking Failed', error.message || 'Failed to book appointment. Please try again.');
+      showAlert({
+        title: 'Booking Failed',
+        message: error.message || 'Failed to book appointment. Please try again.',
+        type: 'error'
+      });
     } finally {
       setLoading(false);
     }

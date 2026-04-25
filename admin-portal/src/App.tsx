@@ -21,6 +21,7 @@ import {
   Users,
   X
 } from 'lucide-react';
+import logoImg from './assets/logo.png';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as XLSX from 'xlsx';
 import './App.css';
@@ -1575,7 +1576,9 @@ function App() {
       {/* Mobile Header */}
       <div className="mobile-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div className="brand-icon"><Shield size={16} color="white" /></div>
+          <div className="brand-icon" style={{ padding: 0, overflow: 'hidden' }}>
+            <img src={logoImg} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="L" />
+          </div>
           <span style={{ fontWeight: 700, fontSize: 16 }}>ClinicUz</span>
         </div>
         <button className="hamburger-btn" onClick={() => setSidebarOpen(!sidebarOpen)}>
@@ -1589,7 +1592,9 @@ function App() {
       {/* Sidebar */}
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-brand">
-          <div className="brand-icon"><Shield size={20} color="white" /></div>
+          <div className="brand-icon" style={{ padding: 0, overflow: 'hidden' }}>
+            <img src={logoImg} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Logo" />
+          </div>
           <div>
             <h2>ClinicUz</h2>
             <span>{role === 'ADMIN' ? 'Admin Portal' : 'Doctor Dashboard'}</span>
@@ -1607,7 +1612,7 @@ function App() {
                 <Users size={18} /> Patients
               </button>
               <button className={`nav-item ${view === 'doctors' ? 'active' : ''}`} onClick={() => navTo('doctors')}>
-                <HeartPulse size={18} /> Providers
+                <HeartPulse size={18} /> Doctors
               </button>
               <button className={`nav-item ${view === 'clinics' ? 'active' : ''}`} onClick={() => navTo('clinics')}>
                 <Building2 size={18} /> Clinics

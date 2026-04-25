@@ -44,6 +44,10 @@ CREATE TABLE appointments (
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- Prevent Double Booking at the Database Level
+-- Ensures a doctor cannot have two non-cancelled appointments at the exact same time
+CREATE UNIQUE INDEX unique_active_appointment ON appointments (doctor_id, date_time) WHERE status != 'CANCELLED';
+
 -- Medical records
 CREATE TABLE medical_records (
   id SERIAL PRIMARY KEY,

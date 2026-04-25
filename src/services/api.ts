@@ -9,6 +9,31 @@ export function getCurrentUser() { return currentUser; }
 export function setAuthToken(_: string | null) {}
 export function getAuthToken() { return null; }
 
+// Hydrate in-memory user from Supabase session (e.g. on app refresh)
+export async function restoreSession() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('auth_id', session.user.id)
+      .single();
+
+    if (profile) {
+      setCurrentUser({
+        id: profile.id,
+        authId: session.user.id,
+        email: session.user.email,
+        role: profile.role,
+        firstName: profile.first_name,
+        lastName: profile.last_name,
+      });
+      return true;
+    }
+  }
+  return false;
+}
+
 // ─── Auth (Supabase OTP) ──────────────────────────────────
 export async function requestOtp(email: string) {
   const { error } = await supabase.auth.signInWithOtp({ email });
@@ -213,6 +238,7 @@ export async function getAppointments() {
     doctorId: app.doctor_id,
     status: app.status,
     dateTime: app.date_time,
+    createdAt: app.created_at,
     type: app.type,
     notes: app.notes,
     price: app.price,

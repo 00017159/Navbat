@@ -1,8 +1,20 @@
 import 'react-native-url-polyfill/auto';
 import { Stack } from 'expo-router';
 import { ThemeProvider } from '../services/theme';
+import { useEffect, useState } from 'react';
+import { restoreSession } from '../services/api';
 
 export default function RootLayout() {
+  const [sessionReady, setSessionReady] = useState(false);
+
+  useEffect(() => {
+    restoreSession().finally(() => {
+      setSessionReady(true);
+    });
+  }, []);
+
+  if (!sessionReady) return null;
+
   return (
     <ThemeProvider>
       <Stack>

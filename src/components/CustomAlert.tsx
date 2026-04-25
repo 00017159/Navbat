@@ -76,8 +76,8 @@ export const CustomAlertComponent: React.FC<CustomAlertProps> = ({
           style={[styles.backdrop, { backgroundColor: 'rgba(0,0,0,0.6)' }]}
         />
         <Animated.View 
-          entering={ScaleInCenter.springify().damping(15)}
-          exiting={ScaleOutCenter.duration(150)}
+          entering={FadeIn.duration(300).springify().damping(15)}
+          exiting={FadeOut.duration(150)}
           style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
         >
           <View style={[styles.iconContainer, { backgroundColor: dark ? 'rgba(255,255,255,0.05)' : getHeaderIconBg() }]}>

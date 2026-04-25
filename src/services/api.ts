@@ -36,6 +36,17 @@ export async function restoreSession() {
 
 // ─── Auth (Supabase OTP) ──────────────────────────────────
 export async function requestOtp(email: string) {
+  // Check if user is a doctor or admin before sending OTP
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('email', email)
+    .single();
+
+  if (profile && (profile.role === 'DOCTOR' || profile.role === 'ADMIN')) {
+    throw new Error('Staff accounts cannot sign in to the patient app. Please use the Admin Portal.');
+  }
+
   const { error } = await supabase.auth.signInWithOtp({ email });
   if (error) throw new Error(error.message);
   return { message: `Verification code sent to ${email}` };
@@ -60,7 +71,7 @@ export async function verifyOtp(email: string, code: string) {
   const userRole = profile?.role || 'PATIENT';
   if (userRole === 'DOCTOR' || userRole === 'ADMIN') {
     await supabase.auth.signOut();
-    throw new Error('Doctor accounts cannot sign in to the patient app. Please use the Admin Portal instead.');
+    throw new Error('Staff accounts cannot sign in to the patient app. Please use the Admin Portal.');
   }
 
   const user = {

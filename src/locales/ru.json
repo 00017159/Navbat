@@ -53,5 +53,16 @@
     "dark_mode": "Темная тема",
     "logout": "Выйти",
     "select_language": "Выберите язык"
+  },
+  "auth": {
+    "title": "Добро пожаловать в NavbatUz",
+    "subtitle": "Начните заботу о своем здоровье вместе с нами. Войдите, чтобы управлять записями.",
+    "email": "Email адрес",
+    "email_placeholder": "example@email.ru",
+    "send_code": "Получить код",
+    "verify_title": "Код подтверждения",
+    "verify_subtitle": "Введите 6-значный код, отправленный на ваш email",
+    "verify_btn": "Подтвердить и продолжить",
+    "back_to_email": "Назад к email"
   }
 }

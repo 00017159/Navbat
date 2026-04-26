@@ -53,5 +53,16 @@
     "dark_mode": "Tungi rejim",
     "logout": "Chiqish",
     "select_language": "Tilni tanlang"
+  },
+  "auth": {
+    "title": "NavbatUz-ga xush kelibsiz",
+    "subtitle": "Sog'lig'ingiz haqida qayg'urishni biz bilan boshlang. Qabullaringizni boshqarish uchun tizimga kiring.",
+    "email": "Email manzili",
+    "email_placeholder": "misol@email.uz",
+    "send_code": "Tasdiqlash kodini olish",
+    "verify_title": "Tasdiqlash kodi",
+    "verify_subtitle": "Emailingizga yuborilgan 6 xonali kodni kiriting",
+    "verify_btn": "Tasdiqlash va davom etish",
+    "back_to_email": "Email-ga qaytish"
   }
 }

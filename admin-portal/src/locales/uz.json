@@ -24,5 +24,16 @@
     "notes": "Bemor shikoyatlari",
     "actions": "Amallar",
     "write_record": "Tarix yozish"
+  },
+  "auth": {
+    "title": "ClinicUz Portali",
+    "description": "Tizimga kirish uchun xodim ma'lumotlarini kiriting.",
+    "admin_login": "Admin Kirish",
+    "doctor_login": "Shifokor Kirish",
+    "email": "Email manzili",
+    "password": "Parol",
+    "send_code": "Tasdiqlash kodini yuborish",
+    "verify_code": "Tasdiqlash kodi",
+    "sign_in": "Kirish"
   }
 }

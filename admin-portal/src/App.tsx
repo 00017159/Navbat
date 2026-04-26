@@ -149,6 +149,7 @@ interface Appointment {
 
 // ── Login Screen ──────────────────────────────────────────
 function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) => void }) {
+  const { t, i18n } = useTranslation();
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [password, setPassword] = useState('');
@@ -231,8 +232,25 @@ function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) =
   return (
     <div className="login-container">
       <div className="login-card">
-        <h1>ClinicUz Portal</h1>
-        <p>Sign in with your staff credentials to access the system.</p>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6, marginBottom: 16 }}>
+          {['en', 'uz', 'ru'].map(l => (
+            <button 
+              key={l}
+              onClick={() => i18n.changeLanguage(l)}
+              style={{ 
+                padding: '4px 8px', borderRadius: 6, fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+                background: i18n.language === l ? 'rgba(59, 130, 246, 0.2)' : 'transparent',
+                color: i18n.language === l ? '#60A5FA' : '#94A3B8',
+                border: '1px solid ' + (i18n.language === l ? 'rgba(59, 130, 246, 0.4)' : 'rgba(51, 65, 85, 0.5)'),
+                cursor: 'pointer'
+              }}
+            >
+              {l}
+            </button>
+          ))}
+        </div>
+        <h1>{t('auth.title')}</h1>
+        <p>{t('auth.description')}</p>
 
         {error && <div className="login-error">{error}</div>}
 
@@ -243,14 +261,14 @@ function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) =
             style={{ flex: 1, fontSize: 13, padding: '8px 0', background: loginMode === 'otp' ? '#1E63D3' : '#1E293B', border: loginMode === 'otp' ? 'none' : '1px solid #334155', boxShadow: loginMode === 'otp' ? undefined : 'none' }}
             onClick={() => { setLoginMode('otp'); setStep('email'); setError(''); }}
           >
-            Admin Login
+            {t('auth.admin_login')}
           </button>
           <button
             className={`btn-primary`}
             style={{ flex: 1, fontSize: 13, padding: '8px 0', background: loginMode === 'password' ? '#1E63D3' : '#1E293B', border: loginMode === 'password' ? 'none' : '1px solid #334155', boxShadow: loginMode === 'password' ? undefined : 'none' }}
             onClick={() => { setLoginMode('password'); setStep('email'); setError(''); }}
           >
-            Doctors Login
+            {t('auth.doctor_login')}
           </button>
         </div>
 
@@ -259,7 +277,7 @@ function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) =
           step === 'email' ? (
             <>
               <div className="form-group">
-                <label>Email Address</label>
+                <label>{t('auth.email')}</label>
                 <input
                   type="email"
                   placeholder="admin@example.com"
@@ -269,7 +287,7 @@ function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) =
                 />
               </div>
               <button className="btn-primary" onClick={handleRequestOtp} disabled={loading}>
-                {loading ? 'Sending...' : 'Send Verification Code'}
+                {loading ? t('common.loading') : t('auth.send_code')}
               </button>
             </>
           ) : (

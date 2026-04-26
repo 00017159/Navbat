@@ -4,6 +4,7 @@ import { Mail, ChevronUp, ArrowLeft, ShieldCheck } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { requestOtp, verifyOtp } from '../services/api';
 import { useAlert } from '../services/AlertContext';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 const OTP_LENGTH = 6;
@@ -19,6 +20,7 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const inputRefs = useRef<(TextInput | null)[]>([]);
   const { showAlert } = useAlert();
+  const { t, i18n } = useTranslation();
 
   const handleRequestOtp = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -132,6 +134,26 @@ export default function LoginScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+            <View style={styles.langSwitcher}>
+              {['en', 'uz', 'ru'].map(l => (
+                <TouchableOpacity 
+                  key={l}
+                  onPress={() => i18n.changeLanguage(l)}
+                  style={[
+                    styles.langBtn,
+                    i18n.language === l && styles.langBtnActive
+                  ]}
+                >
+                  <Text style={[
+                    styles.langBtnText,
+                    i18n.language === l && styles.langBtnTextActive
+                  ]}>
+                    {l.toUpperCase()}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
             <TouchableOpacity style={styles.backButton} onPress={() => { setStep('email'); setOtpDigits(['', '', '', '', '', '']); }}>
               <ArrowLeft color="#111827" size={24} />
             </TouchableOpacity>
@@ -140,8 +162,8 @@ export default function LoginScreen() {
               <View style={styles.shieldIcon}>
                 <ShieldCheck color="#fff" size={32} />
               </View>
-              <Text style={styles.otpTitle}>Verification Code</Text>
-              <Text style={styles.otpSubtitle}>Enter the {OTP_LENGTH}-digit code sent to</Text>
+              <Text style={styles.otpTitle}>{t('auth.verify_title')}</Text>
+              <Text style={styles.otpSubtitle}>{t('auth.verify_subtitle')}</Text>
               <Text style={styles.otpEmail}>{email}</Text>
             </View>
 
@@ -169,14 +191,13 @@ export default function LoginScreen() {
             >
               {loading
                 ? <ActivityIndicator color="#FFF" />
-                : <Text style={styles.verifyButtonText}>Verify & Sign In</Text>
+                : <Text style={styles.verifyButtonText}>{t('auth.verify_btn')}</Text>
               }
             </TouchableOpacity>
 
             <View style={styles.resendRow}>
-              <Text style={styles.resendText}>Didn't receive the code? </Text>
-              <TouchableOpacity onPress={handleResendOtp} disabled={loading}>
-                <Text style={styles.resendLink}>Resend</Text>
+              <TouchableOpacity onPress={() => setStep('email')} disabled={loading}>
+                <Text style={styles.resendLink}>{t('auth.back_to_email')}</Text>
               </TouchableOpacity>
             </View>
 
@@ -195,18 +216,37 @@ export default function LoginScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-          
+          <View style={styles.langSwitcher}>
+            {['en', 'uz', 'ru'].map(l => (
+              <TouchableOpacity 
+                key={l}
+                onPress={() => i18n.changeLanguage(l)}
+                style={[
+                  styles.langBtn,
+                  i18n.language === l && styles.langBtnActive
+                ]}
+              >
+                <Text style={[
+                  styles.langBtnText,
+                  i18n.language === l && styles.langBtnTextActive
+                ]}>
+                  {l.toUpperCase()}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </div>
+
           <View style={styles.header}>
             <Image source={require('../../assets/images/clinicuz-logo-clean.png')} style={{ width: 80, height: 80, borderRadius: 20, marginBottom: 12 }} resizeMode="contain" />
             <Text style={styles.brandTitle}>ClinicUz</Text>
-            <Text style={styles.brandSubtitle}>Your Healthcare Companion</Text>
+            <Text style={styles.brandSubtitle}>{t('auth.subtitle')}</Text>
           </View>
 
           <View style={styles.formCard}>
-            <Text style={styles.welcomeText}>Welcome</Text>
-            <Text style={styles.welcomeSubtext}>Enter your email to receive a one-time verification code</Text>
+            <Text style={styles.welcomeText}>{t('auth.title')}</Text>
+            <Text style={styles.welcomeSubtext}>{t('auth.subtitle')}</Text>
 
-            <Text style={styles.label}>Email Address</Text>
+            <Text style={styles.label}>{t('auth.email')}</Text>
             <View style={styles.inputContainer}>
               <Mail color="#94A3B8" size={20} style={styles.inputIcon} />
               <TextInput
@@ -231,7 +271,7 @@ export default function LoginScreen() {
             >
               {loading
                 ? <ActivityIndicator color="#FFF" />
-                : <Text style={styles.signInText}>Send Verification Code</Text>
+                : <Text style={styles.signInText}>{t('auth.send_code')}</Text>
               }
             </TouchableOpacity>
           </View>
@@ -246,6 +286,33 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
+  langSwitcher: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 20,
+    marginTop: 10,
+    gap: 8,
+  },
+  langBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    backgroundColor: '#FFFFFF',
+  },
+  langBtnActive: {
+    backgroundColor: '#EFF6FF',
+    borderColor: '#3B82F6',
+  },
+  langBtnText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#64748B',
+  },
+  langBtnTextActive: {
+    color: '#1E63D3',
+  },
   scrollContent: { padding: 20 },
   header: { alignItems: 'center', marginTop: 40, marginBottom: 40 },
   logoContainer: { 

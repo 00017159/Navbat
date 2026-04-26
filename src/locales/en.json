@@ -53,5 +53,16 @@
     "dark_mode": "Dark Mode",
     "logout": "Log Out",
     "select_language": "Select Language"
+  },
+  "auth": {
+    "title": "Welcome to NavbatUz",
+    "subtitle": "Your healthcare journey starts here. Sign in to manage your appointments.",
+    "email": "Email Address",
+    "email_placeholder": "example@email.com",
+    "send_code": "Get Verification Code",
+    "verify_title": "Verification Code",
+    "verify_subtitle": "Enter the 6-digit code sent to your email",
+    "verify_btn": "Verify & Continue",
+    "back_to_email": "Back to Email"
   }
 }

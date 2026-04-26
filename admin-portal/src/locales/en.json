@@ -24,5 +24,16 @@
     "notes": "Patient Notes",
     "actions": "Actions",
     "write_record": "Write Record"
+  },
+  "auth": {
+    "title": "ClinicUz Portal",
+    "description": "Sign in with your staff credentials to access the system.",
+    "admin_login": "Admin Login",
+    "doctor_login": "Doctors Login",
+    "email": "Email Address",
+    "password": "Password",
+    "send_code": "Send Verification Code",
+    "verify_code": "Verification Code",
+    "sign_in": "Sign In"
   }
 }

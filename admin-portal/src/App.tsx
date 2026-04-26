@@ -601,12 +601,13 @@ function AppointmentsView({ appointments, role, onRefresh, toast }: { appointmen
               <th>Date & Time</th>
               <th>Type</th>
               <th>Status</th>
-              <th>{role === 'DOCTOR' || role === 'ADMIN' ? 'Actions' : 'Notes'}</th>
+              <th>Patient Notes</th>
+              <th>{role === 'DOCTOR' || role === 'ADMIN' ? 'Actions' : ''}</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
-              <tr><td colSpan={6} className="empty-state">No appointments found</td></tr>
+              <tr><td colSpan={7} className="empty-state">No appointments found</td></tr>
             ) : filtered.map(a => (
               <tr key={a.id}>
                 <td>
@@ -624,6 +625,9 @@ function AppointmentsView({ appointments, role, onRefresh, toast }: { appointmen
                 <td style={{ color: '#94A3B8', fontSize: 13 }}>{new Date(a.date_time).toLocaleString()}</td>
                 <td style={{ color: '#94A3B8' }}>{a.type}</td>
                 <td><span className={`status-badge ${a.status?.toLowerCase()}`}>{a.status}</span></td>
+                <td style={{ color: '#64748B', fontSize: 13, maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={a.notes || ''}>
+                  {a.notes || '—'}
+                </td>
                 <td>
                   {(role === 'DOCTOR' || role === 'ADMIN') && a.status !== 'COMPLETED' ? (
                     <button 
@@ -640,7 +644,7 @@ function AppointmentsView({ appointments, role, onRefresh, toast }: { appointmen
                     >
                       Write Record
                     </button>
-                  ) : <span style={{ color: '#64748B', fontSize: 13, maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{a.notes || '—'}</span>}
+                  ) : <span style={{ color: '#64748B', fontSize: 13 }}>{a.status === 'COMPLETED' ? '—' : ''}</span>}
                 </td>
               </tr>
             ))}

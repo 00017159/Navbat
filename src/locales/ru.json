@@ -1,0 +1,57 @@
+{
+  "common": {
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "confirm": "Подтвердить",
+    "ok": "ОК",
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "success": "Успешно",
+    "info": "Информация"
+  },
+  "tabs": {
+    "home": "Главная",
+    "appointments": "Записи",
+    "records": "История",
+    "profile": "Профиль"
+  },
+  "home": {
+    "welcome": "С возвращением",
+    "search_placeholder": "Поиск врачей или клиник...",
+    "top_doctors": "Лучшие врачи",
+    "view_all": "Показать все",
+    "no_doctors": "Врачи не найдены",
+    "book_now": "Записаться"
+  },
+  "doctor": {
+    "specialty": "Специалист",
+    "experience": "лет опыта",
+    "rating": "рейтинг",
+    "about": "О враче",
+    "contact": "Контакты",
+    "call": "Позвонить",
+    "email": "Написать",
+    "clinic_info": "О клинике",
+    "select_date": "Выберите дату",
+    "select_time": "Выберите время",
+    "notes_placeholder": "Опишите ваши симптомы...",
+    "book_appointment": "Записаться на прием",
+    "confirm_booking": "Подтвердить"
+  },
+  "appointments": {
+    "upcoming": "Предстоящие",
+    "past": "Прошедшие",
+    "no_upcoming": "Нет предстоящих записей",
+    "no_past": "Нет прошедших записей",
+    "cancel_btn": "Отменить",
+    "write_review": "Оставить отзыв"
+  },
+  "profile": {
+    "personal_info": "Личная информация",
+    "privacy": "Приватность",
+    "language": "Язык",
+    "dark_mode": "Темная тема",
+    "logout": "Выйти",
+    "select_language": "Выберите язык"
+  }
+}

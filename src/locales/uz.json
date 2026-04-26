@@ -1,0 +1,57 @@
+{
+  "common": {
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "confirm": "Tasdiqlash",
+    "ok": "OK",
+    "loading": "Yuklanmoqda...",
+    "error": "Xato",
+    "success": "Muvaffaqiyatli",
+    "info": "Ma'lumot"
+  },
+  "tabs": {
+    "home": "Asosiy",
+    "appointments": "Qabullar",
+    "records": "Tarix",
+    "profile": "Profil"
+  },
+  "home": {
+    "welcome": "Xush kelibsiz",
+    "search_placeholder": "Shifokor yoki klinika qidirish...",
+    "top_doctors": "Top Shifokorlar",
+    "view_all": "Barchasini ko'rish",
+    "no_doctors": "Shifokorlar topilmadi",
+    "book_now": "Hozir yozilish"
+  },
+  "doctor": {
+    "specialty": "Mutaxassis",
+    "experience": "yil tajriba",
+    "rating": "reyting",
+    "about": "Shifokor haqida",
+    "contact": "Aloqa",
+    "call": "Qo'ng'iroq qilish",
+    "email": "Email yozish",
+    "clinic_info": "Klinika haqida",
+    "select_date": "Kunni tanlang",
+    "select_time": "Vaqtni tanlang",
+    "notes_placeholder": "Shikoyatlaringizni yozing...",
+    "book_appointment": "Qabulga yozilish",
+    "confirm_booking": "Tasdiqlash"
+  },
+  "appointments": {
+    "upcoming": "Kutilayotgan",
+    "past": "O'tgan",
+    "no_upcoming": "Kutilayotgan qabullar yo'q",
+    "no_past": "O'tgan qabullar yo'q",
+    "cancel_btn": "Bekor qilish",
+    "write_review": "Fikr qoldirish"
+  },
+  "profile": {
+    "personal_info": "Shaxsiy ma'lumotlar",
+    "privacy": "Maxfiylik va xavfsizlik",
+    "language": "Til",
+    "dark_mode": "Tungi rejim",
+    "logout": "Chiqish",
+    "select_language": "Tilni tanlang"
+  }
+}

@@ -1,11 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, Switch, Linking } from 'react-native';
-import { User, Lock, HelpCircle, Info, ChevronRight, LogOut, Moon } from 'lucide-react-native';
 import { useRouter, useNavigation, useFocusEffect } from 'expo-router';
 import { getCurrentUser, signOut } from '../../services/api';
 import { useTheme } from '../../services/theme';
 import { useAlert } from '../../services/AlertContext';
 import { CommonActions } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import { Globe, User, Lock, HelpCircle, Info, ChevronRight, LogOut, Moon } from 'lucide-react-native';
 
 const SETTINGS_ITEMS = [
   { id: 1, icon: 'User', title: 'Personal Information', description: 'Name, email, phone number' },
@@ -19,6 +20,9 @@ export default function ProfileScreen() {
   const navigation = useNavigation();
   const { dark, toggle, colors } = useTheme();
   const { showAlert } = useAlert();
+  const { t, i18n } = useTranslation();
+
+  const [languageModalVisible, setLanguageModalVisible] = useState(false);
 
   const [user, setUser] = useState(getCurrentUser());
 
@@ -39,11 +43,22 @@ export default function ProfileScreen() {
     switch (iconName) {
       case 'User': return <User color={color} size={20} />;
       case 'Lock': return <Lock color={color} size={20} />;
+      case 'Globe': return <Globe color={color} size={20} />;
       case 'HelpCircle': return <HelpCircle color={color} size={20} />;
       case 'Info': return <Info color={color} size={20} />;
       default: return <ChevronRight color={color} size={20} />;
     }
   };
+
+  const currentLangName = i18n.language === 'uz' ? 'O\'zbekcha' : i18n.language === 'ru' ? 'Русский' : 'English';
+
+  const settingsItems = [
+    { id: 1, icon: 'User', title: t('profile.personal_info'), description: 'Name, email, phone number' },
+    { id: 3, icon: 'Lock', title: t('profile.privacy_security'), description: 'Password, 2FA, data' },
+    { id: 6, icon: 'Globe', title: t('profile.language'), description: currentLangName },
+    { id: 4, icon: 'HelpCircle', title: 'Help & Support', description: 'FAQ, contact us, report' },
+    { id: 5, icon: 'Info', title: 'About ClinicUz', description: 'Version, terms, licenses' },
+  ];
 
   const handleSettingsPress = (item: typeof SETTINGS_ITEMS[number]) => {
     switch (item.id) {
@@ -52,6 +67,9 @@ export default function ProfileScreen() {
         break;
       case 3:
         router.push('/privacy' as any);
+        break;
+      case 6:
+        setLanguageModalVisible(true);
         break;
       case 4:
         showAlert({
@@ -129,15 +147,15 @@ export default function ProfileScreen() {
         {/* Settings Menu */}
         <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>SETTINGS</Text>
         <View style={[styles.settingsCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          {SETTINGS_ITEMS.map((item, index) => (
+          {settingsItems.map((item, index) => (
             <TouchableOpacity 
               key={item.id} 
               style={[
                 styles.settingsRow, 
-                index === SETTINGS_ITEMS.length - 1 ? styles.settingsRowLast : null,
+                index === settingsItems.length - 1 ? styles.settingsRowLast : null,
                 { borderBottomColor: colors.border }
               ]}
-              onPress={() => handleSettingsPress(item)}
+              onPress={() => handleSettingsPress(item as any)}
             >
               <View style={[styles.settingsIcon, { backgroundColor: dark ? '#334155' : '#EFF6FF' }]}>
                 {getIcon(item.icon, colors.primary)}
@@ -153,12 +171,44 @@ export default function ProfileScreen() {
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <LogOut color="#EF4444" size={20} style={{ marginRight: 8 }} />
-          <Text style={styles.logoutText}>Log Out</Text>
+          <Text style={styles.logoutText}>{t('profile.logout')}</Text>
         </TouchableOpacity>
 
         <Text style={[styles.versionText, { color: colors.textSecondary }]}>ClinicUz v1.0.0</Text>
 
       </ScrollView>
+
+      {/* Language Selection Modal */}
+      {languageModalVisible && (
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }]}>
+          <View style={[styles.langModal, { backgroundColor: colors.card, width: '85%', borderRadius: 24, padding: 24 }]}>
+            <Text style={[styles.langTitle, { color: colors.text, fontSize: 18, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' }]}>{t('profile.select_language')}</Text>
+            {[
+              { code: 'en', name: 'English' },
+              { code: 'uz', name: 'O\'zbekcha' },
+              { code: 'ru', name: 'Русский' }
+            ].map(lang => (
+              <TouchableOpacity 
+                key={lang.code}
+                style={[
+                  { paddingVertical: 16, paddingHorizontal: 20, borderRadius: 12, marginBottom: 8, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }, 
+                  i18n.language === lang.code && { backgroundColor: dark ? '#334155' : '#EFF6FF' }
+                ]}
+                onPress={() => {
+                  i18n.changeLanguage(lang.code);
+                  setLanguageModalVisible(false);
+                }}
+              >
+                <Text style={[{ fontSize: 16, fontWeight: '600' }, { color: i18n.language === lang.code ? '#1E63D3' : colors.text }]}>{lang.name}</Text>
+                {i18n.language === lang.code && <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#1E63D3' }} />}
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity style={{ marginTop: 12, paddingVertical: 12, alignItems: 'center' }} onPress={() => setLanguageModalVisible(false)}>
+              <Text style={{ color: colors.textSecondary, fontWeight: '600' }}>{t('common.cancel')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 }

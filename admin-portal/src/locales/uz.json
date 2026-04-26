@@ -1,0 +1,28 @@
+{
+  "sidebar": {
+    "dashboard": "Boshqaruv paneli",
+    "users": "Foydalanuvchilar",
+    "appointments": "Qabullar",
+    "doctors": "Shifokorlar",
+    "records": "Tibbiy tarix",
+    "clinics": "Klinikalar",
+    "logout": "Chiqish"
+  },
+  "dashboard": {
+    "total_patients": "Barcha bemorlar",
+    "active_doctors": "Faol shifokorlar",
+    "total_appointments": "Barcha qabullar",
+    "completed": "Tugatilgan"
+  },
+  "appointments": {
+    "title": "Qabullar",
+    "patient": "Bemor",
+    "doctor": "Shifokor",
+    "date_time": "Sana va vaqt",
+    "type": "Turi",
+    "status": "Holati",
+    "notes": "Bemor shikoyatlari",
+    "actions": "Amallar",
+    "write_record": "Tarix yozish"
+  }
+}

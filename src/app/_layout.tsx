@@ -4,6 +4,7 @@ import { ThemeProvider } from '../services/theme';
 import { AlertProvider } from '../services/AlertContext';
 import { useEffect, useState } from 'react';
 import { restoreSession } from '../services/api';
+import '../services/i18n';
 
 export default function RootLayout() {
   const [sessionReady, setSessionReady] = useState(false);

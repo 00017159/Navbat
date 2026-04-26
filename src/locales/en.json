@@ -1,0 +1,57 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "ok": "OK",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "info": "Information"
+  },
+  "tabs": {
+    "home": "Home",
+    "appointments": "Appointments",
+    "records": "Records",
+    "profile": "Profile"
+  },
+  "home": {
+    "welcome": "Welcome back",
+    "search_placeholder": "Search doctors or clinics...",
+    "top_doctors": "Top Doctors",
+    "view_all": "View All",
+    "no_doctors": "No doctors found",
+    "book_now": "Book Now"
+  },
+  "doctor": {
+    "specialty": "Specialist",
+    "experience": "years exp",
+    "rating": "rating",
+    "about": "About Doctor",
+    "contact": "Contact",
+    "call": "Call Doctor",
+    "email": "Email Doctor",
+    "clinic_info": "About Clinic",
+    "select_date": "Select Date",
+    "select_time": "Select Time",
+    "notes_placeholder": "Describe your symptoms...",
+    "book_appointment": "Book Appointment",
+    "confirm_booking": "Confirm Booking"
+  },
+  "appointments": {
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "no_upcoming": "No upcoming appointments",
+    "no_past": "No past appointments",
+    "cancel_btn": "Cancel",
+    "write_review": "Write Review"
+  },
+  "profile": {
+    "personal_info": "Personal Information",
+    "privacy": "Privacy & Security",
+    "language": "Language",
+    "dark_mode": "Dark Mode",
+    "logout": "Log Out",
+    "select_language": "Select Language"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "appointments": "Appointments",
+    "doctors": "Doctors",
+    "records": "Medical Records",
+    "clinics": "Clinics",
+    "logout": "Sign Out"
+  },
+  "dashboard": {
+    "total_patients": "Total Patients",
+    "active_doctors": "Active Doctors",
+    "total_appointments": "Total Appointments",
+    "completed": "Completed"
+  },
+  "appointments": {
+    "title": "Appointments",
+    "patient": "Patient",
+    "doctor": "Doctor",
+    "date_time": "Date & Time",
+    "type": "Type",
+    "status": "Status",
+    "notes": "Patient Notes",
+    "actions": "Actions",
+    "write_record": "Write Record"
+  }
+}

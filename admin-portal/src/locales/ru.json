@@ -1,0 +1,28 @@
+{
+  "sidebar": {
+    "dashboard": "Панель управления",
+    "users": "Пользователи",
+    "appointments": "Записи",
+    "doctors": "Врачи",
+    "records": "Мед. карты",
+    "clinics": "Клиники",
+    "logout": "Выйти"
+  },
+  "dashboard": {
+    "total_patients": "Всего пациентов",
+    "active_doctors": "Активные врачи",
+    "total_appointments": "Всего записей",
+    "completed": "Завершено"
+  },
+  "appointments": {
+    "title": "Записи",
+    "patient": "Пациент",
+    "doctor": "Врач",
+    "date_time": "Дата и время",
+    "type": "Тип",
+    "status": "Статус",
+    "notes": "Заметки пациента",
+    "actions": "Действия",
+    "write_record": "Создать запись"
+  }
+}

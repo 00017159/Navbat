@@ -18,8 +18,8 @@ import {
   Trash2,
   UserCheck,
   Users,
-  X
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import logoImg from './assets/logo.png';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as XLSX from 'xlsx';
@@ -1475,6 +1475,7 @@ function App() {
   const [profileId, setProfileId] = useState<string>('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { toast, confirm, toasts, removeToast, confirmOptions, handleConfirm, handleCancel } = useDialog();
+  const { t, i18n } = useTranslation();
 
   // Check existing session
   useEffect(() => {
@@ -1617,36 +1618,56 @@ function App() {
 
         <nav className="sidebar-nav">
           <button className={`nav-item ${view === 'dashboard' ? 'active' : ''}`} onClick={() => navTo('dashboard')}>
-            <LayoutDashboard size={18} /> Dashboard
+            <LayoutDashboard size={18} /> {t('sidebar.dashboard')}
           </button>
 
           {role === 'ADMIN' && (
             <>
               <button className={`nav-item ${view === 'users' ? 'active' : ''}`} onClick={() => navTo('users')}>
-                <Users size={18} /> Patients
+                <Users size={18} /> {t('sidebar.users')}
               </button>
               <button className={`nav-item ${view === 'doctors' ? 'active' : ''}`} onClick={() => navTo('doctors')}>
-                <HeartPulse size={18} /> Doctors
+                <HeartPulse size={18} /> {t('sidebar.doctors')}
               </button>
               <button className={`nav-item ${view === 'clinics' ? 'active' : ''}`} onClick={() => navTo('clinics')}>
-                <Building2 size={18} /> Clinics
+                <Building2 size={18} /> {t('sidebar.clinics')}
               </button>
             </>
           )}
 
           <button className={`nav-item ${view === 'appointments' ? 'active' : ''}`} onClick={() => navTo('appointments')}>
-            <Calendar size={18} /> {role === 'ADMIN' ? 'All Appointments' : 'My Schedule'}
+            <Calendar size={18} /> {role === 'ADMIN' ? t('sidebar.appointments') : 'My Schedule'}
           </button>
 
           {role === 'DOCTOR' && (
             <button className={`nav-item ${view === 'records' ? 'active' : ''}`} onClick={() => navTo('records')}>
-              <FileText size={18} /> My Records
+              <FileText size={18} /> {t('sidebar.records')}
             </button>
           )}
 
-          <button className="nav-item nav-item-logout" onClick={handleLogout}>
-            <LogOut size={18} /> Sign Out
-          </button>
+          <div style={{ marginTop: 'auto', padding: '12px 0' }}>
+            <div style={{ display: 'flex', gap: 4, marginBottom: 8, padding: '0 12px' }}>
+              {['en', 'uz', 'ru'].map(l => (
+                <button 
+                  key={l}
+                  onClick={() => i18n.changeLanguage(l)}
+                  style={{ 
+                    flex: 1, padding: '4px 0', borderRadius: 4, fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+                    background: i18n.language === l ? 'rgba(59, 130, 246, 0.2)' : 'transparent',
+                    color: i18n.language === l ? '#60A5FA' : '#94A3B8',
+                    border: '1px solid ' + (i18n.language === l ? 'rgba(59, 130, 246, 0.4)' : 'rgba(51, 65, 85, 0.5)'),
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
+            <button className="nav-item nav-item-logout" onClick={handleLogout}>
+              <LogOut size={18} /> {t('sidebar.logout')}
+            </button>
+          </div>
         </nav>
       </aside>
 

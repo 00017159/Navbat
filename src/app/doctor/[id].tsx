@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native';
-import { ArrowLeft, Star, Clock, MapPin, Calendar, FileText, CheckCircle, MessageSquare, ChevronDown, ChevronUp } from 'lucide-react-native';
+import { ArrowLeft, Star, Clock, MapPin, Calendar, FileText, CheckCircle, MessageSquare, ChevronDown, ChevronUp, Phone, Mail, Building2 } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { Linking, View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native';
 import { useTheme } from '../../services/theme';
 import { useAlert } from '../../services/AlertContext';
-import { createAppointment, getDoctorAppointmentsForDate, getReviews } from '../../services/api';
+import { useAlert } from '../../services/AlertContext';
+import { createAppointment, getDoctorAppointmentsForDate, getReviews, getDoctor, getClinicByName } from '../../services/api';
 
 const AVATAR_COLORS = ['#fef3c7', '#ffedd5', '#e0f2fe', '#fce7f3', '#dcfce7', '#f3e8ff'];
 const TEXT_COLORS = ['#92400e', '#c2410c', '#0369a1', '#be185d', '#166534', '#7e22ce'];
@@ -94,6 +95,9 @@ export default function DoctorBookingScreen() {
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [doctorReviews, setDoctorReviews] = useState<any[]>([]);
   const [profileExpanded, setProfileExpanded] = useState(false);
+  const [doctorData, setDoctorData] = useState<any>(null);
+  const [clinicData, setClinicData] = useState<any>(null);
+  const [fetchingData, setFetchingData] = useState(true);
 
   // Fetch reviews from DB
   useEffect(() => {
@@ -105,6 +109,27 @@ export default function DoctorBookingScreen() {
       } catch {}
     }
     fetchReviews();
+  }, [doctorId]);
+
+  // Fetch full doctor and clinic data
+  useEffect(() => {
+    async function fetchFullData() {
+      setFetchingData(true);
+      try {
+        const fullDoc = await getDoctor(doctorId);
+        setDoctorData(fullDoc);
+        
+        if (fullDoc?.doctor_profiles?.clinic_name) {
+          const clinic = await getClinicByName(fullDoc.doctor_profiles.clinic_name);
+          setClinicData(clinic);
+        }
+      } catch (err) {
+        console.error('Error fetching doctor/clinic data:', err);
+      } finally {
+        setFetchingData(false);
+      }
+    }
+    fetchFullData();
   }, [doctorId]);
 
   // Compute live rating from reviews
@@ -271,11 +296,62 @@ export default function DoctorBookingScreen() {
         </TouchableOpacity>
 
         {/* Consultation Type */}
-        <View style={[styles.typeCard, styles.typeCardActive, { marginBottom: 28, backgroundColor: dark ? '#1E3A5F' : '#EFF6FF', borderColor: '#1E63D3' }]}>
+        <View style={[styles.typeCard, styles.typeCardActive, { marginBottom: 12, backgroundColor: dark ? '#1E3A5F' : '#EFF6FF', borderColor: '#1E63D3' }]}>
           <MapPin color="#1E63D3" size={24} />
           <Text style={[styles.typeText, styles.typeTextActive]}>In-Person</Text>
           <Text style={[styles.typeSubtext, { color: colors.textSecondary }]}>Visit clinic</Text>
         </View>
+
+        {/* Doctor Bio & Contact */}
+        <View style={[styles.infoSection, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <Text style={[styles.sectionHeading, { color: colors.text }]}>About Doctor</Text>
+          <Text style={[styles.bioText, { color: colors.textSecondary }]}>
+            {doctorData?.doctor_profiles?.description || 'No description available for this doctor.'}
+          </Text>
+          
+          <View style={styles.contactRow}>
+            <TouchableOpacity 
+              style={[styles.contactButton, { backgroundColor: dark ? '#1E293B' : '#F1F5F9' }]}
+              onPress={() => {
+                const phone = doctorData?.doctor_profiles?.contact_phone;
+                if (phone) Linking.openURL(`tel:${phone.replace(/\s+/g, '')}`);
+                else showAlert({ title: 'Info', message: 'No phone number available for this doctor.', type: 'info' });
+              }}
+            >
+              <Phone size={18} color="#1E63D3" />
+              <Text style={[styles.contactButtonText, { color: colors.text }]}>Call Doctor</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={[styles.contactButton, { backgroundColor: dark ? '#1E293B' : '#F1F5F9' }]}
+              onPress={() => {
+                const email = doctorData?.doctor_profiles?.contact_email;
+                if (email) Linking.openURL(`mailto:${email}`);
+                else showAlert({ title: 'Info', message: 'No email address available for this doctor.', type: 'info' });
+              }}
+            >
+              <Mail size={18} color="#1E63D3" />
+              <Text style={[styles.contactButtonText, { color: colors.text }]}>Email Doctor</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Clinic Info */}
+        {clinicData && (
+          <View style={[styles.infoSection, { backgroundColor: colors.card, borderColor: colors.border, marginBottom: 28 }]}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+              <Building2 size={20} color="#1E63D3" style={{ marginRight: 8 }} />
+              <Text style={[styles.sectionHeading, { color: colors.text, marginBottom: 0 }]}>{clinicData.name}</Text>
+            </View>
+            <Text style={[styles.bioText, { color: colors.textSecondary, marginBottom: 12 }]}>
+              {clinicData.description || 'Welcome to our clinic. We provide high-quality healthcare services.'}
+            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <MapPin size={14} color={colors.textSecondary} style={{ marginRight: 6 }} />
+              <Text style={{ fontSize: 13, color: colors.textSecondary }}>{clinicData.location}</Text>
+            </View>
+          </View>
+        )}
 
         {/* Date Selection */}
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
@@ -398,6 +474,39 @@ const styles = StyleSheet.create({
   avatar: { width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center', marginRight: 14 },
   avatarText: { fontSize: 20, fontWeight: 'bold' },
   doctorInfo: { flex: 1 },
+  infoSection: {
+    padding: 20,
+    borderRadius: 20,
+    borderWidth: 1,
+    marginBottom: 16,
+  },
+  sectionHeading: {
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  bioText: {
+    fontSize: 14,
+    lineHeight: 22,
+  },
+  contactRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 16,
+  },
+  contactButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 12,
+    gap: 8,
+  },
+  contactButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
   doctorName: { fontSize: 16, fontWeight: 'bold', color: '#111827', marginBottom: 2 },
   doctorSpecialty: { fontSize: 13, color: '#64748B', marginBottom: 6 },
   ratingRow: { flexDirection: 'row', alignItems: 'center' },

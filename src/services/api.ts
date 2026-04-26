@@ -161,10 +161,21 @@ export async function getDoctor(id: string) {
     .from('profiles')
     .select('*, doctor_profiles(*)')
     .eq('id', id)
-    .eq('role', 'DOCTOR')
     .single();
 
   if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function getClinicByName(name: string) {
+  if (!name) return null;
+  const { data, error } = await supabase
+    .from('clinics')
+    .select('*')
+    .eq('name', name)
+    .single();
+  
+  if (error) return null;
   return data;
 }
 
@@ -347,6 +358,24 @@ export async function createReview(data: { doctorId: string; rating: number; com
   });
 
   if (error) throw new Error(error.message);
+
+  // Recalculate doctor rating
+  const { data: reviews } = await supabase
+    .from('reviews')
+    .select('rating')
+    .eq('doctor_id', data.doctorId);
+  
+  if (reviews && reviews.length > 0) {
+    const avgRating = reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length;
+    await supabase
+      .from('doctor_profiles')
+      .update({ 
+        rating: parseFloat(avgRating.toFixed(1)), 
+        review_count: reviews.length 
+      })
+      .eq('user_id', data.doctorId);
+  }
+
   return { message: 'Review submitted' };
 }
 

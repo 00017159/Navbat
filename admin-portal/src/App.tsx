@@ -626,15 +626,20 @@ function AppointmentsView({ appointments, role, onRefresh, toast }: { appointmen
                 <td><span className={`status-badge ${a.status?.toLowerCase()}`}>{a.status}</span></td>
                 <td>
                   {(role === 'DOCTOR' || role === 'ADMIN') && a.status !== 'COMPLETED' ? (
-                    new Date(a.date_time) <= new Date() ? (
-                      <button className="btn-primary" style={{ padding: '6px 12px', fontSize: 12 }} onClick={() => { setSelectedAppt(a); setIsModalOpen(true); }}>
-                        Write Record
-                      </button>
-                    ) : (
-                      <span className="status-badge" style={{ background: 'rgba(245,158,11,0.1)', color: '#D97706', border: '1px solid rgba(245,158,11,0.2)', fontSize: '10px', whiteSpace: 'nowrap', display: 'inline-block' }}>
-                        Wait for appointment
-                      </span>
-                    )
+                    <button 
+                      className="btn-primary" 
+                      style={{ padding: '6px 12px', fontSize: 12 }} 
+                      onClick={() => { 
+                        if (new Date(a.date_time) > new Date()) {
+                          toast('You can only write medical records once the appointment time has passed.', 'info');
+                        } else {
+                          setSelectedAppt(a); 
+                          setIsModalOpen(true); 
+                        }
+                      }}
+                    >
+                      Write Record
+                    </button>
                   ) : <span style={{ color: '#64748B', fontSize: 13, maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{a.notes || '—'}</span>}
                 </td>
               </tr>

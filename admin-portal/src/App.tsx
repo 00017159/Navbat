@@ -18,6 +18,8 @@ import {
   Trash2,
   UserCheck,
   Users,
+  X,
+  Globe
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import logoImg from './assets/logo.png';

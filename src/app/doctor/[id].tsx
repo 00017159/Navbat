@@ -4,7 +4,6 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Linking, View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native';
 import { useTheme } from '../../services/theme';
 import { useAlert } from '../../services/AlertContext';
-import { useAlert } from '../../services/AlertContext';
 import { createAppointment, getDoctorAppointmentsForDate, getReviews, getDoctor, getClinicByName } from '../../services/api';
 
 const AVATAR_COLORS = ['#fef3c7', '#ffedd5', '#e0f2fe', '#fce7f3', '#dcfce7', '#f3e8ff'];

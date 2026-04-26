@@ -234,7 +234,7 @@ export default function LoginScreen() {
                 </Text>
               </TouchableOpacity>
             ))}
-          </div>
+          </View>
 
           <View style={styles.header}>
             <Image source={require('../../assets/images/clinicuz-logo-clean.png')} style={{ width: 80, height: 80, borderRadius: 20, marginBottom: 12 }} resizeMode="contain" />

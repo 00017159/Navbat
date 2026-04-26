@@ -631,7 +631,7 @@ function AppointmentsView({ appointments, role, onRefresh, toast }: { appointmen
                         Write Record
                       </button>
                     ) : (
-                      <span className="status-badge" style={{ background: 'rgba(245,158,11,0.1)', color: '#D97706', border: '1px solid rgba(245,158,11,0.2)', fontSize: 11 }}>
+                      <span className="status-badge" style={{ background: 'rgba(245,158,11,0.1)', color: '#D97706', border: '1px solid rgba(245,158,11,0.2)', fontSize: '10px', whiteSpace: 'nowrap', display: 'inline-block' }}>
                         Wait for appointment
                       </span>
                     )

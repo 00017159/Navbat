@@ -79,7 +79,7 @@ function ConfirmDialog({ options, onConfirm, onCancel }: ConfirmDialogProps) {
         <p style={{ margin: '0 0 24px', color: '#94A3B8', fontSize: 14, lineHeight: 1.6, paddingLeft: 52 }}>{options.message}</p>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
           <button onClick={onCancel} style={{ padding: '10px 20px', borderRadius: 10, border: '1px solid #1E293B', background: '#1E293B', color: '#94A3B8', cursor: 'pointer', fontSize: 14, fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>
-            Cancel
+            {options.confirmLabel ? 'Cancel' : 'Cancel'}
           </button>
           <button onClick={onConfirm} style={{ padding: '10px 20px', borderRadius: 10, border: 'none', background: options.danger ? '#ef4444' : '#3b82f6', color: '#fff', cursor: 'pointer', fontSize: 14, fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
             {options.confirmLabel || 'Confirm'}
@@ -160,7 +160,7 @@ function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) =
   const [showPassword, setShowPassword] = useState(false);
 
   const handleRequestOtp = async () => {
-    if (!email.includes('@')) { setError('Enter a valid email'); return; }
+    if (!email.includes('@')) { setError(t('auth.invalid_email')); return; }
     setLoading(true);
     setError('');
     try {
@@ -175,7 +175,7 @@ function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) =
   };
 
   const handleVerifyOtp = async () => {
-    if (otp.length < 6) { setError('Enter the 6-digit code'); return; }
+    if (otp.length < 6) { setError(t('auth.otp_too_short')); return; }
     setLoading(true);
     setError('');
     try {
@@ -190,8 +190,8 @@ function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) =
   };
 
   const handlePasswordLogin = async () => {
-    if (!email.includes('@')) { setError('Enter a valid email'); return; }
-    if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
+    if (!email.includes('@')) { setError(t('auth.invalid_email')); return; }
+    if (password.length < 6) { setError(t('auth.password_too_short')); return; }
     setLoading(true);
     setError('');
     try {
@@ -224,7 +224,7 @@ function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) =
     }
     if (profile?.role !== 'ADMIN' && profile?.role !== 'DOCTOR') {
       await supabase.auth.signOut();
-      throw new Error('Access denied. Staff privileges required.');
+      throw new Error(t('auth.access_denied'));
     }
     onLogin(profile.role, profile.id);
   };
@@ -293,10 +293,10 @@ function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) =
           ) : (
             <>
               <div className="form-group">
-                <label>Verification Code</label>
+                <label>{t('auth.verify_code')}</label>
                 <input
                   type="text"
-                  placeholder="Enter 6-digit code"
+                  placeholder={t('auth.verify_placeholder')}
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   onKeyDown={(e) => e.key === 'Enter' && handleVerifyOtp()}
@@ -304,13 +304,13 @@ function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) =
                 />
               </div>
               <button className="btn-primary" onClick={handleVerifyOtp} disabled={loading}>
-                {loading ? 'Verifying...' : 'Sign In'}
+                {loading ? t('auth.verifying') : t('auth.sign_in')}
               </button>
               <button
                 style={{ marginTop: 12, background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', fontSize: 13, fontFamily: 'Inter' }}
                 onClick={() => { setStep('email'); setOtp(''); setError(''); }}
               >
-                ← Back to email
+                {t('auth.back_to_email')}
               </button>
             </>
           )
@@ -318,7 +318,7 @@ function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) =
           // Password Flow
           <>
             <div className="form-group">
-              <label>Email Address</label>
+              <label>{t('auth.email')}</label>
               <input
                 type="email"
                 placeholder="doctor@clinic.uz"
@@ -328,11 +328,11 @@ function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) =
               />
             </div>
             <div className="form-group">
-              <label>Password</label>
+              <label>{t('auth.password')}</label>
               <div style={{ position: 'relative' }}>
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
+                  placeholder={t('auth.password_placeholder')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handlePasswordLogin()}
@@ -346,7 +346,7 @@ function LoginScreen({ onLogin }: { onLogin: (role: string, profileId: string) =
               </div>
             </div>
             <button className="btn-primary" onClick={handlePasswordLogin} disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? t('auth.signing_in') : t('auth.sign_in')}
             </button>
           </>
         )}
@@ -361,63 +361,64 @@ function DashboardView({ users, appointments }: { users: Profile[]; appointments
   const totalDoctors = users.filter(u => u.role === 'DOCTOR').length;
   const upcomingCount = appointments.filter(a => a.status === 'UPCOMING').length;
   const completedCount = appointments.filter(a => a.status === 'COMPLETED').length;
+  const { t } = useTranslation();
 
   return (
     <>
       <div className="page-header">
-        <h1>Dashboard</h1>
-        <p>System overview and real-time metrics</p>
+        <h1>{t('dashboard.title')}</h1>
+        <p>{t('dashboard.subtitle')}</p>
       </div>
 
       <div className="metrics-grid">
         <div className="metric-card blue">
           <div className="metric-icon blue"><Users size={24} /></div>
           <div className="metric-value">{totalPatients}</div>
-          <div className="metric-label">Total Patients</div>
+          <div className="metric-label">{t('dashboard.total_patients')}</div>
         </div>
         <div className="metric-card green">
           <div className="metric-icon green"><Activity size={24} /></div>
           <div className="metric-value">{totalDoctors}</div>
-          <div className="metric-label">Active Doctors</div>
+          <div className="metric-label">{t('dashboard.active_doctors')}</div>
         </div>
         <div className="metric-card purple">
           <div className="metric-icon purple"><Clock size={24} /></div>
           <div className="metric-value">{upcomingCount}</div>
-          <div className="metric-label">Upcoming Visits</div>
+          <div className="metric-label">{t('dashboard.upcoming_visits')}</div>
         </div>
         <div className="metric-card amber">
           <div className="metric-icon amber"><UserCheck size={24} /></div>
           <div className="metric-value">{completedCount}</div>
-          <div className="metric-label">Completed</div>
+          <div className="metric-label">{t('dashboard.completed')}</div>
         </div>
       </div>
 
       {/* Recent Appointments */}
       <div className="table-section">
         <div className="table-header">
-          <h2>Recent Appointments</h2>
-          <span className="badge">{appointments.length} total</span>
+          <h2>{t('dashboard.recent_appointments')}</h2>
+          <span className="badge">{appointments.length} {t('common.total')}</span>
         </div>
         <table>
           <thead>
             <tr>
-              <th>Patient</th>
-              <th>Doctor</th>
-              <th>Date & Time</th>
-              <th>Type</th>
-              <th>Status</th>
+              <th>{t('appointments.patient')}</th>
+              <th>{t('appointments.doctor')}</th>
+              <th>{t('appointments.date_time')}</th>
+              <th>{t('appointments.type')}</th>
+              <th>{t('appointments.status')}</th>
             </tr>
           </thead>
           <tbody>
             {appointments.length === 0 ? (
-              <tr><td colSpan={5} className="empty-state">No appointments found</td></tr>
+              <tr><td colSpan={5} className="empty-state">{t('dashboard.no_appointments')}</td></tr>
             ) : appointments.slice(0, 10).map(a => (
               <tr key={a.id}>
                 <td>{a.patient ? `${a.patient.first_name} ${a.patient.last_name}` : '—'}</td>
                 <td>{a.doctor ? `${a.doctor.first_name} ${a.doctor.last_name}` : '—'}</td>
                 <td style={{ color: '#94A3B8' }}>{new Date(a.date_time).toLocaleString()}</td>
-                <td style={{ color: '#94A3B8' }}>{a.type}</td>
-                <td><span className={`status-badge ${a.status?.toLowerCase()}`}>{a.status}</span></td>
+                <td style={{ color: '#94A3B8' }}>{t('type.' + a.type?.toLowerCase(), a.type)}</td>
+                <td><span className={`status-badge ${a.status?.toLowerCase()}`}>{t('status.' + a.status?.toLowerCase(), a.status)}</span></td>
               </tr>
             ))}
           </tbody>
@@ -430,6 +431,7 @@ function DashboardView({ users, appointments }: { users: Profile[]; appointments
 // ── Users Management ──────────────────────────────────────
 function UsersView({ users, onDelete }: { users: Profile[]; onDelete: (id: string) => void }) {
   const [search, setSearch] = useState('');
+  const { t } = useTranslation();
   const filtered = users.filter(u =>
     u.email?.toLowerCase().includes(search.toLowerCase()) ||
     u.first_name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -439,19 +441,19 @@ function UsersView({ users, onDelete }: { users: Profile[]; onDelete: (id: strin
   return (
     <>
       <div className="page-header">
-        <h1>User Management</h1>
-        <p>View and manage all registered users</p>
+        <h1>{t('users.title')}</h1>
+        <p>{t('users.subtitle')}</p>
       </div>
 
       <div className="table-section">
         <div className="table-header">
-          <h2>All Users</h2>
-          <span className="badge">{users.length} registered</span>
+          <h2>{t('users.all_users')}</h2>
+          <span className="badge">{users.length} {t('common.registered')}</span>
         </div>
         <div className="search-bar">
           <input
             type="text"
-            placeholder="Search by name or email..."
+            placeholder={t('users.search_placeholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -459,15 +461,15 @@ function UsersView({ users, onDelete }: { users: Profile[]; onDelete: (id: strin
         <table>
           <thead>
             <tr>
-              <th>User</th>
-              <th>Role</th>
-              <th>Joined</th>
-              <th>Actions</th>
+              <th>{t('users.col_user')}</th>
+              <th>{t('users.col_role')}</th>
+              <th>{t('users.col_joined')}</th>
+              <th>{t('users.col_actions')}</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
-              <tr><td colSpan={4} className="empty-state">No users found</td></tr>
+              <tr><td colSpan={4} className="empty-state">{t('users.no_users')}</td></tr>
             ) : filtered.map(u => (
               <tr key={u.id}>
                 <td>
@@ -481,13 +483,13 @@ function UsersView({ users, onDelete }: { users: Profile[]; onDelete: (id: strin
                     </div>
                   </div>
                 </td>
-                <td><span className={`role-badge ${u.role?.toLowerCase()}`}>{u.role}</span></td>
+                <td><span className={`role-badge ${u.role?.toLowerCase()}`}>{t('roles.' + u.role?.toLowerCase(), u.role)}</span></td>
                 <td style={{ color: '#64748B', fontSize: 13 }}>{new Date(u.created_at).toLocaleDateString()}</td>
                 <td>
                   {u.role !== 'ADMIN' && (
                     <button className="btn-delete" onClick={() => onDelete(u.id)}>
                       <Trash2 size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                      Delete
+                      {t('users.delete_btn')}
                     </button>
                   )}
                 </td>
@@ -506,11 +508,8 @@ function AppointmentsView({ appointments, role, onRefresh, toast }: { appointmen
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
   const [loading, setLoading] = useState(false);
-
-  const [recordForm, setRecordForm] = useState({
-    diagnosis: '',
-    notes: ''
-  });
+  const { t } = useTranslation();
+  const [recordForm, setRecordForm] = useState({ diagnosis: '', notes: '' });
 
   const filtered = appointments.filter(a =>
     a.patient?.first_name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -521,7 +520,7 @@ function AppointmentsView({ appointments, role, onRefresh, toast }: { appointmen
 
   const handleAddRecord = async () => {
     if (!selectedAppt || !recordForm.diagnosis) {
-      toast('Diagnosis is required.', 'error');
+      toast(t('appointments.diagnosis_required'), 'error');
       return;
     }
     setLoading(true);
@@ -542,7 +541,7 @@ function AppointmentsView({ appointments, role, onRefresh, toast }: { appointmen
       onRefresh();
       setRecordForm({ diagnosis: '', notes: '' });
     } catch (e: any) {
-      toast('Failed to save record: ' + e.message, 'error');
+      toast(t('appointments.save_failed') + ': ' + e.message, 'error');
     } finally {
       setLoading(false);
     }
@@ -569,7 +568,7 @@ function AppointmentsView({ appointments, role, onRefresh, toast }: { appointmen
     }));
 
     if (rows.length === 0) {
-      toast('No appointments found for ' + monthName + ' ' + currentYear, 'info');
+      toast(t('appointments.no_month_appointments') + ' ' + monthName + ' ' + currentYear, 'info');
       return;
     }
 
@@ -589,44 +588,39 @@ function AppointmentsView({ appointments, role, onRefresh, toast }: { appointmen
     <>
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1>{role === 'DOCTOR' ? 'My Schedule' : 'Appointments'}</h1>
-          <p>{role === 'DOCTOR' ? 'Your upcoming and past appointments' : 'All clinic appointments across the system'}</p>
+          <h1>{role === 'DOCTOR' ? t('appointments.my_schedule') : t('appointments.title')}</h1>
+          <p>{role === 'DOCTOR' ? t('appointments.subtitle_doctor') : t('appointments.subtitle_admin')}</p>
         </div>
         {role === 'DOCTOR' && (
           <button className="btn-primary" style={{ width: 'auto', padding: '10px 20px', display: 'flex', alignItems: 'center', gap: 8 }} onClick={handleDownloadXlsx}>
-            <Download size={16} /> Monthly Report
+            <Download size={16} /> {t('appointments.monthly_report')}
           </button>
         )}
       </div>
 
       <div className="table-section">
         <div className="table-header">
-          <h2>All Appointments</h2>
-          <span className="badge">{appointments.length} total</span>
+          <h2>{t('appointments.all_appointments')}</h2>
+          <span className="badge">{appointments.length} {t('common.total')}</span>
         </div>
         <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Search by patient or doctor name..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <input type="text" placeholder={t('appointments.search_placeholder')} value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
         <table>
           <thead>
             <tr>
-              <th>Patient</th>
-              <th>Doctor</th>
-              <th>Date & Time</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Patient Notes</th>
-              <th>{role === 'DOCTOR' || role === 'ADMIN' ? 'Actions' : ''}</th>
+              <th>{t('appointments.patient')}</th>
+              <th>{t('appointments.doctor')}</th>
+              <th>{t('appointments.date_time')}</th>
+              <th>{t('appointments.type')}</th>
+              <th>{t('appointments.status')}</th>
+              <th>{t('appointments.notes')}</th>
+              <th>{role === 'DOCTOR' || role === 'ADMIN' ? t('appointments.actions') : ''}</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
-              <tr><td colSpan={7} className="empty-state">No appointments found</td></tr>
+              <tr><td colSpan={7} className="empty-state">{t('appointments.no_appointments')}</td></tr>
             ) : filtered.map(a => (
               <tr key={a.id}>
                 <td>
@@ -642,8 +636,8 @@ function AppointmentsView({ appointments, role, onRefresh, toast }: { appointmen
                 </td>
                 <td>{a.doctor ? `${a.doctor.first_name} ${a.doctor.last_name}` : '—'}</td>
                 <td style={{ color: '#94A3B8', fontSize: 13 }}>{new Date(a.date_time).toLocaleString()}</td>
-                <td style={{ color: '#94A3B8' }}>{a.type}</td>
-                <td><span className={`status-badge ${a.status?.toLowerCase()}`}>{a.status}</span></td>
+                <td style={{ color: '#94A3B8' }}>{t('type.' + a.type?.toLowerCase(), a.type)}</td>
+                <td><span className={`status-badge ${a.status?.toLowerCase()}`}>{t('status.' + a.status?.toLowerCase(), a.status)}</span></td>
                 <td style={{ color: '#64748B', fontSize: 13, maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={a.notes || ''}>
                   {a.notes || '—'}
                 </td>
@@ -654,7 +648,7 @@ function AppointmentsView({ appointments, role, onRefresh, toast }: { appointmen
                       style={{ padding: '6px 12px', fontSize: 12 }} 
                       onClick={() => { 
                         if (new Date(a.date_time) > new Date()) {
-                          toast('You can only write medical records once the appointment time has passed.', 'info');
+                          toast(t('appointments.future_appointment_warning'), 'info');
                         } else {
                           setSelectedAppt(a); 
                           setIsModalOpen(true); 
@@ -674,32 +668,32 @@ function AppointmentsView({ appointments, role, onRefresh, toast }: { appointmen
       {isModalOpen && selectedAppt && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(11,17,32,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
           <div className="login-card" style={{ width: 500, transform: 'none', padding: 24, borderRadius: 16 }}>
-            <h2 style={{ marginTop: 0, marginBottom: 8, fontFamily: 'Outfit', color: '#F1F5F9' }}>Clinical Record</h2>
-            <p style={{ color: '#94A3B8', marginBottom: 20 }}>Patient: <strong style={{ color: '#F1F5F9' }}>{selectedAppt.patient?.first_name} {selectedAppt.patient?.last_name}</strong></p>
+            <h2 style={{ marginTop: 0, marginBottom: 8, fontFamily: 'Outfit', color: '#F1F5F9' }}>{t('appointments.record_modal_title')}</h2>
+            <p style={{ color: '#94A3B8', marginBottom: 20 }}>{t('appointments.record_patient_label')}: <strong style={{ color: '#F1F5F9' }}>{selectedAppt.patient?.first_name} {selectedAppt.patient?.last_name}</strong></p>
 
             <div className="form-group">
-              <label>Diagnosis / Symptoms</label>
+              <label>{t('appointments.diagnosis_label')}</label>
               <textarea
                 style={{ minHeight: 80, resize: 'vertical' }}
                 value={recordForm.diagnosis}
                 onChange={e => setRecordForm({ ...recordForm, diagnosis: e.target.value })}
-                placeholder="Observed symptoms and final diagnosis..."
+                placeholder={t('appointments.diagnosis_placeholder')}
               />
             </div>
 
             <div className="form-group">
-              <label>Prescriptions & Suggestions</label>
+              <label>{t('appointments.prescriptions_label')}</label>
               <textarea
                 style={{ minHeight: 80, resize: 'vertical' }}
                 value={recordForm.notes}
                 onChange={e => setRecordForm({ ...recordForm, notes: e.target.value })}
-                placeholder="Medications, rest details, treatment plan..."
+                placeholder={t('appointments.prescriptions_placeholder')}
               />
             </div>
 
             <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
-              <button className="btn-primary" style={{ flex: 1, background: '#1E293B', color: '#F1F5F9', border: '1px solid #334155', boxShadow: 'none' }} onClick={() => setIsModalOpen(false)}>Cancel</button>
-              <button className="btn-primary" style={{ flex: 1, background: '#10B981' }} onClick={handleAddRecord} disabled={loading}>{loading ? 'Saving...' : 'Save & Complete'}</button>
+              <button className="btn-primary" style={{ flex: 1, background: '#1E293B', color: '#F1F5F9', border: '1px solid #334155', boxShadow: 'none' }} onClick={() => setIsModalOpen(false)}>{t('common.cancel')}</button>
+              <button className="btn-primary" style={{ flex: 1, background: '#10B981' }} onClick={handleAddRecord} disabled={loading}>{loading ? t('common.saving') : t('appointments.save_complete')}</button>
             </div>
           </div>
         </div>
@@ -722,6 +716,7 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
   const [editForm, setEditForm] = useState({ first_name: '', last_name: '', specialty: '', clinic_name: '', description: '', experience_yrs: 0, contact_phone: '', contact_email: '' });
   const [loading, setLoading] = useState(false);
   const [clinics, setClinics] = useState<{ id: string; name: string }[]>([]);
+  const { t } = useTranslation();
 
   const openEditModal = async (doctor: Profile) => {
     const { data: dp } = await supabase.from('doctor_profiles').select('*').eq('user_id', doctor.id).single();
@@ -748,11 +743,11 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (editForm.contact_phone && !phoneRegex.test(editForm.contact_phone)) {
-      toast('Phone must be in +998XXXXXXXXX format', 'error');
+      toast(t('doctors.phone_format'), 'error');
       return;
     }
     if (editForm.contact_email && !emailRegex.test(editForm.contact_email)) {
-      toast('Please enter a valid contact email', 'error');
+      toast(t('doctors.email_invalid'), 'error');
       return;
     }
 
@@ -815,11 +810,11 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
 
   const handleAddDoctor = async () => {
     if (!doctorForm.email || !doctorForm.first_name || !doctorForm.last_name) {
-      toast('Email, First Name, and Last Name are required.', 'error');
+      toast(t('doctors.required_fields'), 'error');
       return;
     }
     if (!doctorForm.password || doctorForm.password.length < 6) {
-      toast('Password must be at least 6 characters.', 'error');
+      toast(t('doctors.password_min'), 'error');
       return;
     }
 
@@ -827,15 +822,15 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (doctorForm.contact_phone && !phoneRegex.test(doctorForm.contact_phone)) {
-      toast('Public Phone must be in +998XXXXXXXXX format', 'error');
+      toast(t('doctors.phone_format'), 'error');
       return;
     }
     if (doctorForm.contact_email && !emailRegex.test(doctorForm.contact_email)) {
-      toast('Please enter a valid public email', 'error');
+      toast(t('doctors.email_invalid'), 'error');
       return;
     }
     if (!emailRegex.test(doctorForm.email)) {
-      toast('Please enter a valid login email', 'error');
+      toast(t('doctors.login_email_invalid'), 'error');
       return;
     }
 
@@ -891,7 +886,7 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
 
       setIsModalOpen(false);
       onRefresh();
-      toast(`Dr. ${doctorForm.first_name} ${doctorForm.last_name} created!`, 'success');
+      toast(`Dr. ${doctorForm.first_name} ${doctorForm.last_name} ${t('doctors.doctor_created')}`, 'success');
 
       // reset form
       setDoctorForm({
@@ -900,9 +895,9 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
       });
     } catch (e: any) {
       if (e.code === '23505') {
-        toast('An account with this email already exists in the system.', 'error');
+        toast(t('doctors.duplicate_email'), 'error');
       } else {
-        toast('Failed to add doctor: ' + e.message, 'error');
+        toast(t('doctors.add_failed') + ': ' + e.message, 'error');
       }
     } finally {
       setLoading(false);
@@ -913,39 +908,34 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
     <>
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1>Doctor Directory</h1>
-          <p>Manage clinic providers and specialists</p>
+          <h1>{t('doctors.title')}</h1>
+          <p>{t('doctors.subtitle')}</p>
         </div>
-        <button className="btn-primary" onClick={openAddModal}>+ Add Doctor</button>
+        <button className="btn-primary" onClick={openAddModal}>{t('doctors.add_doctor')}</button>
       </div>
 
       <div className="table-section">
         <div className="table-header">
-          <h2>Active Providers</h2>
-          <span className="badge">{doctors.length} total</span>
+          <h2>{t('doctors.active_providers')}</h2>
+          <span className="badge">{doctors.length} {t('common.total')}</span>
         </div>
         <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Search providers..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <input type="text" placeholder={t('doctors.search_placeholder')} value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
         <table>
           <thead>
             <tr>
-              <th>Provider</th>
-              <th>Specialty</th>
-              <th>Clinic</th>
-              <th>Contact Info</th>
-              <th>Joined</th>
-              <th>Actions</th>
+              <th>{t('doctors.col_provider')}</th>
+              <th>{t('doctors.col_specialty')}</th>
+              <th>{t('doctors.col_clinic')}</th>
+              <th>{t('doctors.col_contact')}</th>
+              <th>{t('doctors.col_joined')}</th>
+              <th>{t('doctors.col_actions')}</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
-              <tr><td colSpan={5} className="empty-state">No doctors found</td></tr>
+              <tr><td colSpan={5} className="empty-state">{t('doctors.no_doctors')}</td></tr>
             ) : filtered.map(u => (
               <tr key={u.id}>
                 <td>
@@ -989,34 +979,34 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
       {isEditModalOpen && editingDoctor && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(11,17,32,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
           <div className="login-card" style={{ width: 440, transform: 'none', padding: 24, borderRadius: 16, maxHeight: '90vh', overflowY: 'auto' }}>
-            <h2 style={{ marginTop: 0, marginBottom: 4, color: '#F1F5F9' }}>Edit Doctor</h2>
+            <h2 style={{ marginTop: 0, marginBottom: 4, color: '#F1F5F9' }}>{t('doctors.edit_doctor_title')}</h2>
             <p style={{ color: '#64748B', marginBottom: 16, fontSize: 13 }}>{editingDoctor.email}</p>
 
             <div style={{ display: 'flex', gap: 12 }}>
-              <div className="form-group" style={{ flex: 1 }}><label>First Name</label><input type="text" value={editForm.first_name} onChange={e => setEditForm({ ...editForm, first_name: e.target.value })} /></div>
-              <div className="form-group" style={{ flex: 1 }}><label>Last Name</label><input type="text" value={editForm.last_name} onChange={e => setEditForm({ ...editForm, last_name: e.target.value })} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>{t('doctors.label_first_name')}</label><input type="text" value={editForm.first_name} onChange={e => setEditForm({ ...editForm, first_name: e.target.value })} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>{t('doctors.label_last_name')}</label><input type="text" value={editForm.last_name} onChange={e => setEditForm({ ...editForm, last_name: e.target.value })} /></div>
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
-              <div className="form-group" style={{ flex: 1 }}><label>Specialty</label><input type="text" value={editForm.specialty} onChange={e => setEditForm({ ...editForm, specialty: e.target.value })} /></div>
-              <div className="form-group" style={{ flex: 1 }}><label>Experience (yrs)</label><input type="number" value={editForm.experience_yrs} onChange={e => setEditForm({ ...editForm, experience_yrs: parseInt(e.target.value) || 0 })} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>{t('doctors.label_specialty')}</label><input type="text" value={editForm.specialty} onChange={e => setEditForm({ ...editForm, specialty: e.target.value })} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>{t('doctors.label_experience_yrs')}</label><input type="number" value={editForm.experience_yrs} onChange={e => setEditForm({ ...editForm, experience_yrs: parseInt(e.target.value) || 0 })} /></div>
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
-              <div className="form-group" style={{ flex: 1 }}><label>Public Phone</label><input type="text" placeholder="+998 90 123 45 67" value={editForm.contact_phone} onChange={e => setEditForm({ ...editForm, contact_phone: e.target.value })} /></div>
-              <div className="form-group" style={{ flex: 1 }}><label>Public Email</label><input type="email" placeholder="contact@doctor.uz" value={editForm.contact_email} onChange={e => setEditForm({ ...editForm, contact_email: e.target.value })} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>{t('doctors.label_phone')}</label><input type="text" placeholder="+998 90 123 45 67" value={editForm.contact_phone} onChange={e => setEditForm({ ...editForm, contact_phone: e.target.value })} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>{t('doctors.label_pub_email')}</label><input type="email" placeholder="contact@doctor.uz" value={editForm.contact_email} onChange={e => setEditForm({ ...editForm, contact_email: e.target.value })} /></div>
             </div>
-            <div className="form-group"><label>Clinic</label>
+            <div className="form-group"><label>{t('doctors.label_clinic')}</label>
               <select value={editForm.clinic_name} onChange={e => setEditForm({ ...editForm, clinic_name: e.target.value })} style={{ width: '100%', padding: '14px 16px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: 15, fontFamily: 'Inter, sans-serif', outline: 'none' }}>
-                <option value="">Select a clinic...</option>
+                <option value="">{t('doctors.select_clinic')}</option>
                 {clinics.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
               </select>
             </div>
-            <div className="form-group"><label>Bio / Description</label>
+            <div className="form-group"><label>{t('doctors.label_description')}</label>
               <textarea style={{ minHeight: 80, resize: 'vertical' }} value={editForm.description} onChange={e => setEditForm({ ...editForm, description: e.target.value })} />
             </div>
 
             <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
-              <button className="btn-primary" style={{ flex: 1, background: '#1E293B', color: '#F1F5F9', border: '1px solid #334155', boxShadow: 'none' }} onClick={() => setIsEditModalOpen(false)}>Cancel</button>
-              <button className="btn-primary" style={{ flex: 1 }} onClick={handleEditDoctor} disabled={loading}>{loading ? 'Saving...' : 'Save Changes'}</button>
+              <button className="btn-primary" style={{ flex: 1, background: '#1E293B', color: '#F1F5F9', border: '1px solid #334155', boxShadow: 'none' }} onClick={() => setIsEditModalOpen(false)}>{t('common.cancel')}</button>
+              <button className="btn-primary" style={{ flex: 1 }} onClick={handleEditDoctor} disabled={loading}>{loading ? t('common.saving') : t('common.save_changes')}</button>
             </div>
           </div>
         </div>
@@ -1026,49 +1016,40 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
       {isModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(11,17,32,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
           <div className="login-card" style={{ width: 400, transform: 'none', padding: 24, borderRadius: 16, maxHeight: '90vh', overflowY: 'auto' }}>
-            <h2 style={{ marginTop: 0, marginBottom: 16, fontFamily: 'Outfit', color: '#F1F5F9' }}>Add New Doctor</h2>
+            <h2 style={{ marginTop: 0, marginBottom: 16, fontFamily: 'Outfit', color: '#F1F5F9' }}>{t('doctors.add_doctor_title')}</h2>
 
-            <div className="form-group"><label>Email</label><input type="email" value={doctorForm.email} onChange={e => setDoctorForm({ ...doctorForm, email: e.target.value })} placeholder="dr.smith@clinic.uz" /></div>
+            <div className="form-group"><label>{t('doctors.label_email')}</label><input type="email" value={doctorForm.email} onChange={e => setDoctorForm({ ...doctorForm, email: e.target.value })} placeholder="dr.smith@clinic.uz" /></div>
             <div className="form-group">
-              <label>Password (doctor will use this to log in)</label>
+              <label>{t('doctors.label_password')}</label>
               <input type="text" value={doctorForm.password} onChange={e => setDoctorForm({ ...doctorForm, password: e.target.value })} placeholder="Min 6 characters" />
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
-              <div className="form-group" style={{ flex: 1 }}><label>First Name</label><input type="text" value={doctorForm.first_name} onChange={e => setDoctorForm({ ...doctorForm, first_name: e.target.value })} /></div>
-              <div className="form-group" style={{ flex: 1 }}><label>Last Name</label><input type="text" value={doctorForm.last_name} onChange={e => setDoctorForm({ ...doctorForm, last_name: e.target.value })} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>{t('doctors.label_first_name')}</label><input type="text" value={doctorForm.first_name} onChange={e => setDoctorForm({ ...doctorForm, first_name: e.target.value })} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>{t('doctors.label_last_name')}</label><input type="text" value={doctorForm.last_name} onChange={e => setDoctorForm({ ...doctorForm, last_name: e.target.value })} /></div>
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
-              <div className="form-group" style={{ flex: 1 }}><label>Specialty</label><input type="text" value={doctorForm.specialty} onChange={e => setDoctorForm({ ...doctorForm, specialty: e.target.value })} placeholder="e.g. Cardiologist" /></div>
-              <div className="form-group" style={{ flex: 1 }}><label>Experience (years)</label><input type="number" min="0" value={doctorForm.experience_yrs} onChange={e => setDoctorForm({ ...doctorForm, experience_yrs: parseInt(e.target.value) || 0 })} placeholder="e.g. 5" /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>{t('doctors.label_specialty')}</label><input type="text" value={doctorForm.specialty} onChange={e => setDoctorForm({ ...doctorForm, specialty: e.target.value })} placeholder="e.g. Cardiologist" /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>{t('doctors.label_experience')}</label><input type="number" min="0" value={doctorForm.experience_yrs} onChange={e => setDoctorForm({ ...doctorForm, experience_yrs: parseInt(e.target.value) || 0 })} placeholder="e.g. 5" /></div>
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
-              <div className="form-group" style={{ flex: 1 }}><label>Public Phone</label><input type="text" placeholder="+998 90 123 45 67" value={doctorForm.contact_phone} onChange={e => setDoctorForm({ ...doctorForm, contact_phone: e.target.value })} /></div>
-              <div className="form-group" style={{ flex: 1 }}><label>Public Email</label><input type="email" placeholder="contact@doctor.uz" value={doctorForm.contact_email} onChange={e => setDoctorForm({ ...doctorForm, contact_email: e.target.value })} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>{t('doctors.label_phone')}</label><input type="text" placeholder="+998 90 123 45 67" value={doctorForm.contact_phone} onChange={e => setDoctorForm({ ...doctorForm, contact_phone: e.target.value })} /></div>
+              <div className="form-group" style={{ flex: 1 }}><label>{t('doctors.label_pub_email')}</label><input type="email" placeholder="contact@doctor.uz" value={doctorForm.contact_email} onChange={e => setDoctorForm({ ...doctorForm, contact_email: e.target.value })} /></div>
             </div>
-            <div className="form-group"><label>Clinic Name</label>
-                <select
-                  value={doctorForm.clinic_name}
-                  onChange={e => setDoctorForm({ ...doctorForm, clinic_name: e.target.value })}
-                  style={{ width: '100%', padding: '14px 16px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: 15, fontFamily: 'Inter, sans-serif', outline: 'none' }}
-                >
-                  <option value="">Select a clinic...</option>
+            <div className="form-group"><label>{t('doctors.label_clinic')}</label>
+                <select value={doctorForm.clinic_name} onChange={e => setDoctorForm({ ...doctorForm, clinic_name: e.target.value })} style={{ width: '100%', padding: '14px 16px', borderRadius: 12, border: '1px solid var(--border)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: 15, fontFamily: 'Inter, sans-serif', outline: 'none' }}>
+                  <option value="">{t('doctors.select_clinic')}</option>
                   {clinics.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
                 </select>
             </div>
 
             <div className="form-group">
-              <label>Doctor Bio / Description</label>
-              <textarea
-                style={{ minHeight: 80, resize: 'vertical' }}
-                value={doctorForm.description}
-                onChange={e => setDoctorForm({ ...doctorForm, description: e.target.value })}
-                placeholder="Write a brief background about the doctor..."
-              />
+              <label>{t('doctors.label_bio')}</label>
+              <textarea style={{ minHeight: 80, resize: 'vertical' }} value={doctorForm.description} onChange={e => setDoctorForm({ ...doctorForm, description: e.target.value })} placeholder="Write a brief background about the doctor..." />
             </div>
 
             <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
-              <button className="btn-primary" style={{ flex: 1, background: '#1E293B', color: '#F1F5F9', border: '1px solid #334155', boxShadow: 'none' }} onClick={() => setIsModalOpen(false)}>Cancel</button>
-              <button className="btn-primary" style={{ flex: 1 }} onClick={handleAddDoctor} disabled={loading}>{loading ? 'Creating...' : 'Create Doctor'}</button>
+              <button className="btn-primary" style={{ flex: 1, background: '#1E293B', color: '#F1F5F9', border: '1px solid #334155', boxShadow: 'none' }} onClick={() => setIsModalOpen(false)}>{t('common.cancel')}</button>
+              <button className="btn-primary" style={{ flex: 1 }} onClick={handleAddDoctor} disabled={loading}>{loading ? t('doctors.creating') : t('doctors.create_doctor')}</button>
             </div>
           </div>
         </div>
@@ -1091,6 +1072,7 @@ function RecordsView({ doctorProfileId }: { doctorProfileId: string }) {
   const [records, setRecords] = useState<MedicalRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchRecords();
@@ -1127,35 +1109,30 @@ function RecordsView({ doctorProfileId }: { doctorProfileId: string }) {
   return (
     <>
       <div className="page-header">
-        <h1>Medical Records</h1>
-        <p>Records you have written for your patients</p>
+        <h1>{t('records.title')}</h1>
+        <p>{t('records.subtitle')}</p>
       </div>
 
       <div className="table-section">
         <div className="table-header">
-          <h2>My Records</h2>
-          <span className="badge">{records.length} total</span>
+          <h2>{t('records.my_records')}</h2>
+          <span className="badge">{records.length} {t('common.total')}</span>
         </div>
         <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Search by patient name or diagnosis..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <input type="text" placeholder={t('records.search_placeholder')} value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
         <table>
           <thead>
             <tr>
-              <th>Patient</th>
-              <th>Diagnosis</th>
-              <th>Notes / Prescriptions</th>
-              <th>Date</th>
+              <th>{t('records.col_patient')}</th>
+              <th>{t('records.col_diagnosis')}</th>
+              <th>{t('records.col_notes')}</th>
+              <th>{t('records.col_date')}</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
-              <tr><td colSpan={4} className="empty-state">No records found</td></tr>
+              <tr><td colSpan={4} className="empty-state">{t('records.no_records')}</td></tr>
             ) : filtered.map(r => (
               <tr key={r.id}>
                 <td>
@@ -1205,6 +1182,7 @@ function ClinicsView({ toast, confirm }: {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ name: '', location: '', description: '', phone: '', email: '' });
   const [editForm, setEditForm] = useState({ name: '', location: '', description: '', phone: '', email: '' });
+  const { t } = useTranslation();
 
   const openEditClinic = (clinic: Clinic) => {
     setEditingClinic(clinic);
@@ -1214,7 +1192,7 @@ function ClinicsView({ toast, confirm }: {
 
   const handleEditClinic = async () => {
     if (!editingClinic || !editForm.name || !editForm.location) {
-      toast('Name and location are required.', 'error');
+      toast(t('clinics.name_required'), 'error');
       return;
     }
 
@@ -1222,11 +1200,11 @@ function ClinicsView({ toast, confirm }: {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (editForm.phone && !phoneRegex.test(editForm.phone)) {
-      toast('Phone must be in +998XXXXXXXXX format', 'error');
+      toast(t('clinics.phone_format'), 'error');
       return;
     }
     if (editForm.email && !emailRegex.test(editForm.email)) {
-      toast('Please enter a valid contact email', 'error');
+      toast(t('clinics.email_invalid'), 'error');
       return;
     }
 
@@ -1241,10 +1219,10 @@ function ClinicsView({ toast, confirm }: {
       }).eq('id', editingClinic.id);
       if (error) throw error;
       setIsEditModalOpen(false);
-      toast('Clinic updated successfully.', 'success');
+      toast(t('clinics.update_success'), 'success');
       fetchClinics();
     } catch (e: any) {
-      toast('Failed to update: ' + e.message, 'error');
+      toast(t('clinics.update_failed') + ': ' + e.message, 'error');
     } finally {
       setSaving(false);
     }
@@ -1270,7 +1248,7 @@ function ClinicsView({ toast, confirm }: {
 
   const handleAddClinic = async () => {
     if (!form.name || !form.location) {
-      toast('Clinic name and location are required.', 'error');
+      toast(t('clinics.name_location_required'), 'error');
       return;
     }
 
@@ -1278,11 +1256,11 @@ function ClinicsView({ toast, confirm }: {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (form.phone && !phoneRegex.test(form.phone)) {
-      toast('Phone must be in +998XXXXXXXXX format', 'error');
+      toast(t('clinics.phone_format'), 'error');
       return;
     }
     if (form.email && !emailRegex.test(form.email)) {
-      toast('Please enter a valid contact email', 'error');
+      toast(t('clinics.email_invalid'), 'error');
       return;
     }
 
@@ -1294,25 +1272,25 @@ function ClinicsView({ toast, confirm }: {
       if (error) throw error;
       setIsModalOpen(false);
       setForm({ name: '', location: '', description: '', phone: '', email: '' });
-      toast('Clinic added successfully!', 'success');
+      toast(t('clinics.add_success'), 'success');
       fetchClinics();
     } catch (e: any) {
-      toast('Failed to add clinic: ' + e.message, 'error');
+      toast(t('clinics.add_failed') + ': ' + e.message, 'error');
     } finally {
       setSaving(false);
     }
   };
 
   const handleDeleteClinic = async (id: string) => {
-    const ok = await confirm({ title: 'Delete Clinic', message: 'This will permanently delete the clinic. This cannot be undone.', confirmLabel: 'Delete', danger: true });
+    const ok = await confirm({ title: t('clinics.delete_title'), message: t('clinics.delete_message'), confirmLabel: t('common.delete'), danger: true });
     if (!ok) return;
     try {
       const { error } = await supabase.from('clinics').delete().eq('id', id);
       if (error) throw error;
-      toast('Clinic deleted.', 'success');
+      toast(t('clinics.delete_success'), 'success');
       fetchClinics();
     } catch (e: any) {
-      toast('Failed to delete: ' + e.message, 'error');
+      toast(t('clinics.delete_failed') + ': ' + e.message, 'error');
     }
   };
 
@@ -1329,40 +1307,35 @@ function ClinicsView({ toast, confirm }: {
     <>
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1>Clinics</h1>
-          <p>Manage clinic locations and details</p>
+          <h1>{t('clinics.title')}</h1>
+          <p>{t('clinics.subtitle')}</p>
         </div>
-        <button className="btn-primary" style={{ width: 'auto', padding: '10px 20px' }} onClick={() => setIsModalOpen(true)}>+ Add Clinic</button>
+        <button className="btn-primary" style={{ width: 'auto', padding: '10px 20px' }} onClick={() => setIsModalOpen(true)}>{t('clinics.add_clinic')}</button>
       </div>
 
       <div className="table-section">
         <div className="table-header">
-          <h2>All Clinics</h2>
-          <span className="badge">{clinics.length} total</span>
+          <h2>{t('clinics.all_clinics')}</h2>
+          <span className="badge">{clinics.length} {t('common.total')}</span>
         </div>
         <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Search by name or location..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <input type="text" placeholder={t('clinics.search_placeholder')} value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
         <div className="table-scroll-wrapper">
           <table>
             <thead>
               <tr>
-                <th>Clinic Name</th>
-                <th>Location</th>
-                <th>Contact</th>
-                <th>Description</th>
-                <th>Added</th>
-                <th>Actions</th>
+                <th>{t('clinics.col_name')}</th>
+                <th>{t('clinics.col_location')}</th>
+                <th>{t('clinics.col_contact')}</th>
+                <th>{t('clinics.col_description')}</th>
+                <th>{t('clinics.col_added')}</th>
+                <th>{t('clinics.col_actions')}</th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={5} className="empty-state">No clinics found</td></tr>
+                <tr><td colSpan={5} className="empty-state">{t('clinics.no_clinics')}</td></tr>
               ) : filtered.map(c => (
                 <tr key={c.id}>
                   <td>
@@ -1401,35 +1374,35 @@ function ClinicsView({ toast, confirm }: {
       {isEditModalOpen && editingClinic && (
         <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(11,17,32,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
           <div className="login-card" style={{ width: 450, transform: 'none', padding: 24, borderRadius: 16, maxHeight: '90vh', overflowY: 'auto' }}>
-            <h2 style={{ marginTop: 0, marginBottom: 4, color: '#F1F5F9' }}>Edit Clinic</h2>
+            <h2 style={{ marginTop: 0, marginBottom: 4, color: '#F1F5F9' }}>{t('clinics.edit_clinic_title')}</h2>
             <p style={{ color: '#64748B', marginBottom: 16, fontSize: 13 }}>ID: {editingClinic.id.slice(0, 8)}...</p>
 
             <div className="form-group">
-              <label>Clinic Name</label>
+              <label>{t('clinics.label_name')}</label>
               <input type="text" value={editForm.name} onChange={e => setEditForm({ ...editForm, name: e.target.value })} />
             </div>
             <div className="form-group">
-              <label>Location</label>
+              <label>{t('clinics.label_location')}</label>
               <input type="text" value={editForm.location} onChange={e => setEditForm({ ...editForm, location: e.target.value })} />
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
               <div className="form-group" style={{ flex: 1 }}>
-                <label>Phone Number</label>
+                <label>{t('clinics.label_phone')}</label>
                 <input type="text" placeholder="+998 90 123 45 67" value={editForm.phone} onChange={e => setEditForm({ ...editForm, phone: e.target.value })} />
               </div>
               <div className="form-group" style={{ flex: 1 }}>
-                <label>Contact Email</label>
+                <label>{t('clinics.label_email')}</label>
                 <input type="email" placeholder="contact@clinic.uz" value={editForm.email} onChange={e => setEditForm({ ...editForm, email: e.target.value })} />
               </div>
             </div>
             <div className="form-group">
-              <label>Description</label>
+              <label>{t('clinics.label_description')}</label>
               <textarea style={{ minHeight: 80, resize: 'vertical' }} value={editForm.description} onChange={e => setEditForm({ ...editForm, description: e.target.value })} />
             </div>
 
             <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
-              <button className="btn-primary" style={{ flex: 1, background: '#1E293B', color: '#F1F5F9', border: '1px solid #334155', boxShadow: 'none' }} onClick={() => setIsEditModalOpen(false)}>Cancel</button>
-              <button className="btn-primary" style={{ flex: 1 }} onClick={handleEditClinic} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
+              <button className="btn-primary" style={{ flex: 1, background: '#1E293B', color: '#F1F5F9', border: '1px solid #334155', boxShadow: 'none' }} onClick={() => setIsEditModalOpen(false)}>{t('common.cancel')}</button>
+              <button className="btn-primary" style={{ flex: 1 }} onClick={handleEditClinic} disabled={saving}>{saving ? t('common.saving') : t('common.save_changes')}</button>
             </div>
           </div>
         </div>
@@ -1439,42 +1412,37 @@ function ClinicsView({ toast, confirm }: {
       {isModalOpen && (
         <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(11,17,32,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
           <div className="login-card" style={{ width: 450, transform: 'none', padding: 24, borderRadius: 16, maxHeight: '90vh', overflowY: 'auto' }}>
-            <h2 style={{ marginTop: 0, marginBottom: 16, fontFamily: 'Outfit', color: '#F1F5F9' }}>Add New Clinic</h2>
+            <h2 style={{ marginTop: 0, marginBottom: 16, fontFamily: 'Outfit', color: '#F1F5F9' }}>{t('clinics.add_clinic_title')}</h2>
 
             <div className="form-group">
-              <label>Clinic Name</label>
+              <label>{t('clinics.label_name')}</label>
               <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="e.g. Central Medical Center" />
             </div>
 
             <div className="form-group">
-              <label>Location</label>
+              <label>{t('clinics.label_location')}</label>
               <input type="text" value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} placeholder="e.g. Tashkent, Mirzo Ulugbek District" />
             </div>
 
             <div style={{ display: 'flex', gap: 12 }}>
               <div className="form-group" style={{ flex: 1 }}>
-                <label>Phone Number</label>
+                <label>{t('clinics.label_phone')}</label>
                 <input type="text" placeholder="+998 90 123 45 67" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
               </div>
               <div className="form-group" style={{ flex: 1 }}>
-                <label>Contact Email</label>
+                <label>{t('clinics.label_email')}</label>
                 <input type="email" placeholder="contact@clinic.uz" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
               </div>
             </div>
 
             <div className="form-group">
-              <label>Description</label>
-              <textarea
-                style={{ minHeight: 80, resize: 'vertical' }}
-                value={form.description}
-                onChange={e => setForm({ ...form, description: e.target.value })}
-                placeholder="Brief description of the clinic..."
-              />
+              <label>{t('clinics.label_description')}</label>
+              <textarea style={{ minHeight: 80, resize: 'vertical' }} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Brief description of the clinic..." />
             </div>
 
             <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
-              <button className="btn-primary" style={{ flex: 1, background: '#1E293B', color: '#F1F5F9', border: '1px solid #334155', boxShadow: 'none' }} onClick={() => setIsModalOpen(false)}>Cancel</button>
-              <button className="btn-primary" style={{ flex: 1 }} onClick={handleAddClinic} disabled={saving}>{saving ? 'Adding...' : 'Add Clinic'}</button>
+              <button className="btn-primary" style={{ flex: 1, background: '#1E293B', color: '#F1F5F9', border: '1px solid #334155', boxShadow: 'none' }} onClick={() => setIsModalOpen(false)}>{t('common.cancel')}</button>
+              <button className="btn-primary" style={{ flex: 1 }} onClick={handleAddClinic} disabled={saving}>{saving ? t('clinics.adding') : t('clinics.add_btn')}</button>
             </div>
           </div>
         </div>
@@ -1567,19 +1535,19 @@ function App() {
   const handleDeleteUser = async (id: string) => {
     const user = users.find(u => u.id === id);
     const ok = await confirm({
-      title: 'Delete User',
-      message: `Permanently delete "${user?.email}"? This cannot be undone.`,
-      confirmLabel: 'Delete',
+      title: t('users.delete_title'),
+      message: `${t('users.delete_message')} (${user?.email})`,
+      confirmLabel: t('common.delete'),
       danger: true,
     });
     if (!ok) return;
     try {
       const { error } = await supabase.from('profiles').delete().eq('id', id);
       if (error) throw error;
-      toast('User deleted successfully.', 'success');
+      toast(t('users.delete_success'), 'success');
       await fetchData();
     } catch (e: any) {
-      toast('Failed to delete: ' + e.message, 'error');
+      toast(t('users.delete_failed') + ': ' + e.message, 'error');
     }
   };
 
@@ -1588,7 +1556,7 @@ function App() {
     return (
       <div className="loading-screen">
         <div className="spinner" />
-        <span style={{ color: '#64748B' }}>Checking session...</span>
+        <span style={{ color: '#64748B' }}>{t('session.checking')}</span>
       </div>
     );
   }
@@ -1631,7 +1599,7 @@ function App() {
           </div>
           <div>
             <h2>ClinicUz</h2>
-            <span>{role === 'ADMIN' ? 'Admin Portal' : 'Doctor Dashboard'}</span>
+            <span>{role === 'ADMIN' ? t('sidebar.admin_portal') : t('sidebar.doctor_dashboard')}</span>
           </div>
         </div>
 
@@ -1655,7 +1623,7 @@ function App() {
           )}
 
           <button className={`nav-item ${view === 'appointments' ? 'active' : ''}`} onClick={() => navTo('appointments')}>
-            <Calendar size={18} /> {role === 'ADMIN' ? t('sidebar.appointments') : 'My Schedule'}
+            <Calendar size={18} /> {role === 'ADMIN' ? t('sidebar.appointments') : t('sidebar.my_schedule')}
           </button>
 
           {role === 'DOCTOR' && (

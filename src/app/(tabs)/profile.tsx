@@ -168,11 +168,11 @@ export default function ProfileScreen() {
             onPress={() => {
               showAlert({
                 title: t('profile.delete_account'),
-                message: 'Are you sure you want to request account deletion? This action cannot be undone.',
+                message: t('settings.delete_account_confirm'),
                 type: 'confirm',
-                confirmLabel: 'Request Deletion',
+                confirmLabel: t('settings.request_deletion'),
                 onConfirm: () => {
-                  showAlert({ title: 'Request Sent', message: 'Your deletion request has been received and will be processed within 30 days.', type: 'success' });
+                  showAlert({ title: t('settings.request_sent_title'), message: t('settings.request_sent_msg'), type: 'success' });
                 }
               });
             }}

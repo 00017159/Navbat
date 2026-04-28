@@ -18,7 +18,7 @@ export default function PrivacyScreen() {
   const handleAccountDeletion = () => {
     showAlert({
       title: t('profile.delete_account'),
-      message: 'Are you sure you want to delete your account? This action is permanent and cannot be undone.',
+      message: t('settings.delete_account_confirm'),
       type: 'confirm',
       confirmLabel: t('common.confirm'),
       onConfirm: async () => {

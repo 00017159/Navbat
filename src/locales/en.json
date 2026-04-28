@@ -204,7 +204,11 @@
     "two_factor": "Two-Factor Authentication",
     "data_privacy": "Data Privacy",
     "about_title": "About Us",
-    "version": "Version"
+    "version": "Version",
+    "delete_account_confirm": "Are you sure you want to request account deletion? This action cannot be undone.",
+    "request_deletion": "Request Deletion",
+    "request_sent_title": "Request Sent",
+    "request_sent_msg": "Your deletion request has been received and will be processed within 30 days."
   },
   "privacy_page": {
     "data_protection": "Data Protection",
@@ -215,5 +219,21 @@
     "rights_desc": "You can request deletion of your account and all associated data at any time by contacting sadullayevshohjahon990@gmail.com.",
     "security": "Device Security",
     "security_desc": "Session data is stored in-memory only. Closing the app requires re-authentication for maximum security."
+  },
+  "about_page": {
+    "header": "About ClinicUz",
+    "tagline": "Your Healthcare Companion",
+    "mission_title": "Our Mission",
+    "mission_desc": "ClinicUz makes healthcare accessible to everyone in Uzbekistan. Book free appointments with qualified doctors, manage your medical records, and get AI-powered health guidance — all in one app.",
+    "features_title": "Features",
+    "feature_appointments": "Free doctor appointments",
+    "feature_records": "Digital medical records",
+    "feature_ai": "AI health assistant",
+    "feature_secure": "Secure & private",
+    "feature_dark": "Dark mode support",
+    "contact_title": "Contact Us",
+    "footer_made_with": "Made with",
+    "footer_in": "in Tashkent, Uzbekistan",
+    "copyright": "All rights reserved."
   }
 }

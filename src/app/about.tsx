@@ -3,10 +3,12 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Lin
 import { ArrowLeft, Heart, Globe, Mail, Phone, ChevronUp } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../services/theme';
+import { useTranslation } from 'react-i18next';
 
 export default function AboutScreen() {
   const router = useRouter();
   const { colors, dark } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -14,7 +16,7 @@ export default function AboutScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <ArrowLeft color={colors.text} size={24} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>About ClinicUz</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>{t('about_page.header')}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -23,32 +25,31 @@ export default function AboutScreen() {
         <View style={styles.logoSection}>
           <Image source={require('../../assets/images/clinicuz-logo.png')} style={{ width: 80, height: 80, borderRadius: 20, marginBottom: 16 }} resizeMode="contain" />
           <Text style={[styles.appName, { color: colors.text }]}>ClinicUz</Text>
-          <Text style={[styles.version, { color: colors.textSecondary }]}>Version 1.0.0</Text>
-          <Text style={[styles.tagline, { color: colors.textSecondary }]}>Your Healthcare Companion</Text>
+          <Text style={[styles.version, { color: colors.textSecondary }]}>{t('settings.version')} 1.0.0</Text>
+          <Text style={[styles.tagline, { color: colors.textSecondary }]}>{t('about_page.tagline')}</Text>
         </View>
 
         {/* Description */}
         <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Text style={[styles.cardTitle, { color: colors.text }]}>Our Mission</Text>
+          <Text style={[styles.cardTitle, { color: colors.text }]}>{t('about_page.mission_title')}</Text>
           <Text style={[styles.cardDesc, { color: colors.textSecondary }]}>
-            ClinicUz makes healthcare accessible to everyone in Uzbekistan. Book free appointments with qualified doctors, 
-            manage your medical records, and get AI-powered health guidance — all in one app.
+            {t('about_page.mission_desc')}
           </Text>
         </View>
 
         <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Text style={[styles.cardTitle, { color: colors.text }]}>Features</Text>
-          <Text style={[styles.featureItem, { color: colors.textSecondary }]}>🏥  Free doctor appointments</Text>
-          <Text style={[styles.featureItem, { color: colors.textSecondary }]}>📋  Digital medical records</Text>
-          <Text style={[styles.featureItem, { color: colors.textSecondary }]}>🤖  AI health assistant</Text>
-          <Text style={[styles.featureItem, { color: colors.textSecondary }]}>🔒  Secure & private</Text>
-          <Text style={[styles.featureItem, { color: colors.textSecondary }]}>🌙  Dark mode support</Text>
+          <Text style={[styles.cardTitle, { color: colors.text }]}>{t('about_page.features_title')}</Text>
+          <Text style={[styles.featureItem, { color: colors.textSecondary }]}>🏥  {t('about_page.feature_appointments')}</Text>
+          <Text style={[styles.featureItem, { color: colors.textSecondary }]}>📋  {t('about_page.feature_records')}</Text>
+          <Text style={[styles.featureItem, { color: colors.textSecondary }]}>🤖  {t('about_page.feature_ai')}</Text>
+          <Text style={[styles.featureItem, { color: colors.textSecondary }]}>🔒  {t('about_page.feature_secure')}</Text>
+          <Text style={[styles.featureItem, { color: colors.textSecondary }]}>🌙  {t('about_page.feature_dark')}</Text>
         </View>
 
         {/* Contact */}
         <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Text style={[styles.cardTitle, { color: colors.text }]}>Contact Us</Text>
-          <TouchableOpacity style={styles.contactRow} onPress={() => Linking.openURL('mailto:sadullayevshohjahon990@gmail.com').catch(() => Alert.alert('Error', 'No email app found on your device.'))}>
+          <Text style={[styles.cardTitle, { color: colors.text }]}>{t('about_page.contact_title')}</Text>
+          <TouchableOpacity style={styles.contactRow} onPress={() => Linking.openURL('mailto:sadullayevshohjahon990@gmail.com').catch(() => Alert.alert(t('common.error'), 'No email app found on your device.'))}>
             <Mail color={colors.primary} size={18} />
             <Text style={[styles.contactText, { color: colors.primary }]}>sadullayevshohjahon990@gmail.com</Text>
           </TouchableOpacity>
@@ -60,9 +61,9 @@ export default function AboutScreen() {
 
         <View style={styles.footer}>
           <Text style={[styles.footerText, { color: colors.textSecondary }]}>
-            Made with <Heart color="#EF4444" fill="#EF4444" size={12} /> in Tashkent, Uzbekistan
+            {t('about_page.footer_made_with')} <Heart color="#EF4444" fill="#EF4444" size={12} /> {t('about_page.footer_in')}
           </Text>
-          <Text style={[styles.footerText, { color: colors.textSecondary }]}>© 2026 ClinicUz. All rights reserved.</Text>
+          <Text style={[styles.footerText, { color: colors.textSecondary }]}>© 2026 ClinicUz. {t('about_page.copyright')}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

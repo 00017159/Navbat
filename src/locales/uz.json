@@ -204,7 +204,11 @@
     "two_factor": "Ikki bosqichli autentifikatsiya",
     "data_privacy": "Ma'lumotlar maxfiyligi",
     "about_title": "Biz haqimizda",
-    "version": "Versiya"
+    "version": "Versiya",
+    "delete_account_confirm": "Hisobni o'chirishni so'rashni xohlaysizmi? Ushbu amalni ortga qaytarib bo'lmaydi.",
+    "request_deletion": "O'chirishni so'rash",
+    "request_sent_title": "So'rov yuborildi",
+    "request_sent_msg": "Sizning o'chirish so'rovingiz qabul qilindi va 30 kun ichida ko'rib chiqiladi."
   },
   "privacy_page": {
     "data_protection": "Ma'lumotlarni himoya qilish",
@@ -215,5 +219,21 @@
     "rights_desc": "Siz istalgan vaqtda sadullayevshohjahon990@gmail.com manziliga murojaat qilib, hisobingizni va barcha tegishli ma'lumotlarni o'chirishni so'rashingiz mumkin.",
     "security": "Qurilma xavfsizligi",
     "security_desc": "Sessiya ma'lumotlari faqat xotirada saqlanadi. Ilovani yopish maksimal xavfsizlik uchun qayta autentifikatsiyani talab qiladi."
+  },
+  "about_page": {
+    "header": "ClinicUz haqida",
+    "tagline": "Sizning salomatlik hamrohingiz",
+    "mission_title": "Bizning vazifamiz",
+    "mission_desc": "ClinicUz O'zbekistonda sog'liqni saqlashni hamma uchun ochiq qiladi. Malakali shifokorlar bilan bepul uchrashuvlarni bron qiling, tibbiy yozuvlaringizni boshqaring va AI yordamida sog'liq bo'yicha yo'l-yo'riq oling — hammasi bitta ilovada.",
+    "features_title": "Imkoniyatlar",
+    "feature_appointments": "Shifokor bilan bepul qabullar",
+    "feature_records": "Raqamli tibbiy yozuvlar",
+    "feature_ai": "AI salomatlik yordamchisi",
+    "feature_secure": "Xavfsiz va maxfiy",
+    "feature_dark": "Tungi rejimni qo'llab-quvvatlash",
+    "contact_title": "Biz bilan bog'laning",
+    "footer_made_with": "Toshkentda",
+    "footer_in": "bilan yaratilgan",
+    "copyright": "Barcha huquqlar himoyalangan."
   }
 }

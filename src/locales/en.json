@@ -9,7 +9,9 @@
     "success": "Success",
     "info": "Information",
     "clear_filters": "Clear filters",
-    "all": "All"
+    "all": "All",
+    "email": "Email",
+    "call": "Call"
   },
   "tabs": {
     "home": "Home",

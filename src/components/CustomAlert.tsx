@@ -11,6 +11,7 @@ import Animated, {
 import { CheckCircle2, AlertTriangle, Info, XCircle } from 'lucide-react-native';
 import { useTheme } from '../services/theme';
 import { AlertType } from '../services/AlertContext';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 
@@ -36,6 +37,7 @@ export const CustomAlertComponent: React.FC<CustomAlertProps> = ({
   onCancel 
 }) => {
   const { colors, dark } = useTheme();
+  const { t } = useTranslation();
   const type = options.type || 'info';
 
   const getIcon = () => {
@@ -96,7 +98,7 @@ export const CustomAlertComponent: React.FC<CustomAlertProps> = ({
                   numberOfLines={1}
                   adjustsFontSizeToFit
                 >
-                  {options.cancelLabel || 'Cancel'}
+                  {options.cancelLabel || t('common.cancel')}
                 </Text>
               </TouchableOpacity>
             )}
@@ -114,7 +116,7 @@ export const CustomAlertComponent: React.FC<CustomAlertProps> = ({
                 numberOfLines={1}
                 adjustsFontSizeToFit
               >
-                {options.confirmLabel || (type === 'confirm' ? 'Confirm' : 'OK')}
+                {options.confirmLabel || (type === 'confirm' ? t('common.confirm') : t('common.ok'))}
               </Text>
             </TouchableOpacity>
           </View>

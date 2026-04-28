@@ -9,7 +9,9 @@
     "success": "Muvaffaqiyatli",
     "info": "Ma'lumot",
     "clear_filters": "Filtrlarni tozalash",
-    "all": "Barchasi"
+    "all": "Barchasi",
+    "email": "Email",
+    "call": "Qo'ng'iroq"
   },
   "tabs": {
     "home": "Asosiy",

@@ -15,6 +15,7 @@ export default function ProfileScreen() {
   const { t, i18n } = useTranslation();
 
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
+  const [helpModalVisible, setHelpModalVisible] = useState(false);
   const [user, setUser] = useState(getCurrentUser());
 
   useFocusEffect(
@@ -70,21 +71,7 @@ export default function ProfileScreen() {
         setLanguageModalVisible(true);
         break;
       case 4:
-        showAlert({
-          title: t('profile.help_support'),
-          message: 'sadullayevshohjahon990@gmail.com\n+998907192922',
-          type: 'confirm',
-          confirmLabel: 'Email',
-          cancelLabel: t('common.cancel'),
-          onConfirm: () =>
-            Linking.openURL('mailto:sadullayevshohjahon990@gmail.com').catch(() =>
-              showAlert({ title: t('common.error'), message: 'Unable to open email client', type: 'error' })
-            ),
-          onCancel: () =>
-            Linking.openURL('tel:+998907192922').catch(() =>
-              showAlert({ title: t('common.error'), message: 'Unable to open dialer', type: 'error' })
-            ),
-        });
+        setHelpModalVisible(true);
         break;
       case 5:
         router.push('/about' as any);
@@ -221,6 +208,53 @@ export default function ProfileScreen() {
             <TouchableOpacity style={styles.langCancelBtn} onPress={() => setLanguageModalVisible(false)}>
               <Text style={[styles.langCancelText, { color: colors.textSecondary }]}>{t('common.cancel')}</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      {/* Help & Support Modal */}
+      {helpModalVisible && (
+        <View style={styles.modalOverlay}>
+          <View style={[styles.langModal, { backgroundColor: colors.card, alignItems: 'center' }]}>
+            <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 'rgba(30, 99, 211, 0.1)', justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
+              <HelpCircle size={32} color="#1E63D3" />
+            </View>
+            <Text style={[styles.langTitle, { color: colors.text, marginBottom: 8 }]}>{t('profile.help_support')}</Text>
+            <Text style={{ color: colors.textSecondary, marginBottom: 4, textAlign: 'center' }}>sadullayevshohjahon990@gmail.com</Text>
+            <Text style={{ color: colors.textSecondary, marginBottom: 24, textAlign: 'center' }}>+998907192922</Text>
+            
+            <View style={{ width: '100%', gap: 12 }}>
+              <TouchableOpacity 
+                style={{ backgroundColor: '#1E63D3', paddingVertical: 14, borderRadius: 12, alignItems: 'center' }}
+                onPress={() => {
+                  setHelpModalVisible(false);
+                  Linking.openURL('mailto:sadullayevshohjahon990@gmail.com').catch(() =>
+                    showAlert({ title: t('common.error'), message: 'Unable to open email client', type: 'error' })
+                  );
+                }}
+              >
+                <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 16 }}>{t('common.email')}</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={{ backgroundColor: '#10B981', paddingVertical: 14, borderRadius: 12, alignItems: 'center' }}
+                onPress={() => {
+                  setHelpModalVisible(false);
+                  Linking.openURL('tel:+998907192922').catch(() =>
+                    showAlert({ title: t('common.error'), message: 'Unable to open dialer', type: 'error' })
+                  );
+                }}
+              >
+                <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 16 }}>{t('common.call')}</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={{ backgroundColor: dark ? '#1E293B' : '#F1F5F9', paddingVertical: 14, borderRadius: 12, alignItems: 'center' }}
+                onPress={() => setHelpModalVisible(false)}
+              >
+                <Text style={{ color: colors.textSecondary, fontWeight: '600', fontSize: 16 }}>{t('common.cancel')}</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       )}

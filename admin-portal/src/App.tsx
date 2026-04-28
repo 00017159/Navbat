@@ -655,7 +655,7 @@ function AppointmentsView({ appointments, role, onRefresh, toast }: { appointmen
                         }
                       }}
                     >
-                      Write Record
+                      {t('appointments.write_record')}
                     </button>
                   ) : <span style={{ color: '#64748B', fontSize: 13 }}>{a.status === 'COMPLETED' ? '—' : ''}</span>}
                 </td>
@@ -962,10 +962,10 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
                 <td>
                   <div style={{ display: 'flex', gap: 8 }}>
                     <button className="btn-delete" style={{ borderColor: 'rgba(59,130,246,0.3)', background: 'rgba(59,130,246,0.08)', color: 'var(--accent-blue)' }} onClick={() => openEditModal(u)}>
-                      <Pencil size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />Edit
+                      <Pencil size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />{t('common.edit')}
                     </button>
                     <button className="btn-delete" onClick={() => onDelete(u.id)}>
-                      <Trash2 size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />Delete
+                      <Trash2 size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />{t('common.delete')}
                     </button>
                   </div>
                 </td>
@@ -1356,10 +1356,10 @@ function ClinicsView({ toast, confirm }: {
                   <td>
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button className="btn-delete" style={{ borderColor: 'rgba(59,130,246,0.3)', background: 'rgba(59,130,246,0.08)', color: 'var(--accent-blue)' }} onClick={() => openEditClinic(c)}>
-                        <Pencil size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />Edit
+                        <Pencil size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />{t('common.edit')}
                       </button>
                       <button className="btn-delete" onClick={() => handleDeleteClinic(c.id)}>
-                        <Trash2 size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />Delete
+                        <Trash2 size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />{t('common.delete')}
                       </button>
                     </div>
                   </td>

@@ -119,7 +119,8 @@
     "duplicate_email": "An account with this email already exists in the system.",
     "add_failed": "Failed to add doctor",
     "update_failed": "Failed to update",
-    "doctor_created": "created!"
+    "doctor_created": "created!",
+    "bio_placeholder": "Write a brief background about the doctor..."
   },
   "records": {
     "title": "Medical Records",
@@ -212,5 +213,12 @@
     "checkup": "Checkup",
     "follow_up": "Follow Up",
     "in_person": "In Person"
+  },
+  "specialties": {
+    "dentist": "Dentist",
+    "cardiologist": "Cardiologist",
+    "neurologist": "Neurologist",
+    "pediatrician": "Pediatrician",
+    "therapist": "Therapist"
   }
 }

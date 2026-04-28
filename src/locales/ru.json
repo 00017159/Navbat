@@ -17,7 +17,8 @@
     "home": "Главная",
     "appointments": "Записи",
     "records": "История",
-    "profile": "Профиль"
+    "profile": "Профиль",
+    "notifications": "Уведомления"
   },
   "home": {
     "welcome": "С возвращением",
@@ -101,7 +102,29 @@
     "select_time": "Выберите время",
     "notes_placeholder": "Опишите ваши симптомы...",
     "book_appointment": "Записаться на прием",
-    "confirm_booking": "Подтвердить"
+    "confirm_booking": "Подтвердить",
+    "years_exp": "лет опыта",
+    "reviews_count": "отзывов",
+    "success_title": "Запись подтверждена!",
+    "success_msg": "Ваш прием у {{doctor}} запланирован на {{date}} в {{time}}",
+    "view_appointments": "Мои записи",
+    "back_to_home": "На главную",
+    "select_time_error": "Пожалуйста, выберите время приема",
+    "booking_failed": "Ошибка при записи",
+    "patient_reviews": "Отзывы пациентов",
+    "no_reviews": "Отзывов пока нет. Будьте первым!",
+    "anonymous": "Аноним",
+    "in_person": "Очно",
+    "visit_clinic": "В клинике",
+    "no_description": "Информация об этом враче отсутствует.",
+    "no_phone": "Номер телефона этого врача отсутствует.",
+    "no_email": "Email этого врача отсутствует.",
+    "default_clinic_desc": "Добро пожаловать в нашу клинику. Мы предоставляем высококачественные медицинские услуги.",
+    "no_slots": "На эту дату нет свободных слотов.",
+    "notes_label": "Заметки (Опционально)",
+    "appointment_summary": "Детали записи",
+    "in_person_visit": "Очный визит",
+    "today": "Сегодня"
   },
   "profile": {
     "header": "Профиль",
@@ -134,5 +157,19 @@
     "verify_subtitle": "Введите 6-значный код, отправленный на ваш email",
     "verify_btn": "Подтвердить и продолжить",
     "back_to_email": "Назад к email"
+  },
+  "notifications": {
+    "title": "Уведомления",
+    "no_notifications": "Уведомлений пока нет",
+    "unread_suffix": "непрочитанное уведомление",
+    "unread_suffix_plural": "непрочитанных уведомлений",
+    "welcome_title": "Добро пожаловать в ClinicUz! 🎉",
+    "welcome_msg": "Ваш помощник по здоровью готов. Просматривайте врачей и записывайтесь на первый прием.",
+    "upcoming_title": "Предстоящий прием",
+    "appointment_msg": "У вас запланирован прием у {{doctor}} на {{date}}",
+    "time_in_days": "через {{count}} дн.",
+    "time_tomorrow": "Завтра",
+    "time_in_hours": "через {{count}} ч.",
+    "time_just_now": "Только что"
   }
 }

@@ -950,7 +950,7 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
                   </div>
                 </td>
                 <td>{u.doctor_profiles?.specialty
-                  ? <span className="role-badge doctor">{u.doctor_profiles.specialty}</span>
+                  ? <span className="role-badge doctor">{t('specialties.' + u.doctor_profiles.specialty.toLowerCase(), u.doctor_profiles.specialty)}</span>
                   : <span style={{ color: '#64748B', fontSize: 13 }}>—</span>}
                 </td>
                 <td style={{ color: '#94A3B8', fontSize: 13 }}>{u.doctor_profiles?.clinic_name || '—'}</td>
@@ -1044,7 +1044,7 @@ function DoctorsView({ users, onDelete, onRefresh, toast }: {
 
             <div className="form-group">
               <label>{t('doctors.label_bio')}</label>
-              <textarea style={{ minHeight: 80, resize: 'vertical' }} value={doctorForm.description} onChange={e => setDoctorForm({ ...doctorForm, description: e.target.value })} placeholder="Write a brief background about the doctor..." />
+              <textarea style={{ minHeight: 80, resize: 'vertical' }} value={doctorForm.description} onChange={e => setDoctorForm({ ...doctorForm, description: e.target.value })} placeholder={t('doctors.bio_placeholder')} />
             </div>
 
             <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>

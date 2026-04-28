@@ -6,6 +6,7 @@ import {
 } from '@react-navigation/material-top-tabs';
 import { Home, Calendar, ClipboardList, User } from 'lucide-react-native';
 import { useTheme } from '../../services/theme';
+import { useTranslation } from 'react-i18next';
 
 const { Navigator } = createMaterialTopTabNavigator();
 
@@ -18,6 +19,7 @@ export const MaterialTopTabs = withLayoutContext<
 
 export default function TabLayout() {
   const { dark, colors } = useTheme();
+  const { t } = useTranslation();
   return (
     <MaterialTopTabs
       tabBarPosition="bottom"
@@ -52,28 +54,28 @@ export default function TabLayout() {
       <MaterialTopTabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: t('tabs.home'),
           tabBarIcon: ({ color }) => <Home size={22} color={color} />,
         }}
       />
       <MaterialTopTabs.Screen
         name="appointments"
         options={{
-          title: 'Appointments',
+          title: t('tabs.appointments'),
           tabBarIcon: ({ color }) => <Calendar size={22} color={color} />,
         }}
       />
       <MaterialTopTabs.Screen
         name="records"
         options={{
-          title: 'Records',
+          title: t('tabs.records'),
           tabBarIcon: ({ color }) => <ClipboardList size={22} color={color} />,
         }}
       />
       <MaterialTopTabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: t('tabs.profile'),
           tabBarIcon: ({ color }) => <User size={22} color={color} />,
         }}
       />

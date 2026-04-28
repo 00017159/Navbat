@@ -4,6 +4,7 @@ import { ArrowLeft, Bell, Calendar, FileText, CheckCircle, CheckCheck } from 'lu
 import { useRouter } from 'expo-router';
 import { useTheme } from '../services/theme';
 import { getAppointments } from '../services/api';
+import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Notification = {
@@ -18,6 +19,7 @@ type Notification = {
 export default function NotificationsScreen() {
   const router = useRouter();
   const { colors, dark } = useTheme();
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
@@ -47,12 +49,15 @@ export default function NotificationsScreen() {
       appointments.forEach((apt: any) => {
         if (apt.status === 'UPCOMING') {
           const date = new Date(apt.dateTime);
-          const doctorName = apt.doctor ? `${apt.doctor.firstName} ${apt.doctor.lastName}` : 'your doctor';
+          const doctorName = apt.doctor ? `${apt.doctor.firstName} ${apt.doctor.lastName}` : t('notifications.your_doctor');
           const createdAt = new Date(apt.createdAt || apt.dateTime).getTime();
           notifs.push({
             id: `apt-${apt.id}`,
-            title: 'Upcoming Appointment',
-            message: `You have an appointment with ${doctorName} on ${date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`,
+            title: t('notifications.upcoming_title'),
+            message: t('notifications.appointment_msg', { 
+              doctor: doctorName, 
+              date: date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) 
+            }),
             time: getRelativeTime(date),
             read: createdAt <= lastRead,
             icon: 'calendar',
@@ -63,9 +68,9 @@ export default function NotificationsScreen() {
       // Add a welcome notification
       notifs.push({
         id: 'welcome',
-        title: 'Welcome to ClinicUz! 🎉',
-        message: 'Your healthcare companion is ready. Browse doctors and book your first appointment.',
-        time: 'Just now',
+        title: t('notifications.welcome_title'),
+        message: t('notifications.welcome_msg'),
+        time: t('notifications.time_just_now'),
         read: lastRead > 0,
         icon: 'check',
       });
@@ -76,9 +81,9 @@ export default function NotificationsScreen() {
       // Fallback state that won't crash the component
       setNotifications([{
         id: 'welcome',
-        title: 'Welcome to ClinicUz! 🎉',
-        message: 'Your healthcare companion is ready.',
-        time: 'Just now',
+        title: t('notifications.welcome_title'),
+        message: t('notifications.welcome_msg').substring(0, 35) + '...',
+        time: t('notifications.time_just_now'),
         read: true,
         icon: 'check',
       }]);
@@ -97,10 +102,10 @@ export default function NotificationsScreen() {
     const diff = date.getTime() - now.getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    if (days > 1) return `in ${days} days`;
-    if (days === 1) return 'Tomorrow';
-    if (hours > 0) return `in ${hours}h`;
-    return 'Just now';
+    if (days > 1) return t('notifications.time_in_days', { count: days });
+    if (days === 1) return t('notifications.time_tomorrow');
+    if (hours > 0) return t('notifications.time_in_hours', { count: hours });
+    return t('notifications.time_just_now');
   };
 
   const getNotifIcon = (type: string) => {
@@ -120,7 +125,7 @@ export default function NotificationsScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <ArrowLeft color={colors.text} size={24} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Notifications</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>{t('notifications.title')}</Text>
         <TouchableOpacity onPress={markAllAsRead} style={styles.backBtn} disabled={unreadCount === 0}>
           <CheckCheck color={unreadCount > 0 ? colors.primary : colors.textSecondary} size={24} />
         </TouchableOpacity>
@@ -129,7 +134,7 @@ export default function NotificationsScreen() {
       {unreadCount > 0 && (
         <View style={[styles.unreadBanner, { backgroundColor: dark ? '#1E3A5F' : '#EFF6FF' }]}>
           <Text style={[styles.unreadText, { color: colors.primary }]}>
-            {unreadCount} unread notification{unreadCount > 1 ? 's' : ''}
+            {unreadCount} {unreadCount > 1 ? t('notifications.unread_suffix_plural') : t('notifications.unread_suffix')}
           </Text>
         </View>
       )}
@@ -138,7 +143,7 @@ export default function NotificationsScreen() {
         {notifications.length === 0 ? (
           <View style={styles.emptyState}>
             <Bell color={colors.textSecondary} size={48} />
-            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No notifications yet</Text>
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>{t('notifications.no_notifications')}</Text>
           </View>
         ) : (
           notifications.map(notif => (

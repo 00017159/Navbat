@@ -17,7 +17,8 @@
     "home": "Home",
     "appointments": "Appointments",
     "records": "Records",
-    "profile": "Profile"
+    "profile": "Profile",
+    "notifications": "Notifications"
   },
   "home": {
     "welcome": "Welcome back",
@@ -101,7 +102,29 @@
     "select_time": "Select Time",
     "notes_placeholder": "Describe your symptoms...",
     "book_appointment": "Book Appointment",
-    "confirm_booking": "Confirm Booking"
+    "confirm_booking": "Confirm Booking",
+    "years_exp": "y exp",
+    "reviews_count": "reviews",
+    "success_title": "Appointment Booked!",
+    "success_msg": "Your appointment with {{doctor}} has been scheduled for {{date}} at {{time}}",
+    "view_appointments": "View My Appointments",
+    "back_to_home": "Back to Home",
+    "select_time_error": "Please select an appointment time slot",
+    "booking_failed": "Booking Failed",
+    "patient_reviews": "Patient Reviews",
+    "no_reviews": "No reviews yet. Be the first to review!",
+    "anonymous": "Anonymous",
+    "in_person": "In-Person",
+    "visit_clinic": "Visit clinic",
+    "no_description": "No description available for this doctor.",
+    "no_phone": "No phone number available for this doctor.",
+    "no_email": "No email address available for this doctor.",
+    "default_clinic_desc": "Welcome to our clinic. We provide high-quality healthcare services.",
+    "no_slots": "No slots available for this date.",
+    "notes_label": "Notes (Optional)",
+    "appointment_summary": "Appointment Summary",
+    "in_person_visit": "In-Person Visit",
+    "today": "Today"
   },
   "profile": {
     "header": "Profile",
@@ -134,5 +157,19 @@
     "verify_subtitle": "Enter the 6-digit code sent to your email",
     "verify_btn": "Verify & Continue",
     "back_to_email": "Back to Email"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "no_notifications": "No notifications yet",
+    "unread_suffix": "unread notification",
+    "unread_suffix_plural": "unread notifications",
+    "welcome_title": "Welcome to ClinicUz! 🎉",
+    "welcome_msg": "Your healthcare companion is ready. Browse doctors and book your first appointment.",
+    "upcoming_title": "Upcoming Appointment",
+    "appointment_msg": "You have an appointment with {{doctor}} on {{date}}",
+    "time_in_days": "in {{count}} days",
+    "time_tomorrow": "Tomorrow",
+    "time_in_hours": "in {{count}}h",
+    "time_just_now": "Just now"
   }
 }

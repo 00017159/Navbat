@@ -119,7 +119,8 @@
     "duplicate_email": "Аккаунт с этим email уже существует в системе.",
     "add_failed": "Не удалось добавить врача",
     "update_failed": "Не удалось обновить",
-    "doctor_created": "создан!"
+    "doctor_created": "создан!",
+    "bio_placeholder": "Напишите краткую биографию врача..."
   },
   "records": {
     "title": "Медицинские карты",
@@ -212,5 +213,12 @@
     "checkup": "Осмотр",
     "follow_up": "Повторный прием",
     "in_person": "Очно"
+  },
+  "specialties": {
+    "dentist": "Стоматолог",
+    "cardiologist": "Кардиолог",
+    "neurologist": "Невропатолог",
+    "pediatrician": "Педиатр",
+    "therapist": "Терапевт"
   }
 }

@@ -4,6 +4,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Linking, View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native';
 import { useTheme } from '../../services/theme';
 import { useAlert } from '../../services/AlertContext';
+import { useTranslation } from 'react-i18next';
 import { createAppointment, getDoctorAppointmentsForDate, getReviews, getDoctor, getClinicByName } from '../../services/api';
 
 const AVATAR_COLORS = ['#fef3c7', '#ffedd5', '#e0f2fe', '#fce7f3', '#dcfce7', '#f3e8ff'];
@@ -71,6 +72,7 @@ export default function DoctorBookingScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const { colors, dark } = useTheme();
+  const { t } = useTranslation();
   const { showAlert } = useAlert();
 
   // Parse doctor data from params
@@ -159,8 +161,8 @@ export default function DoctorBookingScreen() {
   const handleBook = async () => {
     if (!selectedTime) {
       showAlert({
-        title: 'Select Time',
-        message: 'Please select an appointment time slot',
+        title: t('doctor.select_time'),
+        message: t('doctor.select_time_error'),
         type: 'info'
       });
       return;
@@ -181,8 +183,8 @@ export default function DoctorBookingScreen() {
       setBooked(true);
     } catch (error: any) {
       showAlert({
-        title: 'Booking Failed',
-        message: error.message || 'Failed to book appointment. Please try again.',
+        title: t('doctor.booking_failed'),
+        message: error.message || t('common.error'),
         type: 'error'
       });
     } finally {
@@ -196,16 +198,19 @@ export default function DoctorBookingScreen() {
         <View style={styles.successCircle}>
           <CheckCircle color="#FFF" size={48} />
         </View>
-        <Text style={[styles.successTitle, { color: colors.text }]}>Appointment Booked!</Text>
+        <Text style={[styles.successTitle, { color: colors.text }]}>{t('doctor.success_title')}</Text>
         <Text style={[styles.successSubtitle, { color: colors.textSecondary }]}>
-          Your appointment with {doctorName} has been scheduled for{'\n'}
-          {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} at {selectedTime}
+          {t('doctor.success_msg', { 
+            doctor: doctorName, 
+            date: selectedDate.toLocaleDateString(t('common.locale', 'en-US'), { weekday: 'long', month: 'long', day: 'numeric' }), 
+            time: selectedTime 
+          })}
         </Text>
         <TouchableOpacity style={styles.successButton} onPress={() => router.push('/(tabs)/appointments')}>
-          <Text style={styles.successButtonText}>View My Appointments</Text>
+          <Text style={styles.successButtonText}>{t('doctor.view_appointments')}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.successSecondary} onPress={() => router.back()}>
-          <Text style={styles.successSecondaryText}>Back to Home</Text>
+          <Text style={styles.successSecondaryText}>{t('doctor.back_to_home')}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -218,7 +223,7 @@ export default function DoctorBookingScreen() {
         <TouchableOpacity onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}>
           <ArrowLeft color={colors.text} size={24} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Book Appointment</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>{t('doctor.book_appointment')}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -240,9 +245,9 @@ export default function DoctorBookingScreen() {
               <View style={styles.ratingRow}>
                 <Star color="#F59E0B" fill="#F59E0B" size={14} />
                 <Text style={[styles.ratingText, { color: colors.text }]}>{liveRating}</Text>
-                <Text style={styles.ratingCount}>({liveReviewCount} reviews)</Text>
+                <Text style={styles.ratingCount}>({liveReviewCount} {t('doctor.reviews_count')})</Text>
                 <Text style={styles.dot}>•</Text>
-                <Text style={styles.expText}>{experience}y exp</Text>
+                <Text style={styles.expText}>{experience}{t('doctor.years_exp')}</Text>
               </View>
             </View>
             {profileExpanded
@@ -255,16 +260,16 @@ export default function DoctorBookingScreen() {
           {profileExpanded && (
             <View style={{ marginTop: 16, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 14 }}>
               <Text style={{ fontSize: 15, fontWeight: '700', color: colors.text, marginBottom: 12 }}>
-                Patient Reviews ({doctorReviews.length})
+                {t('doctor.patient_reviews')} ({doctorReviews.length})
               </Text>
               {doctorReviews.length === 0 ? (
-                <Text style={{ fontSize: 13, color: colors.textSecondary, fontStyle: 'italic' }}>No reviews yet. Be the first to review!</Text>
+                <Text style={{ fontSize: 13, color: colors.textSecondary, fontStyle: 'italic' }}>{t('doctor.no_reviews')}</Text>
               ) : (
                 doctorReviews.slice(0, 10).map((review: any, idx: number) => {
                   const patientName = review.patient
                     ? `${review.patient.first_name || ''} ${review.patient.last_name || ''}`.trim()
-                    : 'Anonymous';
-                  const reviewDate = new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    : t('doctor.anonymous');
+                  const reviewDate = new Date(review.created_at).toLocaleDateString(t('common.locale', 'en-US'), { month: 'short', day: 'numeric', year: 'numeric' });
                   return (
                     <View key={review.id || idx} style={[styles.reviewCard, { backgroundColor: dark ? '#1E293B' : '#F8FAFC', borderColor: colors.border }]}>
                       <View style={styles.reviewHeader}>
@@ -297,15 +302,15 @@ export default function DoctorBookingScreen() {
         {/* Consultation Type */}
         <View style={[styles.typeCard, styles.typeCardActive, { marginBottom: 12, backgroundColor: dark ? '#1E3A5F' : '#EFF6FF', borderColor: '#1E63D3' }]}>
           <MapPin color="#1E63D3" size={24} />
-          <Text style={[styles.typeText, styles.typeTextActive]}>In-Person</Text>
-          <Text style={[styles.typeSubtext, { color: colors.textSecondary }]}>Visit clinic</Text>
+          <Text style={[styles.typeText, styles.typeTextActive]}>{t('doctor.in_person')}</Text>
+          <Text style={[styles.typeSubtext, { color: colors.textSecondary }]}>{t('doctor.visit_clinic')}</Text>
         </View>
 
         {/* Doctor Bio & Contact */}
         <View style={[styles.infoSection, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Text style={[styles.sectionHeading, { color: colors.text }]}>About Doctor</Text>
+          <Text style={[styles.sectionHeading, { color: colors.text }]}>{t('doctor.about')}</Text>
           <Text style={[styles.bioText, { color: colors.textSecondary }]}>
-            {doctorData?.doctor_profiles?.description || 'No description available for this doctor.'}
+            {doctorData?.doctor_profiles?.description || t('doctor.no_description')}
           </Text>
           
           <View style={styles.contactRow}>
@@ -314,11 +319,11 @@ export default function DoctorBookingScreen() {
               onPress={() => {
                 const phone = doctorData?.doctor_profiles?.contact_phone;
                 if (phone) Linking.openURL(`tel:${phone.replace(/\s+/g, '')}`);
-                else showAlert({ title: 'Info', message: 'No phone number available for this doctor.', type: 'info' });
+                else showAlert({ title: t('common.info'), message: t('doctor.no_phone'), type: 'info' });
               }}
             >
               <Phone size={18} color="#1E63D3" />
-              <Text style={[styles.contactButtonText, { color: colors.text }]}>Call Doctor</Text>
+              <Text style={[styles.contactButtonText, { color: colors.text }]}>{t('doctor.call')}</Text>
             </TouchableOpacity>
             
             <TouchableOpacity 
@@ -326,11 +331,11 @@ export default function DoctorBookingScreen() {
               onPress={() => {
                 const email = doctorData?.doctor_profiles?.contact_email;
                 if (email) Linking.openURL(`mailto:${email}`);
-                else showAlert({ title: 'Info', message: 'No email address available for this doctor.', type: 'info' });
+                else showAlert({ title: t('common.info'), message: t('doctor.no_email'), type: 'info' });
               }}
             >
               <Mail size={18} color="#1E63D3" />
-              <Text style={[styles.contactButtonText, { color: colors.text }]}>Email Doctor</Text>
+              <Text style={[styles.contactButtonText, { color: colors.text }]}>{t('doctor.email')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -343,7 +348,7 @@ export default function DoctorBookingScreen() {
               <Text style={[styles.sectionHeading, { color: colors.text, marginBottom: 0 }]}>{clinicData.name}</Text>
             </View>
             <Text style={[styles.bioText, { color: colors.textSecondary, marginBottom: 12 }]}>
-              {clinicData.description || 'Welcome to our clinic. We provide high-quality healthcare services.'}
+              {clinicData.description || t('doctor.default_clinic_desc')}
             </Text>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <MapPin size={14} color={colors.textSecondary} style={{ marginRight: 6 }} />
@@ -354,7 +359,7 @@ export default function DoctorBookingScreen() {
 
         {/* Date Selection */}
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          <Calendar color={colors.text} size={16} /> Select Date
+          <Calendar color={colors.text} size={16} /> {t('doctor.select_date')}
         </Text>
         <Text style={[styles.monthLabel, { color: colors.textSecondary }]}>{formatMonth(selectedDate)}</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.dateScroll}>
@@ -368,7 +373,7 @@ export default function DoctorBookingScreen() {
                 onPress={() => setSelectedDate(date)}
               >
                 <Text style={[styles.dateDayLabel, { color: colors.textSecondary }, selected && styles.dateDayLabelActive]}>
-                  {today ? 'Today' : formatDateLabel(date)}
+                  {today ? t('doctor.today') : date.toLocaleDateString(t('common.locale', 'en-US'), { weekday: 'short' })}
                 </Text>
                 <Text style={[styles.dateNum, { color: colors.text }, selected && styles.dateNumActive]}>{formatDateNum(date)}</Text>
               </TouchableOpacity>
@@ -378,11 +383,11 @@ export default function DoctorBookingScreen() {
 
         {/* Time Selection */}
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          <Clock color={colors.text} size={16} /> Select Time
+          <Clock color={colors.text} size={16} /> {t('doctor.select_time')}
         </Text>
         <View style={styles.timeGrid}>
           {availableTimeSlots.length === 0 ? (
-            <Text style={{ color: colors.textSecondary, fontStyle: 'italic', paddingVertical: 10 }}>No slots available for this date.</Text>
+            <Text style={{ color: colors.textSecondary, fontStyle: 'italic', paddingVertical: 10 }}>{t('doctor.no_slots')}</Text>
           ) : (
             availableTimeSlots.map(slot => {
               const selected = slot === selectedTime;
@@ -401,11 +406,11 @@ export default function DoctorBookingScreen() {
 
         {/* Notes */}
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          <FileText color={colors.text} size={16} /> Notes (Optional)
+          <FileText color={colors.text} size={16} /> {t('doctor.notes_label')}
         </Text>
         <TextInput
           style={[styles.notesInput, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-          placeholder="Describe your symptoms or reason for visit..."
+          placeholder={t('doctor.notes_placeholder')}
           placeholderTextColor={colors.textSecondary}
           value={notes}
           onChangeText={setNotes}
@@ -417,22 +422,22 @@ export default function DoctorBookingScreen() {
         {/* Summary */}
         {selectedTime ? (
           <View style={[styles.summaryCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[styles.summaryTitle, { color: colors.text }]}>Appointment Summary</Text>
+            <Text style={[styles.summaryTitle, { color: colors.text }]}>{t('doctor.appointment_summary')}</Text>
             <View style={[styles.summaryRow, { borderBottomColor: colors.border }]}>
-              <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Doctor</Text>
+              <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>{t('doctor.doctor')}</Text>
               <Text style={[styles.summaryValue, { color: colors.text }]}>{doctorName}</Text>
             </View>
             <View style={[styles.summaryRow, { borderBottomColor: colors.border }]}>
-              <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Date</Text>
-              <Text style={[styles.summaryValue, { color: colors.text }]}>{selectedDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</Text>
+              <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>{t('doctor.date')}</Text>
+              <Text style={[styles.summaryValue, { color: colors.text }]}>{selectedDate.toLocaleDateString(t('common.locale', 'en-US'), { weekday: 'short', month: 'short', day: 'numeric' })}</Text>
             </View>
             <View style={[styles.summaryRow, { borderBottomColor: colors.border }]}>
-              <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Time</Text>
+              <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>{t('doctor.time')}</Text>
               <Text style={[styles.summaryValue, { color: colors.text }]}>{selectedTime}</Text>
             </View>
             <View style={[styles.summaryRow, { borderBottomColor: colors.border, borderBottomWidth: 0 }]}>
-              <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>Type</Text>
-              <Text style={[styles.summaryValue, { color: colors.text }]}>In-Person Visit</Text>
+              <Text style={[styles.summaryLabel, { color: colors.textSecondary }]}>{t('doctor.type')}</Text>
+              <Text style={[styles.summaryValue, { color: colors.text }]}>{t('doctor.in_person_visit')}</Text>
             </View>
           </View>
         ) : null}
@@ -443,10 +448,11 @@ export default function DoctorBookingScreen() {
           onPress={handleBook}
           disabled={!selectedTime || loading}
         >
-          {loading
-            ? <ActivityIndicator color="#FFF" />
-            : <Text style={styles.bookButtonText}>Confirm Booking</Text>
-          }
+          {loading ? (
+            <ActivityIndicator color="#FFF" />
+          ) : (
+            <Text style={styles.bookButtonText}>{t('doctor.confirm_booking')}</Text>
+          )}
         </TouchableOpacity>
 
       </ScrollView>

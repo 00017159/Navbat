@@ -17,7 +17,8 @@
     "home": "Asosiy",
     "appointments": "Qabullar",
     "records": "Tarix",
-    "profile": "Profil"
+    "profile": "Profil",
+    "notifications": "Bildirishnomalar"
   },
   "home": {
     "welcome": "Xush kelibsiz",
@@ -101,7 +102,29 @@
     "select_time": "Vaqtni tanlang",
     "notes_placeholder": "Shikoyatlaringizni yozing...",
     "book_appointment": "Qabulga yozilish",
-    "confirm_booking": "Tasdiqlash"
+    "confirm_booking": "Tasdiqlash",
+    "years_exp": "yil tajriba",
+    "reviews_count": "sharhlar",
+    "success_title": "Qabul muvaffaqiyatli band qilindi!",
+    "success_msg": "{{doctor}} bilan qabulingiz {{date}} kuni soat {{time}} ga belgilandi",
+    "view_appointments": "Mening qabullarim",
+    "back_to_home": "Asosiyga qaytish",
+    "select_time_error": "Iltimos, qabul vaqtini tanlang",
+    "booking_failed": "Band qilishda xatolik",
+    "patient_reviews": "Bemorlar sharhlari",
+    "no_reviews": "Hozircha sharhlar yo'q. Birinchi bo'lib sharh qoldiring!",
+    "anonymous": "Anonim",
+    "in_person": "Yuzma-yuz",
+    "visit_clinic": "Klinikaga tashrif",
+    "no_description": "Ushbu shifokor haqida ma'lumot kiritilmagan.",
+    "no_phone": "Ushbu shifokorning telefon raqami yo'q.",
+    "no_email": "Ushbu shifokorning email manzili yo'q.",
+    "default_clinic_desc": "Klinikamizga xush kelibsiz. Biz yuqori sifatli tibbiy xizmatlarni taqdim etamiz.",
+    "no_slots": "Ushbu sana uchun bo'sh vaqtlar yo'q.",
+    "notes_label": "Eslatmalar (Ixtiyoriy)",
+    "appointment_summary": "Qabul xulosasi",
+    "in_person_visit": "Klinikada ko'rik",
+    "today": "Bugun"
   },
   "profile": {
     "header": "Profil",
@@ -134,5 +157,19 @@
     "verify_subtitle": "Emailingizga yuborilgan 6 xonali kodni kiriting",
     "verify_btn": "Tasdiqlash va davom etish",
     "back_to_email": "Email-ga qaytish"
+  },
+  "notifications": {
+    "title": "Bildirishnomalar",
+    "no_notifications": "Hozircha bildirishnomalar yo'q",
+    "unread_suffix": "o'qilmagan xabar",
+    "unread_suffix_plural": "o'qilmagan xabarlar",
+    "welcome_title": "ClinicUz-ga xush kelibsiz! 🎉",
+    "welcome_msg": "Sog'liqni saqlash bo'yicha yordamchingiz tayyor. Shifokorlarni ko'ring va birinchi qabulga yoziling.",
+    "upcoming_title": "Kutilayotgan qabul",
+    "appointment_msg": "Sizning {{date}} kuni {{doctor}} bilan qabulingiz bor",
+    "time_in_days": "{{count}} kundan keyin",
+    "time_tomorrow": "Ertaga",
+    "time_in_hours": "{{count}} soatdan keyin",
+    "time_just_now": "Hozir"
   }
 }

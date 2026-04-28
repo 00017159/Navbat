@@ -119,7 +119,8 @@
     "duplicate_email": "Bu email bilan hisob allaqachon mavjud.",
     "add_failed": "Shifokor qo'shib bo'lmadi",
     "update_failed": "Yangilashda xatolik",
-    "doctor_created": "yaratildi!"
+    "doctor_created": "yaratildi!",
+    "bio_placeholder": "Shifokor haqida qisqacha ma'lumot yozing..."
   },
   "records": {
     "title": "Tibbiy yozuvlar",
@@ -212,5 +213,12 @@
     "checkup": "Tekshiruv",
     "follow_up": "Takroriy ko'rik",
     "in_person": "Yuzma-yuz"
+  },
+  "specialties": {
+    "dentist": "Stomatolog",
+    "cardiologist": "Kardiolog",
+    "neurologist": "Nevropatolog",
+    "pediatrician": "Pediatr",
+    "therapist": "Terapevt"
   }
 }

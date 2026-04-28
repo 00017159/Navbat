@@ -1,21 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Alert, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { Bell, Search, Calendar, CheckCircle2, Users, Star, Bot } from 'lucide-react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { getDoctors, getAppointments, getCurrentUser, getClinics } from '../../services/api';
 import { useTheme } from '../../services/theme';
+import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// Live data only
-
-function getGreeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'Good morning';
-  if (hour < 18) return 'Good afternoon';
-  return 'Good evening';
-}
-
-
 
 function getAvgRating(reviews: { rating: number }[]) {
   if (!reviews || reviews.length === 0) return 0;
@@ -32,6 +22,7 @@ const TEXT_COLORS = ['#92400e', '#c2410c', '#0369a1', '#be185d', '#166534', '#7e
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [doctors, setDoctors] = useState<any[]>([]);
@@ -55,13 +46,11 @@ export default function HomeScreen() {
       if (clinicsList.status === 'fulfilled' && Array.isArray(clinicsList.value)) {
         setClinics(clinicsList.value);
       }
-
       if (doctorsList.status === 'fulfilled' && Array.isArray(doctorsList.value)) {
         setDoctors(doctorsList.value);
       } else {
         setDoctors([]);
       }
-
       if (appointmentsList.status === 'fulfilled' && Array.isArray(appointmentsList.value)) {
         setAppointments(appointmentsList.value);
       }
@@ -74,30 +63,24 @@ export default function HomeScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
-  // Check unread status whenever appointments change or screen is focused
   useFocusEffect(
     useCallback(() => {
       const checkUnread = async () => {
         try {
           const lastReadTime = await AsyncStorage.getItem('notif_last_read');
           const lastRead = lastReadTime ? parseInt(lastReadTime, 10) : 0;
-          
           const upcoming = appointments.filter(a => a.status === 'UPCOMING');
           const unread = upcoming.filter(a => {
             const createdAt = new Date(a.createdAt || a.dateTime).getTime();
             return createdAt > lastRead;
           });
-          
           setUnreadCount(unread.length);
         } catch (e) {
           console.warn('Error checking unread status:', e);
         }
       };
-      
       checkUnread();
     }, [appointments])
   );
@@ -107,10 +90,8 @@ export default function HomeScreen() {
     fetchData();
   }, [fetchData]);
 
-  // Dynamically compute categories from active doctors
   const computedCategories = ['All', ...Array.from(new Set(doctors.map(d => d.doctorProfile?.specialty).filter(Boolean)))];
 
-  // Filter doctors by category and search
   const filteredDoctors = doctors.filter(doc => {
     const specialty = doc.doctorProfile?.specialty || '';
     const clinicName = doc.doctorProfile?.clinicName || '';
@@ -137,24 +118,11 @@ export default function HomeScreen() {
     router.push(`/doctor/${doctor.id}?${params}` as any);
   };
 
-  const handleNotifications = () => {
-    router.push('/notifications' as any);
-  };
-
-  const handleSearchSubmit = () => {
-    if (searchQuery.trim()) {
-      const results = filteredDoctors.length;
-      if (results === 0) {
-        Alert.alert('No Results', `No doctors found for "${searchQuery}"`);
-      }
-    }
-  };
-
   if (loading) {
     return (
       <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="large" color="#1E63D3" />
-        <Text style={{ marginTop: 12, color: '#64748B' }}>Loading dashboard...</Text>
+        <Text style={{ marginTop: 12, color: '#64748B' }}>{t('home.loading')}</Text>
       </SafeAreaView>
     );
   }
@@ -166,16 +134,16 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}
       >
-        
-        {/* Header Section */}
+        {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={[styles.greetingText, { color: colors.textSecondary }]}>{getGreeting()},</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={[styles.userName, { color: colors.text }]}>{user?.firstName || 'User'} <Text style={{ fontSize: 24 }}>👋</Text></Text>
-            </View>
+            <Text style={[styles.greetingText, { color: colors.textSecondary }]}>{t('home.welcome')},</Text>
+            <Text style={[styles.userName, { color: colors.text }]}>{user?.firstName || 'User'} <Text style={{ fontSize: 24 }}>👋</Text></Text>
           </View>
-          <TouchableOpacity style={[styles.notificationBtn, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={handleNotifications}>
+          <TouchableOpacity
+            style={[styles.notificationBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
+            onPress={() => router.push('/notifications' as any)}
+          >
             <Bell color={colors.text} size={24} />
             {unreadCount > 0 && (
               <View style={styles.badge}>
@@ -190,11 +158,10 @@ export default function HomeScreen() {
           <Search color={colors.textSecondary} size={20} style={styles.searchIcon} />
           <TextInput
             style={[styles.searchInput, { color: colors.text }]}
-            placeholder="Search doctors, specializations..."
+            placeholder={t('home.search_placeholder')}
             placeholderTextColor={colors.textSecondary}
             value={searchQuery}
             onChangeText={setSearchQuery}
-            onSubmitEditing={handleSearchSubmit}
             returnKeyType="search"
           />
           {searchQuery.length > 0 && (
@@ -211,55 +178,57 @@ export default function HomeScreen() {
               <Calendar color="#3B82F6" size={24} />
             </View>
             <Text style={[styles.statValue, { color: dark ? '#93C5FD' : '#1E40AF' }]}>{appointments.length}</Text>
-            <Text style={[styles.statTitle, { color: colors.textSecondary }]}>Appointments</Text>
+            <Text style={[styles.statTitle, { color: colors.textSecondary }]}>{t('home.appointments_stat')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.statCard, { backgroundColor: colors.card }]} onPress={() => router.push('/(tabs)/appointments?tab=Completed' as any)}>
             <View style={[styles.statIconWrapper, { backgroundColor: dark ? '#064E3B' : '#ECFDF5' }]}>
               <CheckCircle2 color="#10B981" size={24} />
             </View>
             <Text style={[styles.statValue, { color: dark ? '#6EE7B7' : '#065F46' }]}>{completedCount}</Text>
-            <Text style={[styles.statTitle, { color: colors.textSecondary }]}>Completed</Text>
+            <Text style={[styles.statTitle, { color: colors.textSecondary }]}>{t('home.completed_stat')}</Text>
           </TouchableOpacity>
           <View style={[styles.statCard, { backgroundColor: colors.card }]}>
             <View style={[styles.statIconWrapper, { backgroundColor: dark ? '#134E4A' : '#F0FDF4' }]}>
               <Users color="#14B8A6" size={24} />
             </View>
             <Text style={[styles.statValue, { color: dark ? '#5EEAD4' : '#0F766E' }]}>{doctors.length}</Text>
-            <Text style={[styles.statTitle, { color: colors.textSecondary }]}>Doctors</Text>
+            <Text style={[styles.statTitle, { color: colors.textSecondary }]}>{t('home.doctors_stat')}</Text>
           </View>
         </View>
 
-        {/* Doctors Section Header */}
+        {/* Section Header */}
         <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Doctors</Text>
-          <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>{filteredDoctors.length} available</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>{t('home.top_doctors')}</Text>
+          <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>{filteredDoctors.length} {t('home.available')}</Text>
         </View>
 
-        {/* Categories Tabs */}
+        {/* Category Tabs */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll}>
           {computedCategories.map(cat => (
-            <TouchableOpacity 
-              key={cat} 
+            <TouchableOpacity
+              key={cat}
               onPress={() => setActiveTab(cat as string)}
               style={[styles.categoryPill, { backgroundColor: colors.card, borderColor: colors.border }, activeTab === cat && styles.categoryPillActive]}
             >
-              <Text style={[styles.categoryText, { color: colors.textSecondary }, activeTab === cat && styles.categoryTextActive]}>{cat}</Text>
+              <Text style={[styles.categoryText, { color: colors.textSecondary }, activeTab === cat && styles.categoryTextActive]}>
+                {cat === 'All' ? t('common.all') : cat}
+              </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
 
-        {/* Clinic Filter Tabs */}
+        {/* Clinic Filter */}
         {clinics.length > 0 && (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesScroll}>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => setActiveClinic('All')}
               style={[styles.categoryPill, { backgroundColor: colors.card, borderColor: colors.border }, activeClinic === 'All' && { backgroundColor: '#10B981', borderColor: '#10B981' }]}
             >
-              <Text style={[styles.categoryText, { color: colors.textSecondary }, activeClinic === 'All' && styles.categoryTextActive]}>All Clinics</Text>
+              <Text style={[styles.categoryText, { color: colors.textSecondary }, activeClinic === 'All' && styles.categoryTextActive]}>{t('home.all_clinics')}</Text>
             </TouchableOpacity>
             {clinics.map(c => (
-              <TouchableOpacity 
-                key={c.id} 
+              <TouchableOpacity
+                key={c.id}
                 onPress={() => setActiveClinic(c.name)}
                 style={[styles.categoryPill, { backgroundColor: colors.card, borderColor: colors.border }, activeClinic === c.name && { backgroundColor: '#10B981', borderColor: '#10B981' }]}
               >
@@ -273,9 +242,9 @@ export default function HomeScreen() {
         <View style={styles.doctorsList}>
           {filteredDoctors.length === 0 ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateText}>No doctors found{searchQuery ? ` for "${searchQuery}"` : ''}</Text>
+              <Text style={styles.emptyStateText}>{t('home.no_doctors')}{searchQuery ? ` "${searchQuery}"` : ''}</Text>
               <TouchableOpacity onPress={() => { setActiveTab('All'); setSearchQuery(''); }}>
-                <Text style={styles.emptyStateAction}>Clear filters</Text>
+                <Text style={styles.emptyStateAction}>{t('common.clear_filters')}</Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -287,7 +256,7 @@ export default function HomeScreen() {
               const reviewCount = doc.reviewsReceived?.length || 0;
               const experience = doc.doctorProfile?.experience || doc.doctorProfile?.experienceYrs || 0;
               const specialty = doc.doctorProfile?.specialty || 'General';
-              const isAvailableToday = index % 3 !== 2; // Simple availability pattern
+              const isAvailableToday = index % 3 !== 2;
 
               return (
                 <TouchableOpacity
@@ -317,16 +286,11 @@ export default function HomeScreen() {
                   </View>
 
                   <View style={styles.doctorCardFooter}>
-                    <Text 
-                      style={[
-                        styles.availabilityText, 
-                        !isAvailableToday ? styles.availabilityTextGrey : null
-                      ]}
-                    >
-                      {isAvailableToday ? 'Available Today' : 'Next: Tomorrow'}
+                    <Text style={[styles.availabilityText, !isAvailableToday ? styles.availabilityTextGrey : null]}>
+                      {isAvailableToday ? t('home.available_today') : t('home.next_tomorrow')}
                     </Text>
                     <TouchableOpacity style={styles.bookBtn} onPress={() => handleBookDoctor(doc)}>
-                      <Text style={styles.bookBtnText}>Book &gt;</Text>
+                      <Text style={styles.bookBtnText}>{t('home.book_now')}</Text>
                     </TouchableOpacity>
                   </View>
                 </TouchableOpacity>
@@ -412,7 +376,6 @@ const styles = StyleSheet.create({
   ratingReviews: { fontSize: 13, color: '#9CA3AF', marginLeft: 2 },
   dotSeparator: { fontSize: 13, color: '#9CA3AF', marginHorizontal: 6 },
   expText: { fontSize: 13, color: '#9CA3AF' },
-  priceText: { fontSize: 13, fontWeight: '600', color: '#1E63D3' },
   statusDotWrapper: { alignItems: 'flex-end', paddingTop: 4 },
   statusDotOn: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#10B981' },
   doctorCardFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 },

@@ -1,19 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, Switch, Linking } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Switch, Linking } from 'react-native';
 import { useRouter, useNavigation, useFocusEffect } from 'expo-router';
 import { getCurrentUser, signOut } from '../../services/api';
 import { useTheme } from '../../services/theme';
 import { useAlert } from '../../services/AlertContext';
-import { CommonActions } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { Globe, User, Lock, HelpCircle, Info, ChevronRight, LogOut, Moon } from 'lucide-react-native';
-
-const SETTINGS_ITEMS = [
-  { id: 1, icon: 'User', title: 'Personal Information', description: 'Name, email, phone number' },
-  { id: 3, icon: 'Lock', title: 'Privacy & Security', description: 'Password, 2FA, data' },
-  { id: 4, icon: 'HelpCircle', title: 'Help & Support', description: 'FAQ, contact us, report' },
-  { id: 5, icon: 'Info', title: 'About ClinicUz', description: 'Version, terms, licenses' },
-];
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -23,7 +15,6 @@ export default function ProfileScreen() {
   const { t, i18n } = useTranslation();
 
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
-
   const [user, setUser] = useState(getCurrentUser());
 
   useFocusEffect(
@@ -32,7 +23,13 @@ export default function ProfileScreen() {
     }, [])
   );
 
-  const displayRole = user?.role === 'DOCTOR' ? 'Doctor' : user?.role === 'ADMIN' ? 'Admin' : 'Patient';
+  const displayRole =
+    user?.role === 'DOCTOR'
+      ? t('profile.role_doctor')
+      : user?.role === 'ADMIN'
+      ? t('profile.role_admin')
+      : t('profile.role_patient');
+
   const displayName = user ? `${user.firstName} ${user.lastName}` : 'User';
   const displayEmail = user?.email || '';
   const initials = user
@@ -50,17 +47,18 @@ export default function ProfileScreen() {
     }
   };
 
-  const currentLangName = i18n.language === 'uz' ? 'O\'zbekcha' : i18n.language === 'ru' ? 'Русский' : 'English';
+  const currentLangName =
+    i18n.language === 'uz' ? "O'zbekcha" : i18n.language === 'ru' ? 'Русский' : 'English';
 
   const settingsItems = [
-    { id: 1, icon: 'User', title: t('profile.personal_info'), description: 'Name, email, phone number' },
-    { id: 3, icon: 'Lock', title: t('profile.privacy_security'), description: 'Password, 2FA, data' },
+    { id: 1, icon: 'User', title: t('profile.personal_info'), description: t('profile.personal_info_desc') },
+    { id: 3, icon: 'Lock', title: t('profile.privacy_security'), description: t('profile.privacy_security_desc') },
     { id: 6, icon: 'Globe', title: t('profile.language'), description: currentLangName },
-    { id: 4, icon: 'HelpCircle', title: 'Help & Support', description: 'FAQ, contact us, report' },
-    { id: 5, icon: 'Info', title: 'About ClinicUz', description: 'Version, terms, licenses' },
+    { id: 4, icon: 'HelpCircle', title: t('profile.help_support'), description: t('profile.help_support_desc') },
+    { id: 5, icon: 'Info', title: t('profile.about'), description: t('profile.about_desc') },
   ];
 
-  const handleSettingsPress = (item: typeof SETTINGS_ITEMS[number]) => {
+  const handleSettingsPress = (item: typeof settingsItems[number]) => {
     switch (item.id) {
       case 1:
         router.push('/personal-info' as any);
@@ -73,13 +71,19 @@ export default function ProfileScreen() {
         break;
       case 4:
         showAlert({
-          title: 'Contact Support',
-          message: 'How would you like to reach us?\n\nsadullayevshohjahon990@gmail.com\n+998907192922',
+          title: t('profile.help_support'),
+          message: 'sadullayevshohjahon990@gmail.com\n+998907192922',
           type: 'confirm',
           confirmLabel: 'Email',
-          cancelLabel: 'Call',
-          onConfirm: () => Linking.openURL('mailto:sadullayevshohjahon990@gmail.com').catch(() => showAlert({ title: 'Error', message: 'Unable to open email client', type: 'error' })),
-          onCancel: () => Linking.openURL('tel:+998907192922').catch(() => showAlert({ title: 'Error', message: 'Unable to open dialer', type: 'error' }))
+          cancelLabel: t('common.cancel'),
+          onConfirm: () =>
+            Linking.openURL('mailto:sadullayevshohjahon990@gmail.com').catch(() =>
+              showAlert({ title: t('common.error'), message: 'Unable to open email client', type: 'error' })
+            ),
+          onCancel: () =>
+            Linking.openURL('tel:+998907192922').catch(() =>
+              showAlert({ title: t('common.error'), message: 'Unable to open dialer', type: 'error' })
+            ),
         });
         break;
       case 5:
@@ -90,10 +94,10 @@ export default function ProfileScreen() {
 
   const handleLogout = () => {
     showAlert({
-      title: 'Log Out',
-      message: 'Are you sure you want to log out?',
+      title: t('profile.logout'),
+      message: t('profile.logout_confirm') || 'Are you sure you want to log out?',
       type: 'confirm',
-      confirmLabel: 'Log Out',
+      confirmLabel: t('profile.logout'),
       onConfirm: async () => {
         try {
           await signOut();
@@ -110,11 +114,11 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Profile</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>{t('profile.header')}</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        
+
         {/* Profile Card */}
         <View style={[styles.profileCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <View style={styles.avatar}>
@@ -128,13 +132,13 @@ export default function ProfileScreen() {
         </View>
 
         {/* Dark Mode Toggle */}
-        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>APPEARANCE</Text>
+        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{t('profile.appearance')}</Text>
         <View style={[styles.settingsCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <View style={[styles.toggleRow, styles.settingsRowLast]}>
             <View style={[styles.settingsIcon, { backgroundColor: dark ? '#334155' : '#EFF6FF' }]}>
               <Moon color={colors.primary} size={20} />
             </View>
-            <Text style={[styles.settingsTitle, { color: colors.text }]}>Dark Mode</Text>
+            <Text style={[styles.settingsTitle, { color: colors.text }]}>{t('profile.dark_mode')}</Text>
             <Switch
               value={dark}
               onValueChange={toggle}
@@ -145,17 +149,17 @@ export default function ProfileScreen() {
         </View>
 
         {/* Settings Menu */}
-        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>SETTINGS</Text>
+        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{t('profile.settings')}</Text>
         <View style={[styles.settingsCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
           {settingsItems.map((item, index) => (
-            <TouchableOpacity 
-              key={item.id} 
+            <TouchableOpacity
+              key={item.id}
               style={[
-                styles.settingsRow, 
+                styles.settingsRow,
                 index === settingsItems.length - 1 ? styles.settingsRowLast : null,
-                { borderBottomColor: colors.border }
+                { borderBottomColor: colors.border },
               ]}
-              onPress={() => handleSettingsPress(item as any)}
+              onPress={() => handleSettingsPress(item)}
             >
               <View style={[styles.settingsIcon, { backgroundColor: dark ? '#334155' : '#EFF6FF' }]}>
                 {getIcon(item.icon, colors.primary)}
@@ -180,31 +184,42 @@ export default function ProfileScreen() {
 
       {/* Language Selection Modal */}
       {languageModalVisible && (
-        <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }]}>
-          <View style={[styles.langModal, { backgroundColor: colors.card, width: '85%', borderRadius: 24, padding: 24 }]}>
-            <Text style={[styles.langTitle, { color: colors.text, fontSize: 18, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' }]}>{t('profile.select_language')}</Text>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.langModal, { backgroundColor: colors.card }]}>
+            <Text style={[styles.langTitle, { color: colors.text }]}>{t('profile.select_language')}</Text>
             {[
               { code: 'en', name: 'English' },
-              { code: 'uz', name: 'O\'zbekcha' },
-              { code: 'ru', name: 'Русский' }
+              { code: 'uz', name: "O'zbekcha" },
+              { code: 'ru', name: 'Русский' },
             ].map(lang => (
-              <TouchableOpacity 
+              <TouchableOpacity
                 key={lang.code}
                 style={[
-                  { paddingVertical: 16, paddingHorizontal: 20, borderRadius: 12, marginBottom: 8, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }, 
-                  i18n.language === lang.code && { backgroundColor: dark ? '#334155' : '#EFF6FF' }
+                  styles.langItem,
+                  i18n.language === lang.code && {
+                    backgroundColor: dark ? '#334155' : '#EFF6FF',
+                  },
                 ]}
                 onPress={() => {
                   i18n.changeLanguage(lang.code);
                   setLanguageModalVisible(false);
                 }}
               >
-                <Text style={[{ fontSize: 16, fontWeight: '600' }, { color: i18n.language === lang.code ? '#1E63D3' : colors.text }]}>{lang.name}</Text>
-                {i18n.language === lang.code && <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#1E63D3' }} />}
+                <Text
+                  style={[
+                    styles.langItemText,
+                    { color: i18n.language === lang.code ? '#1E63D3' : colors.text },
+                  ]}
+                >
+                  {lang.name}
+                </Text>
+                {i18n.language === lang.code && (
+                  <View style={styles.langDot} />
+                )}
               </TouchableOpacity>
             ))}
-            <TouchableOpacity style={{ marginTop: 12, paddingVertical: 12, alignItems: 'center' }} onPress={() => setLanguageModalVisible(false)}>
-              <Text style={{ color: colors.textSecondary, fontWeight: '600' }}>{t('common.cancel')}</Text>
+            <TouchableOpacity style={styles.langCancelBtn} onPress={() => setLanguageModalVisible(false)}>
+              <Text style={[styles.langCancelText, { color: colors.textSecondary }]}>{t('common.cancel')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -227,22 +242,22 @@ const styles = StyleSheet.create({
   },
   avatar: {
     width: 80, height: 80, borderRadius: 40, backgroundColor: '#FEE2E2',
-    alignItems: 'center', justifyContent: 'center', marginBottom: 16
+    alignItems: 'center', justifyContent: 'center', marginBottom: 16,
   },
   avatarText: { fontSize: 28, fontWeight: 'bold', color: '#991B1B' },
   userName: { fontSize: 20, fontWeight: 'bold', marginBottom: 4 },
   userEmail: { fontSize: 14, marginBottom: 12 },
   rolePill: {
-    backgroundColor: '#EFF6FF', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12
+    backgroundColor: '#EFF6FF', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12,
   },
   roleText: { fontSize: 13, fontWeight: '600', color: '#1E63D3' },
   sectionTitle: {
     fontSize: 12, fontWeight: 'bold', letterSpacing: 1,
-    marginBottom: 12, paddingHorizontal: 4
+    marginBottom: 12, paddingHorizontal: 4,
   },
   settingsCard: {
     borderRadius: 24, paddingHorizontal: 20, paddingVertical: 8,
-    borderWidth: 1, marginBottom: 24
+    borderWidth: 1, marginBottom: 24,
   },
   settingsRow: {
     flexDirection: 'row', alignItems: 'center', paddingVertical: 16,
@@ -254,15 +269,38 @@ const styles = StyleSheet.create({
   settingsRowLast: { borderBottomWidth: 0 },
   settingsIcon: {
     width: 36, height: 36, borderRadius: 10,
-    alignItems: 'center', justifyContent: 'center', marginRight: 16
+    alignItems: 'center', justifyContent: 'center', marginRight: 16,
   },
   settingsTitle: { flex: 1, fontSize: 16 },
   settingsItemTitle: { fontSize: 16 },
   settingsDescription: { fontSize: 12, marginTop: 2 },
   logoutButton: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    paddingVertical: 16, marginBottom: 8
+    paddingVertical: 16, marginBottom: 8,
   },
-  logoutText: { fontSize: 16, fontWeight: 'bold', color: '#EF4444' },
+  logoutText: { fontSize: 16, fontWeight: 'bold', color: '#EF4444', marginLeft: 8 },
   versionText: { textAlign: 'center', fontSize: 12, marginBottom: 20 },
+  // Language modal styles
+  modalOverlay: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center', alignItems: 'center', zIndex: 1000,
+  },
+  langModal: {
+    width: '85%', borderRadius: 24, padding: 24,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2, shadowRadius: 24, elevation: 10,
+  },
+  langTitle: {
+    fontSize: 18, fontWeight: 'bold', textAlign: 'center', marginBottom: 20,
+  },
+  langItem: {
+    paddingVertical: 16, paddingHorizontal: 20, borderRadius: 12,
+    marginBottom: 8, flexDirection: 'row',
+    justifyContent: 'space-between', alignItems: 'center',
+  },
+  langItemText: { fontSize: 16, fontWeight: '600' },
+  langDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#1E63D3' },
+  langCancelBtn: { marginTop: 12, paddingVertical: 12, alignItems: 'center' },
+  langCancelText: { fontWeight: '600', fontSize: 14 },
 });

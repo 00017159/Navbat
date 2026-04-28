@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Alert, ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, Dimensions, Image } from 'react-native';
-import { Mail, ChevronUp, ArrowLeft, ShieldCheck } from 'lucide-react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, ActivityIndicator, KeyboardAvoidingView, Platform, Dimensions, Image } from 'react-native';
+import { Mail, ArrowLeft, ShieldCheck } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { requestOtp, verifyOtp } from '../services/api';
 import { useAlert } from '../services/AlertContext';

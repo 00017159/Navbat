@@ -7,8 +7,6 @@ import Animated, {
   withTiming,
   FadeIn,
   FadeOut,
-  ScaleInCenter,
-  ScaleOutCenter
 } from 'react-native-reanimated';
 import { CheckCircle2, AlertTriangle, Info, XCircle } from 'lucide-react-native';
 import { useTheme } from '../services/theme';

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator, RefreshControl, Linking } from 'react-native';
-import { Activity, MessageSquare, Paperclip, ChevronRight, ChevronDown, ChevronUp, Download, FileText } from 'lucide-react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert, ActivityIndicator, RefreshControl } from 'react-native';
+import { Activity, MessageSquare, Paperclip, ChevronDown, ChevronUp, Download, FileText } from 'lucide-react-native';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { getRecords, getCurrentUser } from '../../services/api';
 import { useTheme } from '../../services/theme';
+import { useTranslation } from 'react-i18next';
 
 // Live data only
 function getInitials(firstName: string, lastName: string) {
@@ -24,6 +25,7 @@ export default function RecordsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const { colors, dark } = useTheme();
+  const { t } = useTranslation();
 
   const fetchData = useCallback(async () => {
     try {
@@ -56,13 +58,13 @@ export default function RecordsScreen() {
 
   const handleAttachment = (filename: string) => {
     Alert.alert(
-      'Open Attachment',
-      `Would you like to download "${filename}"?`,
+      t('records.open_attachment'),
+      t('records.download_prompt'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Download',
-          onPress: () => Alert.alert('Downloaded', `${filename} has been saved to your device.`),
+          text: t('records.download_label'),
+          onPress: () => Alert.alert(t('records.downloaded'), t('records.downloaded_sub')),
         },
       ]
     );
@@ -131,12 +133,12 @@ export default function RecordsScreen() {
       
       const { uri } = await Print.printToFileAsync({ html, base64: false });
       if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(uri, { dialogTitle: 'Save Medical Details', UTI: 'com.adobe.pdf', mimeType: 'application/pdf' });
+        await Sharing.shareAsync(uri, { dialogTitle: t('records.download_pdf'), UTI: 'com.adobe.pdf', mimeType: 'application/pdf' });
       } else {
-        Alert.alert('Error', 'File sharing is not supported on this device.');
+        Alert.alert(t('common.error'), t('records.share_error'));
       }
     } catch (e: any) {
-      Alert.alert('Download Failed', e.message);
+      Alert.alert(t('records.download_failed'), e.message);
     }
   };
 
@@ -144,7 +146,7 @@ export default function RecordsScreen() {
     return (
       <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="large" color="#1E63D3" />
-        <Text style={{ marginTop: 12, color: '#64748B' }}>Loading records...</Text>
+        <Text style={{ marginTop: 12, color: '#64748B' }}>{t('records.loading')}</Text>
       </SafeAreaView>
     );
   }
@@ -152,8 +154,8 @@ export default function RecordsScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Medical Records</Text>
-        <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>{records.length} record{records.length !== 1 ? 's' : ''}</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>{t('records.title')}</Text>
+        <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>{records.length} {records.length !== 1 ? t('records.records_count_many') : t('records.records_count_one')}</Text>
       </View>
 
       <ScrollView
@@ -164,8 +166,8 @@ export default function RecordsScreen() {
         {records.length === 0 ? (
           <View style={styles.emptyState}>
             <Activity color={colors.textSecondary} size={48} />
-            <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>No medical records</Text>
-            <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>Your medical records will appear here after doctor visits</Text>
+            <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>{t('records.no_records')}</Text>
+            <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>{t('records.no_records_sub')}</Text>
           </View>
         ) : (
           records.map((record, index) => {
@@ -202,7 +204,7 @@ export default function RecordsScreen() {
                     <Activity color={colors.primary} size={20} />
                   </View>
                   <View>
-                    <Text style={[styles.sectionLabelTxt, { color: colors.textSecondary }]}>Diagnosis</Text>
+                    <Text style={[styles.sectionLabelTxt, { color: colors.textSecondary }]}>{t('records.diagnosis')}</Text>
                     <Text style={[styles.diagnosisTitle, { color: colors.text }]}>{record.diagnosis}</Text>
                   </View>
                 </View>
@@ -213,7 +215,7 @@ export default function RecordsScreen() {
                     {/* Prescriptions Section */}
                     {prescriptions.length > 0 && (
                       <View style={styles.prescriptionsSection}>
-                        <Text style={[styles.sectionLabelTxt, { color: colors.textSecondary }]}>Prescriptions</Text>
+                        <Text style={[styles.sectionLabelTxt, { color: colors.textSecondary }]}>{t('records.prescriptions')}</Text>
                         <View style={styles.tagsContainer}>
                           {prescriptions.map((med: string, idx: number) => (
                             <TouchableOpacity
@@ -256,7 +258,7 @@ export default function RecordsScreen() {
                     {/* PDF Download Button */}
                     <TouchableOpacity style={[styles.shareBtn, { backgroundColor: '#1E63D3', flexDirection: 'row', justifyContent: 'center' }]} onPress={() => handleDownloadPdf(record)}>
                       <FileText color="#FFFFFF" size={18} style={{ marginRight: 8 }} />
-                      <Text style={[styles.shareBtnText, { color: '#FFFFFF' }]}>Download PDF Report</Text>
+                      <Text style={[styles.shareBtnText, { color: '#FFFFFF' }]}>{t('records.download_pdf')}</Text>
                     </TouchableOpacity>
                   </>
                 )}

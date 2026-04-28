@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Linking, Alert } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { ArrowLeft, Shield, Smartphone, Key, Eye } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../services/theme';

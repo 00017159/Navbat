@@ -1,73 +1,51 @@
-# React + TypeScript + Vite
+# ClinicUz Administration Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The Clinical Administration Portal is a high-performance web dashboard designed for healthcare providers and clinical administrators. It provides real-time oversight of patient queues, doctor schedules, and clinical reporting.
 
-Currently, two official plugins are available:
+## 🌟 Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **🌍 Multilingual Interface:** Full support for English, Uzbek, and Russian.
+- **👨‍⚕️ Patient Queue Management:** Real-time visibility into daily appointments for doctors.
+- **📊 Advanced Reporting:** Export appointment data and clinical logs to **Excel (.xlsx)**.
+- **🛡️ Role-Based Access (RBAC):** Dedicated views for `ADMIN` (system settings, doctor onboarding) and `DOCTOR` (patient management).
+- **📝 Clinical Documentation:** Seamless interface for writing symptoms and prescriptive diagnoses that sync directly to the patient's mobile timeline.
+- **🎨 Modern Dark UI:** Optimized for long-session comfort with a sleek, deep-slate theme.
 
-## React Compiler
+## 🛠️ Technology Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Framework:** React v19
+- **Bundler:** Vite v8
+- **Language:** TypeScript
+- **State & Data:** Isomorphic Supabase integration
+- **Styling:** Modular Vanilla CSS
+- **Reporting:** XLSX for data portability
 
-## Expanding the ESLint configuration
+## 🚀 Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 1. Prerequisites
+- Node.js (LTS)
+- A configured Supabase project (see root `supabase-schema.sql`)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 2. Installation
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 3. Environment Setup
+Create a `.env` file in this directory:
+```bash
+VITE_SUPABASE_URL=your_project_url
+VITE_SUPABASE_ANON_KEY=your_anon_key
 ```
+
+### 4. Running Development Server
+```bash
+npm run dev
+```
+
+## 🧪 Testing
+- **Unit Tests:** `npm run test` (Vitest)
+- **E2E Tests:** `npm run test:e2e` (Playwright)
+
+---
+*Part of the ClinicUz Ecosystem.*

@@ -5,74 +5,69 @@ ClinicUz is a comprehensive, production-ready Dual-Platform Healthcare System de
 🌐 **Live Admin Portal Deployment:** [https://clinicuzadminportal.vercel.app/](https://clinicuzadminportal.vercel.app/)  
 *(The web administration dashboard is fully deployed and hosted via Vercel for immediate cloud access.)*
 
-The system operates across a **Patient-Facing Mobile Application** and an **Administrative Web Portal**, both unified securely through a centralized **Supabase** backend.
+The system operates across a **Patient-Facing Mobile Application** and an **Administrative Web Portal**, both unified securely through a centralized **Supabase** backend with full **Multilingual Support (EN, UZ, RU)**.
 
 ---
 
-## System Architecture Overview
-
-The codebase operates natively as a monorepo containing two dedicated frontends hooked up to a unified backend ecosystem:
+## 🚀 Key Features
 
 ### 1. Patient Mobile Application (React Native / Expo)
 The primary mobile interface where users register accounts and leverage healthcare tools:
-- **Interactive Triage:** An AI-powered triage assistant running on OpenAI's GPT-3.5-Turbo providing pre-visit guidance.
-- **Provider Searching:** Search and filter capabilities bridging dynamic specialty endpoints (e.g. Cardiologists, Dentists).
-- **Appointment Booking:** Seamlessly book physical or virtual consultations with verified doctors in real-time.
-- **Medical Documentation Pipeline:** The app securely downloads official medical records dynamically synthesized natively as **A4-sized PDF Documents** to the user’s mobile file system using `expo-print` and `expo-sharing`.
-- **UI Framework:** Responsive fluid routing utilizing `expo-router` with Tab and Stack Navigators. Native glassmorphism implemented through `expo-glass-effect`.
+- **🌍 Full Localization (i18n):** Seamlessly switch between **English, Uzbek, and Russian** across the entire UI, including notifications and booking flows.
+- **🤖 AI-Powered Health Assistant:** A real-time triage assistant (GPT-3.5-Turbo) providing health guidance, symptom triage, and specialist recommendations.
+- **🏥 Advanced Appointment Booking:** Search doctors by specialty, view availability, and get a localized dynamic booking summary.
+- **📄 Medical Record Pipeline:** Securely download official medical records as **A4 PDF Documents** directly to the device using `expo-print`.
+- **🔔 Real-time Notifications:** Localized updates for appointment confirmations and health reminders.
+- **🛡️ Account Management:** Comprehensive profile settings including a "Danger Zone" for secure account deletion requests.
 
 ### 2. Clinical Administration Portal (React / Vite)
 A private web dashboard accessible exclusively to authenticated internal team members (`ADMIN` and `DOCTOR` roles).
-- **Dual-Role Navigation:** Dynamic rendering blocks standard doctors from accessing root administrative controls, isolating them cleanly to only their patient queues.
-- **Provider Onboarding System:** A rich interface to perform full CRUD operations adding new specialist doctors to the mobile app seamlessly.
-- **Prescriptive Analytics:** A custom-built pipeline wherein Doctors can pull historical appointments and write official "Symptoms and Prescriptive Diagnosis" directly to the database. These securely push directly to the patient's mobile app timeline.
-- **UI Framework:** Lightning-fast single-page interface bundled by **Vite** using pure Vanilla CSS specifically architected around a sleek, dark-mode styling scheme.
+- **🌍 Multilingual Dashboard:** Full i18n support for administrative staff and doctors.
+- **📊 Patient Queue Management:** Doctors can view their daily appointments, manage patient status, and write diagnoses.
+- **📥 Data Portability:** Export clinical data and appointment reports to **Excel (.xlsx)** format for offline analysis.
+- **👨‍⚕️ Provider Onboarding:** Admin tools to perform full CRUD operations for doctors, specialties, and schedules.
+- **🎨 Sleek Dark Interface:** A modern, deep-slate dark theme architected with Vanilla CSS for high performance and visual excellence.
 
-### 3. Backend Powerhouse (Supabase)
-- **Unified Identity:** Powered by **Supabase Auth** using an Email OTP strategy for highly secure, passwordless logins.
-- **Automated Workflows:** **PostgreSQL triggers** automatically initialize user profiles and link roles upon first registration.
-- **Advanced Security:** Strict **Row-Level-Security (RLS)** policies ensure patients only access their own data while enabling administrative oversight.
-- **Schema Control:** A centralized `supabase-schema.sql` manages all relationships across profiles, appointments, and medical records.
+### 3. Backend & Infrastructure (Supabase)
+- **🔐 Secure Authentication:** Passwordless Email OTP strategy powered by **Supabase Auth**.
+- **👮 Row-Level Security (RLS):** Aggressive security policies ensuring data isolation between patients and administrative staff.
+- **⚡ Real-time Engine:** Instant synchronization of appointments and medical updates across all platforms.
+- **⚙️ Automated Workflows:** PostgreSQL triggers for profile initialization and role-based access control.
 
 ---
 
-##  Complete Technology Stack
+## 🛠️ Technology Stack
 
 ### Mobile Application
-- **Core Framework:** [React Native](https://reactnative.dev/) v0.81.5 & [Expo](https://expo.dev/) SDK 54
-- **Routing:** [Expo Router](https://docs.expo.dev/router/introduction/) / [React Navigation](https://reactnavigation.org/) v7 (Stack & Top Tabs)
-- **Local Caching:** `@react-native-async-storage/async-storage`
-- **File Management & Exportation:** `expo-print` (HTML-to-PDF Conversion) & `expo-sharing` (OS-level device file routing)
-- **Iconography:** `lucide-react-native`
+- **Core:** React Native v0.81.5 & Expo SDK 54
+- **Navigation:** Expo Router / React Navigation v7
+- **Internationalization:** `i18next` & `react-i18next`
+- **Styling:** Custom design system with glassmorphism effects
+- **Icons:** `lucide-react-native`
 
 ### Web Administration Portal
-- **Framework & Bundler:** [React](https://reactjs.org/) v19 & [Vite](https://vitejs.dev/) v8
-- **Language Compiler:** TypeScript
-- **Styling:** Custom Vanilla CSS properties scoped to Deep-Slate Dark Theme
-- **Data Fetching:** Isomorphic Supabase configuration allowing real-time mapping natively in the browser.
+- **Core:** React v19 & Vite v8
+- **Language:** TypeScript
+- **Internationalization:** `i18next` with Browser Language Detection
+- **Reporting:** `xlsx` for report generation
+- **Styling:** Modular Vanilla CSS
 
 ### Cloud Infrastructure
-- **Backend Platform:** [Supabase](https://supabase.com/) (Database, Auth, and Realtime Engine)
-- **Authentication:** Supabase Auth (Email OTP Strategy)
-- **DevOps:** [GitHub Actions](https://github.com/features/actions) YAML pipelines performing Continuous Integration builds sequentially testing both TS configurations natively across Node instances.
-- **Generative AI Backend:** [OpenAI API](https://openai.com/) GPT-3.5-Turbo for Natural Language Processing routines.
+- **Database:** PostgreSQL (via Supabase)
+- **AI Backend:** OpenAI API (GPT-3.5-Turbo)
+- **CI/CD:** GitHub Actions for automated testing and builds
+- **Hosting:** Vercel (Web Portal)
 
 ---
 
-##  Getting Started
-
-Follow these instructions to get the mono-repo up and running on your local machine for development and testing.
+## 🏁 Getting Started
 
 ### 1. Prerequisites
-Ensure you have the following installed:
-- [Node.js](https://nodejs.org/) (LTS recommended)
-- [Git](https://git-scm.com/)
-- Expo Go App on your physical device (iOS/Android) 
-- A free [Supabase](https://supabase.com/) account
-- An [OpenAI](https://openai.com/) standard API key 
+- Node.js (LTS)
+- Expo Go App (for physical device testing)
+- Supabase Account & OpenAI API Key
 
 ### 2. Installation
-Clone the repository and install dependencies at both root levels:
 ```bash
 # Install mobile dependencies
 npm install
@@ -82,92 +77,42 @@ cd admin-portal
 npm install
 ```
 
-### 3. Environment Variables
-Create `.env` files in both the root directory and the `/admin-portal/` directory, adding your credentials:
+### 3. Configuration
+Create `.env` files in both the root and `admin-portal/` directories:
 
 ```bash
-# Root Directory (.env)
-EXPO_PUBLIC_SUPABASE_URL=your_supabase_project_url
-EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-EXPO_PUBLIC_OPENAI_API_KEY=your_openai_api_key
+# Mobile (.env)
+EXPO_PUBLIC_SUPABASE_URL=your_url
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your_key
+EXPO_PUBLIC_OPENAI_API_KEY=your_openai_key
 
-# Admin Portal (/admin-portal/.env)
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+# Web Admin (/admin-portal/.env)
+VITE_SUPABASE_URL=your_url
+VITE_SUPABASE_ANON_KEY=your_key
 ```
 
-### 4. Database Setup
-1. Log into your Supabase Dashboard.
-2. Navigate to the **SQL Editor**.
-3. Copy and paste the entire contents of `supabase-schema.sql` (found in the root directory).
-4. Run the script. This fully synchronizes the tables, bypass authorizations, and SQL views.
-
-### 5. Running the Application
-
-To boot up the complete system ecosystem, run two terminal windows.
-
-**Terminal 1 (Mobile Patient Application):**
+### 4. Running Locally
+**Terminal 1 (Mobile):**
 ```bash
 npx expo start -c
 ```
-- Open with **iOS Simulator** (`i`), **Android Emulator** (`a`), or physical device QR scan.
-
-**Terminal 2 (Admin Portal Dashboard):**
+**Terminal 2 (Admin Portal):**
 ```bash
 cd admin-portal
 npm run dev
 ```
-- Will deploy natively on `http://localhost:5173`. Simply sign in using a registered `ADMIN` email dynamically seeded in your Supabase DB.
 
 ---
 
-##  Performance & Concurrency Testing
+## 🧪 Testing Infrastructure
 
-ClinicUz includes a professional load testing suite powered by **Artillery** to ensure the system can handle patient traffic surges.
+ClinicUz maintains a rigorous testing standard across the entire stack:
 
-### Testing Levels
-1.  **Load Test (`load-test.yml`)**: Simulates normal daily traffic (~20-50 users with realistic pacing).
-2.  **Stress Test (`stress-test.yml`)**: Pushes the system to its breaking point (100+ concurrent users) to identify hardware limits.
-3.  **Spike Test (`spike-test.yml`)**: Simulates a sudden influx of users (50 users in 10 seconds) to test rapid scalability.
-
-### How to Run Tests
-Ensure you have the dependencies installed, then run any of the following commands in the root directory:
-```bash
-# Run a standard load test
-npx artillery run load-test.yml
-
-# Run a stress test to find the crash point
-npx artillery run stress-test.yml
-
-# Run a spike test for sudden traffic bursts
-npx artillery run spike-test.yml
-```
+- **Load Testing:** `artillery run load-test.yml` (Stress, Spike, and Load scenarios).
+- **Web Unit Testing:** `npm run test` (Vitest & React Testing Library).
+- **Web E2E Testing:** `npm run test:e2e` (Playwright).
+- **Mobile E2E Testing:** `npm run test:e2e` (Maestro).
 
 ---
+*Developed with precision for ClinicUz.*
 
-##  Automated Testing Infrastructure
-
-The completely configured testing architecture spans across unit testing, web browser automation, and native mobile flows.
-
-### 1. Web Portal Unit Testing (Vitest)
-Unit tests ensure discrete Web Admin interface components render properly without external dependencies.
-- **Tools:** Vitest, React Testing Library, JSDOM.
-- **Command:** `npm run test` (inside `admin-portal/`).
-
-### 2. Web Portal End-to-End Testing (Playwright)
-Playwright spins up real Chromium browsers to physically click through the Admin login systems.
-- **Tools:** Playwright.
-- **Command:** `npm run test:e2e` (inside `admin-portal/`).
-
-### 3. Mobile App End-to-End Testing (Maestro)
-Cross-platform native mobile interface testing mimicking organic physical touch interactions on phones.
-- **Tools:** Maestro CLI.
-- **Command:** `npm run test:e2e` (inside root directory `/`, requires Android Emulator available).
-
----
-
-##  State & Security Rules
-All global state flows uniquely down to the `current_user` variables, mapping instantly to Postgres tables where data mutation is guarded aggressively. Bypasses are deployed uniquely in the schema layer via `is_admin()` custom functions stopping infinite recursive row loops during multi-role policy evaluations.
-
----
-*Developed securely for ClinicUz.*

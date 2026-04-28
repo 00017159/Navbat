@@ -210,6 +210,7 @@
     "offline": "Офлайн",
     "consultation": "Консультация",
     "checkup": "Осмотр",
-    "follow_up": "Повторный прием"
+    "follow_up": "Повторный прием",
+    "in_person": "Очно"
   }
 }

@@ -123,6 +123,10 @@
     "no_slots": "Ushbu sana uchun bo'sh vaqtlar yo'q.",
     "notes_label": "Eslatmalar (Ixtiyoriy)",
     "appointment_summary": "Qabul xulosasi",
+    "doctor": "Shifokor",
+    "date": "Sana",
+    "time": "Vaqt",
+    "type": "Turi",
     "in_person_visit": "Klinikada ko'rik",
     "today": "Bugun"
   },
@@ -138,8 +142,11 @@
     "language": "Til",
     "help_support": "Yordam",
     "help_support_desc": "Ko'p so'raladigan savollar, biz bilan bog'lanish",
-    "about": "ClinicUz haqida",
-    "about_desc": "Versiya, shartlar, litsenziyalar",
+    "about": "Biz haqimizda",
+    "about_desc": "Ilova va jamoa haqida",
+    "danger_zone": "XAVFLI HUDUD",
+    "delete_account": "Hisobni o'chirishni so'rash",
+    "delete_account_desc": "Hisobingizni doimiy ravishda o'chirib tashlang",
     "logout": "Chiqish",
     "select_language": "Tilni tanlang",
     "role_doctor": "Shifokor",
@@ -171,5 +178,42 @@
     "time_tomorrow": "Ertaga",
     "time_in_hours": "{{count}} soatdan keyin",
     "time_just_now": "Hozir"
+  },
+  "chatbot": {
+    "title": "AI Salomatlik Yordamchisi",
+    "subtitle": "ClinicUz tomonidan",
+    "welcome_msg": "Salom! Men sizning ClinicUz AI salomatlik yordamchingizman 🩺\n\nMen sizga quyidagilar bilan yordam bera olaman:\n• Simptomlar haqida ma'lumot\n• Umumiy salomatlik savollari\n• To'g'ri mutaxassisni topish\n• Qabulga tayyorgarlik bo'yicha maslahatlar\n\nBugun sizga qanday yordam bera olaman?",
+    "input_placeholder": "Salomatligingiz haqida so'rang...",
+    "thinking": "O'ylayapman...",
+    "error_msg": "Uzr, hozir ulanishda muammo yuz berdi. Iltimos, keyinroq qayta urinib ko'ring.",
+    "system_prompt": "Siz ClinicUz ilovasi uchun foydali va professional tibbiy AI yordamchisiz. Siz umumiy sog'liqni saqlash bo'yicha yo'riqnomalar, simptomlarni saralash va tibbiy faktlarni taqdim etasiz. Jiddiy yoki aniq tashxislar uchun foydalanuvchilarga doimo haqiqiy shifokor bilan maslahatlashishni eslatib turing."
+  },
+  "settings": {
+    "personal_title": "Shaxsiy ma'lumotlar",
+    "first_name": "Ism",
+    "last_name": "Familiya",
+    "first_name_placeholder": "Ismni kiriting",
+    "last_name_placeholder": "Familiyani kiriting",
+    "save_changes": "O'zgarishlarni saqlash",
+    "saving": "Saqlanmoqda...",
+    "save_success_title": "Saqlandi ✓",
+    "save_success_msg": "Profilingiz muvaffaqiyatli yangilandi.",
+    "session_expired": "Sessiya muddati tugadi. Iltimos, chiqib qayta kiring.",
+    "privacy_title": "Maxfiylik va xavfsizlik",
+    "change_password": "Parolni o'zgartirish",
+    "two_factor": "Ikki bosqichli autentifikatsiya",
+    "data_privacy": "Ma'lumotlar maxfiyligi",
+    "about_title": "Biz haqimizda",
+    "version": "Versiya"
+  },
+  "privacy_page": {
+    "data_protection": "Ma'lumotlarni himoya qilish",
+    "data_protection_desc": "Sizning sog'lig'ingizga oid ma'lumotlaringiz to'liq shifrlangan va SOC2 muvofiqligiga ega Supabase bulutli infratuzilmasida xavfsiz saqlanadi.",
+    "auth": "Autentifikatsiya",
+    "auth_desc": "Biz bir martalik elektron pochta tasdiqlash kodlaridan foydalanamiz — parollar saqlanmaydi. Sizning sessiyangiz JWT tokenlari bilan himoyalangan.",
+    "rights": "Sizning maxfiylik huquqlaringiz",
+    "rights_desc": "Siz istalgan vaqtda sadullayevshohjahon990@gmail.com manziliga murojaat qilib, hisobingizni va barcha tegishli ma'lumotlarni o'chirishni so'rashingiz mumkin.",
+    "security": "Qurilma xavfsizligi",
+    "security_desc": "Sessiya ma'lumotlari faqat xotirada saqlanadi. Ilovani yopish maksimal xavfsizlik uchun qayta autentifikatsiyani talab qiladi."
   }
 }

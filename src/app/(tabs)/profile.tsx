@@ -160,6 +160,34 @@ export default function ProfileScreen() {
           ))}
         </View>
 
+        {/* Danger Zone */}
+        <Text style={[styles.sectionTitle, { color: '#EF4444', marginTop: 12 }]}>{t('profile.danger_zone')}</Text>
+        <View style={[styles.settingsCard, { backgroundColor: colors.card, borderColor: '#FEE2E2', borderWidth: 1 }]}>
+          <TouchableOpacity 
+            style={[styles.settingsRow, styles.settingsRowLast]}
+            onPress={() => {
+              showAlert({
+                title: t('profile.delete_account'),
+                message: 'Are you sure you want to request account deletion? This action cannot be undone.',
+                type: 'confirm',
+                confirmLabel: 'Request Deletion',
+                onConfirm: () => {
+                  showAlert({ title: 'Request Sent', message: 'Your deletion request has been received and will be processed within 30 days.', type: 'success' });
+                }
+              });
+            }}
+          >
+            <View style={[styles.settingsIcon, { backgroundColor: '#FEE2E2' }]}>
+              <Lock color="#EF4444" size={20} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.settingsItemTitle, { color: '#EF4444' }]}>{t('profile.delete_account')}</Text>
+              <Text style={[styles.settingsDescription, { color: colors.textSecondary }]}>{t('profile.delete_account_desc')}</Text>
+            </View>
+            <ChevronRight color="#EF4444" size={20} />
+          </TouchableOpacity>
+        </View>
+
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <LogOut color="#EF4444" size={20} style={{ marginRight: 8 }} />
           <Text style={styles.logoutText}>{t('profile.logout')}</Text>

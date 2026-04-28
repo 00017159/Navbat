@@ -6,12 +6,14 @@ import { useTheme } from '../services/theme';
 import { getCurrentUser, setCurrentUser } from '../services/api';
 import { supabase } from '../services/supabase';
 import { useAlert } from '../services/AlertContext';
+import { useTranslation } from 'react-i18next';
 
 export default function PersonalInfoScreen() {
   const router = useRouter();
   const { colors, dark } = useTheme();
   const user = getCurrentUser();
   const { showAlert } = useAlert();
+  const { t } = useTranslation();
 
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
@@ -45,8 +47,8 @@ export default function PersonalInfoScreen() {
       const { data: { user: authUser } } = await supabase.auth.getUser();
       if (!authUser) {
         showAlert({ 
-          title: 'Error', 
-          message: 'Session expired. Please log out and log in again.', 
+          title: t('common.error'), 
+          message: t('settings.session_expired'), 
           type: 'error' 
         });
         return;
@@ -69,13 +71,13 @@ export default function PersonalInfoScreen() {
       }
 
       showAlert({ 
-        title: 'Saved ✓', 
-        message: 'Your profile has been updated successfully.', 
+        title: t('settings.save_success_title'), 
+        message: t('settings.save_success_msg'), 
         type: 'success' 
       });
     } catch (e: any) {
       showAlert({ 
-        title: 'Error', 
+        title: t('common.error'), 
         message: e.message || 'Failed to save. Please try again.', 
         type: 'error' 
       });
@@ -90,32 +92,32 @@ export default function PersonalInfoScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <ArrowLeft color={colors.text} size={24} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Personal Information</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>{t('settings.personal_title')}</Text>
         <TouchableOpacity onPress={handleSave} disabled={saving}>
           <Save color={colors.primary} size={24} />
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={[styles.label, { color: colors.textSecondary }]}>First Name</Text>
+        <Text style={[styles.label, { color: colors.textSecondary }]}>{t('settings.first_name')}</Text>
         <TextInput
           style={[styles.input, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]}
           value={firstName}
           onChangeText={setFirstName}
-          placeholder="Enter first name"
+          placeholder={t('settings.first_name_placeholder')}
           placeholderTextColor={colors.textSecondary}
         />
 
-        <Text style={[styles.label, { color: colors.textSecondary }]}>Last Name</Text>
+        <Text style={[styles.label, { color: colors.textSecondary }]}>{t('settings.last_name')}</Text>
         <TextInput
           style={[styles.input, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]}
           value={lastName}
           onChangeText={setLastName}
-          placeholder="Enter last name"
+          placeholder={t('settings.last_name_placeholder')}
           placeholderTextColor={colors.textSecondary}
         />
 
-        <Text style={[styles.label, { color: colors.textSecondary }]}>Email</Text>
+        <Text style={[styles.label, { color: colors.textSecondary }]}>{t('common.email')}</Text>
         <View style={[styles.input, styles.readOnly, { backgroundColor: dark ? '#334155' : '#F1F5F9', borderColor: colors.border }]}>
           <Text style={{ color: colors.textSecondary }}>{email}</Text>
         </View>
@@ -125,7 +127,7 @@ export default function PersonalInfoScreen() {
           onPress={handleSave}
           disabled={saving}
         >
-          <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Save Changes'}</Text>
+          <Text style={styles.saveButtonText}>{saving ? t('settings.saving') : t('settings.save_changes')}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

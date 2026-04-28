@@ -6,19 +6,21 @@ import { useTheme } from '../services/theme';
 import { deleteAccount } from '../services/api';
 import { useAlert } from '../services/AlertContext';
 import { CommonActions, useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 export default function PrivacyScreen() {
   const router = useRouter();
   const navigation = useNavigation();
   const { colors, dark } = useTheme();
   const { showAlert } = useAlert();
+  const { t } = useTranslation();
 
   const handleAccountDeletion = () => {
     showAlert({
-      title: 'Delete Account',
+      title: t('profile.delete_account'),
       message: 'Are you sure you want to delete your account? This action is permanent and cannot be undone.',
       type: 'confirm',
-      confirmLabel: 'Delete',
+      confirmLabel: t('common.confirm'),
       onConfirm: async () => {
         try {
           await deleteAccount();
@@ -37,23 +39,23 @@ export default function PrivacyScreen() {
   const sections = [
     {
       icon: <Shield color={colors.primary} size={20} />,
-      title: 'Data Protection',
-      description: 'Your health data is encrypted end-to-end and stored securely in Supabase cloud infrastructure with SOC2 compliance.',
+      title: t('privacy_page.data_protection'),
+      description: t('privacy_page.data_protection_desc'),
     },
     {
       icon: <Key color="#F59E0B" size={20} />,
-      title: 'Authentication',
-      description: 'We use one-time email verification codes — no passwords stored. Your session is secured with JWT tokens.',
+      title: t('privacy_page.auth'),
+      description: t('privacy_page.auth_desc'),
     },
     {
       icon: <Eye color="#10B981" size={20} />,
-      title: 'Your Privacy Rights',
-      description: 'You can request deletion of your account and all associated data at any time by contacting sadullayevshohjahon990@gmail.com.',
+      title: t('privacy_page.rights'),
+      description: t('privacy_page.rights_desc'),
     },
     {
       icon: <Smartphone color="#8B5CF6" size={20} />,
-      title: 'Device Security',
-      description: 'Session data is stored in-memory only. Closing the app requires re-authentication for maximum security.',
+      title: t('privacy_page.security'),
+      description: t('privacy_page.security_desc'),
     },
   ];
 
@@ -63,7 +65,7 @@ export default function PrivacyScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <ArrowLeft color={colors.text} size={24} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Privacy & Security</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>{t('profile.privacy_security')}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -82,7 +84,7 @@ export default function PrivacyScreen() {
           style={[styles.linkButton, { borderColor: colors.border }]}
           onPress={handleAccountDeletion}
         >
-          <Text style={{ color: '#EF4444', fontWeight: '600' }}>Request Account Deletion</Text>
+          <Text style={{ color: '#EF4444', fontWeight: '600' }}>{t('profile.delete_account')}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

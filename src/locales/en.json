@@ -123,6 +123,10 @@
     "no_slots": "No slots available for this date.",
     "notes_label": "Notes (Optional)",
     "appointment_summary": "Appointment Summary",
+    "doctor": "Doctor",
+    "date": "Date",
+    "time": "Time",
+    "type": "Type",
     "in_person_visit": "In-Person Visit",
     "today": "Today"
   },
@@ -138,8 +142,11 @@
     "language": "Language",
     "help_support": "Help & Support",
     "help_support_desc": "FAQ, contact us, report",
-    "about": "About ClinicUz",
-    "about_desc": "Version, terms, licenses",
+    "about": "About Us",
+    "about_desc": "About app and team",
+    "danger_zone": "DANGER ZONE",
+    "delete_account": "Request account deletion",
+    "delete_account_desc": "Permanently delete your account and data",
     "logout": "Log Out",
     "select_language": "Select Language",
     "role_doctor": "Doctor",
@@ -171,5 +178,42 @@
     "time_tomorrow": "Tomorrow",
     "time_in_hours": "in {{count}}h",
     "time_just_now": "Just now"
+  },
+  "chatbot": {
+    "title": "AI Health Assistant",
+    "subtitle": "Powered by ClinicUz",
+    "welcome_msg": "Hello! I'm your ClinicUz AI Health Assistant 🩺\n\nI can help you with:\n• Symptom information\n• General health questions\n• Finding the right specialist\n• Appointment preparation tips\n\nHow can I help you today?",
+    "input_placeholder": "Ask about your health...",
+    "thinking": "Thinking...",
+    "error_msg": "Sorry, I'm having trouble connecting right now. Please try again later.",
+    "system_prompt": "You are a helpful and professional medical AI assistant for the ClinicUz application. You provide general health guidance, symptom triage, and medical facts. Always remind users to consult a real human doctor for serious or definitive diagnoses."
+  },
+  "settings": {
+    "personal_title": "Personal Information",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "first_name_placeholder": "Enter first name",
+    "last_name_placeholder": "Enter last name",
+    "save_changes": "Save Changes",
+    "saving": "Saving...",
+    "save_success_title": "Saved ✓",
+    "save_success_msg": "Your profile has been updated successfully.",
+    "session_expired": "Session expired. Please log out and log in again.",
+    "privacy_title": "Privacy & Security",
+    "change_password": "Change Password",
+    "two_factor": "Two-Factor Authentication",
+    "data_privacy": "Data Privacy",
+    "about_title": "About Us",
+    "version": "Version"
+  },
+  "privacy_page": {
+    "data_protection": "Data Protection",
+    "data_protection_desc": "Your health data is encrypted end-to-end and stored securely in Supabase cloud infrastructure with SOC2 compliance.",
+    "auth": "Authentication",
+    "auth_desc": "We use one-time email verification codes — no passwords stored. Your session is secured with JWT tokens.",
+    "rights": "Your Privacy Rights",
+    "rights_desc": "You can request deletion of your account and all associated data at any time by contacting sadullayevshohjahon990@gmail.com.",
+    "security": "Device Security",
+    "security_desc": "Session data is stored in-memory only. Closing the app requires re-authentication for maximum security."
   }
 }

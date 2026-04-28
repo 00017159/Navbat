@@ -6,6 +6,7 @@ import {
 import { ArrowLeft, Send, Bot, User } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '../services/theme';
+import { useTranslation } from 'react-i18next';
 
 type Message = {
   id: string;
@@ -32,7 +33,14 @@ const PLACEHOLDER_RESPONSES = [
 export default function AIChatScreen() {
   const router = useRouter();
   const { colors, dark } = useTheme();
-  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
+  const { t } = useTranslation();
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      role: 'assistant',
+      content: t('chatbot.welcome_msg'),
+    },
+  ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
@@ -62,7 +70,7 @@ export default function AIChatScreen() {
         body: JSON.stringify({
           model: 'gpt-3.5-turbo',
           messages: [
-            { role: 'system', content: 'You are a helpful and professional medical AI assistant for the ClinicUz application. You provide general health guidance, symptom triage, and medical facts. Always remind users to consult a real human doctor for serious or definitive diagnoses.' },
+            { role: 'system', content: t('chatbot.system_prompt') },
             ...messages.map(m => ({ role: m.role, content: m.content })),
             { role: 'user', content: userMsg.content }
           ]
@@ -86,7 +94,7 @@ export default function AIChatScreen() {
       const errorMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: "Sorry, I'm having trouble connecting right now. Please try again later.",
+        content: t('chatbot.error_msg'),
       };
       setMessages(prev => [...prev, errorMsg]);
     } finally {
@@ -107,8 +115,8 @@ export default function AIChatScreen() {
             <Bot color="#fff" size={18} />
           </View>
           <View>
-            <Text style={[styles.headerTitle, { color: colors.text }]}>AI Health Assistant</Text>
-            <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>Powered by ClinicUz</Text>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>{t('chatbot.title')}</Text>
+            <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>{t('chatbot.subtitle')}</Text>
           </View>
         </View>
         <View style={{ width: 40 }} />
@@ -153,7 +161,7 @@ export default function AIChatScreen() {
             </View>
             <View style={styles.typingDots}>
               <ActivityIndicator size="small" color={colors.primary} />
-              <Text style={[styles.typingText, { color: colors.textSecondary }]}>Thinking...</Text>
+              <Text style={[styles.typingText, { color: colors.textSecondary }]}>{t('chatbot.thinking')}</Text>
             </View>
           </View>
         )}
@@ -164,7 +172,7 @@ export default function AIChatScreen() {
         <View style={[styles.inputRow, { backgroundColor: colors.card, borderTopColor: colors.border }]}>
           <TextInput
             style={[styles.input, { backgroundColor: dark ? '#334155' : '#F1F5F9', color: colors.text }]}
-            placeholder="Ask about your health..."
+            placeholder={t('chatbot.input_placeholder')}
             placeholderTextColor={colors.textSecondary}
             value={input}
             onChangeText={setInput}
